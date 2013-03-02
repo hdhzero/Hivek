@@ -3,40 +3,40 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity icache_memory is
-    generic (
-    );
     port (
         clock   : in std_logic;
         load    : in std_logic;
         address : in std_logic_vector(31 downto 0);
         data_i  : in std_logic_vector(63 downto 0);
-        data_o  : in std_logic_vector(63 downto 0)
+        data_o  : out std_logic_vector(63 downto 0)
     );
 end icache_memory;
 
 architecture icache_memory_arch of icache_memory is
-    type ram is array (0 to ) of std_logic_vector(15 downto 0);
+    type ram is array (0 to 127) of std_logic_vector(15 downto 0);
 
     signal mem0 : ram;
     signal mem1 : ram;
     signal mem2 : ram;
     signal mem3 : ram;
 
-    signal addr0 : std_logic_vector();
-    signal addr1 : std_logic_vector();
-    signal addr2 : std_logic_vector();
-    signal addr3 : std_logic_vector();
+    signal addr0 : std_logic_vector(31 downto 0);
+    signal addr1 : std_logic_vector(31 downto 0);
+    signal addr2 : std_logic_vector(31 downto 0);
+    signal addr3 : std_logic_vector(31 downto 0);
 
     signal out0 : std_logic_vector(15 downto 0);
     signal out1 : std_logic_vector(15 downto 0);
     signal out2 : std_logic_vector(15 downto 0);
     signal out3 : std_logic_vector(15 downto 0);
 
-    signal address_plus_one : std_logic_vector();
-    signal addr_sel : std_logic_vector(1 downto 0);
+    signal address_plus_one : std_logic_vector(31 downto 0);
+    signal addr_sel         : std_logic_vector(1 downto 0);
+    signal ONE : std_logic_vector(31 downto 0);
 
 begin
-    address_plus_one <= std_logic_vector(unsigned(address) + ONE());
+    ONE <= (0 => '1', others => '0');
+    address_plus_one <= std_logic_vector(unsigned(address) + unsigned(ONE));
     addr_sel <= address(2 downto 1);
 
     process (addr_sel, address, address_plus_one)
@@ -90,9 +90,9 @@ begin
             end if;
 
             out0 <= mem0(to_integer(unsigned(addr0)));
-            out1 <= mem0(to_integer(unsigned(addr1)));
-            out2 <= mem0(to_integer(unsigned(addr2)));
-            out3 <= mem0(to_integer(unsigned(addr3)));
+            out1 <= mem1(to_integer(unsigned(addr1)));
+            out2 <= mem2(to_integer(unsigned(addr2)));
+            out3 <= mem3(to_integer(unsigned(addr3)));
         end if;
     end process;
 end icache_memory_arch;
