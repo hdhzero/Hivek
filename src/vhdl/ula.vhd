@@ -2,6 +2,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+library work;
+use work.hiveck_pack.all;
+
 entity ula is
     port (
         operation     : in std_logic_vector(2 downto 0);
