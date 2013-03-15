@@ -100,6 +100,26 @@ class HivekEmulator {
             return res;
         }
 
+        uint32_t load_uhalf(uint32_t addr) {
+            uint32_t res = 0;
+
+            res = 0;
+            res |= dmem[addr] << 8;
+            res |= dmem[addr + 1];
+
+            return res;
+
+        }
+
+        uint32_t load_ubyte(uint32_t addr) {
+            uint32_t res = 0;
+
+            res = 0;
+            res |= dmem[addr];
+
+            return res;
+        }
+
 
         void fetch() {
             head1 = imem[pc];
@@ -153,6 +173,6 @@ class HivekEmulator {
 };
 
 int main(int argc, char** argv) {
-    int32_t v;
+    HivekEmulator emulator;
     return 0;
 }
