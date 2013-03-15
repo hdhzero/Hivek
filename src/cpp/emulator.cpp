@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <stdint.h>
+#include <cstdio>
 using namespace std;
 
 #define ADD 0
@@ -36,12 +37,14 @@ class HivekEmulator {
         uint16_t tail1;
         uint16_t tail2;
         vector<uint16_t> imem;
-        vector<uint8_t> dmem;
+//        vector<uint8_t> dmem; 
+    uint8_t dmem[100];
 
         int op;
         int addr_dmem;
 
-    private:
+//    private:
+    public:
         void store_word(uint32_t value, uint32_t addr) {
             dmem[addr] = value >> 24;
             dmem[addr + 1] = (value << 8) >> 24;
@@ -55,7 +58,7 @@ class HivekEmulator {
         }
 
         void store_byte(uint32_t value, uint32_t addr) {
-            dmem[addr] = value;
+            dmem[addr] = (value << 24) >> 24;
         }
 
         uint32_t load_word(uint32_t addr) {
@@ -120,6 +123,47 @@ class HivekEmulator {
             return res;
         }
 
+        uint32_t shift_logical_left(uint32_t value, uint32_t sh) {
+            return value << sh;
+        }
+
+        uint32_t shift_logical_right(uint32_t value, uint32_t sh) {
+            return value >> sh;
+        }
+
+        uint32_t shift_arith_right(uint32_t value, uint32_t sh) {
+            uint32_t res;
+
+            if (value & 0x80000000) {
+                res = ~0 & (value >> sh);
+            } else {
+                res = 0 | (value >> sh);
+            }
+
+            return res;
+        }
+
+        uint32_t rotate_right(uint32_t value, uint32_t sh) {
+            uint32_t res = value;
+
+            value = value >> sh;
+            res   = res << 32 - sh;
+            res   = res | value;
+
+            return res;
+        }
+
+        string to_binary(uint32_t value, int size) {
+            string res;
+            char c;
+
+            for (int i = 0; i < size; ++i) {
+                c = (value & (1 << i)) ? '1' : '0';
+                res = c + res;
+            }
+
+            return res;
+        }
 
         void fetch() {
             head1 = imem[pc];
@@ -174,5 +218,9 @@ class HivekEmulator {
 
 int main(int argc, char** argv) {
     HivekEmulator emulator;
+
+    emulator.store_word(0x80000, 0);
+    printf("%X\n", emulator.load_byte(0));
+    cout << emulator.to_binary(256, 16);
     return 0;
 }
