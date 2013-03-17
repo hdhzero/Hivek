@@ -38,13 +38,25 @@ class HivekEmulator {
         uint16_t tail2;
         vector<uint16_t> imem;
 //        vector<uint8_t> dmem; 
-    uint8_t dmem[100];
+        uint8_t dmem[100];
 
         int op;
         int addr_dmem;
 
 //    private:
     public:
+        uint32_t rt32(uint16_t value) {
+            return (value << 4) >> 12;
+        }
+
+        uint32_t rs32(uint16_t value) {
+            return value >> 12;
+        }
+
+        uint32_t rd32(uint16_t value) {
+            return (value << 12) >> 12;
+        }
+
         void store_word(uint32_t value, uint32_t addr) {
             dmem[addr] = value >> 24;
             dmem[addr + 1] = (value << 8) >> 24;
@@ -173,7 +185,20 @@ class HivekEmulator {
         }
 
         void decode() {
+            if (head1 & 0x8000) {
 
+            } else {
+                if (head1 & 0x4000) {
+                    if (tail1 & 0x800) {
+                        op2 = ~0 & (tail1 & 0xFFF);
+                    } else {
+                        op2 = 0 | (tail1 & 0xFFF);
+                    }
+                } else {
+                    addr_tmp = tail1 & 
+                    op2 = regs[tail1 & 
+                }
+            }
         }
 
         void execute() {
