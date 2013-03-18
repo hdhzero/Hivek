@@ -65,6 +65,12 @@ begin
                 addr1 <= address_plus_one;
                 addr2 <= address_plus_one;
                 addr3 <= address;
+            when others =>
+                addr0 <= address;
+                addr1 <= address;
+                addr2 <= address;
+                addr3 <= address;
+
         end case;
     end process;
 
@@ -79,6 +85,9 @@ begin
                 data_o <= out2 & out3 & out0 & out1;
             when "11" =>
                 data_o <= out3 & out0 & out1 & out2;
+            when others =>
+                data_o <= out0 & out1 & out2 & out3;
+
         end case;
     end process;
 

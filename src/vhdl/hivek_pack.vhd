@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-package hiveck_pack is
+package hivek_pack is
     ------------------------
     -- constants definitions
     ------------------------
@@ -48,7 +48,7 @@ package hiveck_pack is
         reg_a2  : in std_logic_vector(3 downto 0);
         reg_b2  : in std_logic_vector(3 downto 0);
         reg_c1  : in std_logic_vector(3 downto 0);
-        reg_c1  : in std_logic_vector(3 downto 0);
+        reg_c2  : in std_logic_vector(3 downto 0);
         din_c1  : in std_logic_vector(31 downto 0);
         din_c2  : in std_logic_vector(31 downto 0);
         dout_a1 : out std_logic_vector(31 downto 0);
@@ -58,5 +58,14 @@ package hiveck_pack is
     );
     end component;
 
+    component icache_memory is
+    port (
+        clock   : in std_logic;
+        load    : in std_logic;
+        address : in std_logic_vector(31 downto 0);
+        data_i  : in std_logic_vector(63 downto 0);
+        data_o  : out std_logic_vector(63 downto 0)
+    );
+    end component;
 
 end package;
