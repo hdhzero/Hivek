@@ -15,3 +15,8 @@ a.out
 
 # vim
 *.swp
+
+# ghdl files
+icache_memory_tb
+*.ghw
+*.cf
