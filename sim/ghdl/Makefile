@@ -7,3 +7,7 @@ icache_memory_tb:
 	ghdl -i $(sources)/hivek_pack.vhd 
 	ghdl -m icache_memory_tb
 	ghdl -r icache_memory_tb --stop-time=1us --wave=icache_memory_tb.ghw
+
+clean:
+	rm -rf *.o *.ghw *.cf
+	rm icache_memory_tb
