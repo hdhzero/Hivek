@@ -11,6 +11,63 @@ package hivek_pack is
     constant ONES : std_logic_vector(63 downto 0) := x"FFFFFFFFFFFFFFFF";
     constant ONE  : std_logic_vector(63 downto 0) := x"0000000000000001";
 
+    ----------------------
+    -- type definitions --
+    ----------------------
+    type alu_op_t is std_logic_vector(2 downto 0);
+
+    constant ALU_ADD_OP : alu_op_t := "000";
+    constant ALU_SUB_OP : alu_op_t := "001";
+    constant ALU_ADC_OP : alu_op_t := "010";
+    constant ALU_SBC_OP : alu_op_t := "011";
+    constant ALU_AND_OP : alu_op_t := "100";
+    constant ALU_OR_OP  : alu_op_t := "101";
+    constant ALU_NOR_OP : alu_op_t := "110";
+    constant ALU_XOR_OP : alu_op_t := "111";
+
+    -- these types are used in the pipeline register stages
+    type IF_IEXP is record
+        head1 : std_logic_vector(15 downto 0);
+        head2 : std_logic_vector(15 downto 0);
+        tail1 : std_logic_vector(15 downto 0);
+        tail2 : std_logic_vector(15 downto 0);
+    end record;
+
+    type IEXP_ID is record
+        instruction_0 : std_logic_vector(31 downto 0);
+        instruction_1 : std_logic_vector(31 downto 0);       
+    end record;
+
+    type ID_SH is record
+        alu_op_0 : alu_op_t;
+        alu_op_1 : alu_op_t;
+        reg_av0  : std_logic_vector(31 downto 0);
+        reg_bv0  : std_logic_vector(31 downto 0);
+        reg_av1  : std_logic_vector(31 downto 0);
+        reg_bv1  : std_logic_vector(31 downto 0);
+    end record;
+
+    type SH_EX is record
+        alu_op_0 : alu_op_t;
+        alu_op_1 : alu_op_t;
+        reg_av0  : std_logic_vector(31 downto 0);
+        reg_bv0  : std_logic_vector(31 downto 0);
+        reg_av1  : std_logic_vector(31 downto 0);
+        reg_bv1  : std_logic_vector(31 downto 0);
+    end record;
+
+    type EX_MEM is record
+        mem_load_0 : std_logic;
+        mem_load_1 : std_logic;
+    end record;
+
+    type MEM_WB is record
+        reg_c0 : std_logic_vector(3 downto 0);
+        reg_c1 : std_logic_vector(3 downto 0);
+        load_0 : std_logic;
+        load_1 : std_logic;
+    end record;
+
     -------------------------
     -- components definitions
     -------------------------
