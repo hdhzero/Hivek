@@ -18,10 +18,22 @@ architecture behavior of execution_stage is
     signal op_bv0 : std_logic_vector(31 downto 0);
     signal op_bv1 : std_logic_vector(31 downto 0);
 
+    signal res0 : std_logic_vector(31 downto 0);
+    signal res1 : std_logic_vector(31 downto 0);
+
+    signal reg_bv0 : std_logic_vector(31 downto 0);
+    signal reg_bv1 : std_logic_vector(31 downto 0);
+
     signal z, n, c, o     : std_logic;
     signal z0, n0, c0, o0 : std_logic;
     signal z1, n1, c1, o1 : std_logic;
     signal rz, rn, rc, ro : std_logic;
+
+    signal exe0 : std_logic;
+    signal exe1 : std_logic;
+
+    signal update_flags : std_logic;
+    signal flag_bits    : std_logic_vector(1 downto 0);
 begin
     -- write enable back in register bank
     to_pipe.wren_back0 <= from_pipe.wren_back0 and exe0;
@@ -34,6 +46,14 @@ begin
     -- destination registers
     to_pipe.wren_addr0 <= from_pipe.wren_addr0;
     to_pipe.wren_addr1 <= from_pipe.wren_addr1;
+
+    -- alu results
+    to_pipe.alu_res0 <= res0;
+    to_pipe.alu_res1 <= res1;
+
+    to_pipe.dmem_i0 <= from_pipe.reg_bv0;
+    to_pipe.dmem_i1 <= from_pipe.reg_bv1;
+
 
     reg_bv0 <= from_pipe.reg_bv0;
     reg_bv1 <= from_pipe.reg_bv1;
@@ -106,13 +126,21 @@ begin
 
     verify_flags_u0 : verify_flags
     port map (
-        condition => cond0,
+        condition => from_pipe.cond0,
+        z => rz,
+        n => rn,
+        c => rc,
+        o => ro,
         execute   => exe0
     );
 
     verify_flags_u1 : verify_flags
     port map (
-        condition => cond1,
+        condition => from_pipe.cond1,
+        z => rz,
+        n => rn,
+        c => rc,
+        o => ro,
         execute   => exe1
     );
 
@@ -125,7 +153,7 @@ begin
         res    => res0,
         z_flag => z0,
         c_flag => c0,
-        n_flav => n0,
+        n_flag => n0,
         o_flag => o0
     );
 
@@ -136,9 +164,9 @@ begin
         op_a   => from_pipe.reg_av1,
         op_b   => op_bv1,
         res    => res1,
-        z_flag => z1
+        z_flag => z1,
         c_flag => c1,
-        n_flav => n1,
+        n_flag => n1,
         o_flag => o1
     );
-end execution_stage;
+end behavior;

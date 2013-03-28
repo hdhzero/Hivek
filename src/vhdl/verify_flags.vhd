@@ -8,6 +8,8 @@ use work.hivek_pack.all;
 entity verify_flags is
     port (
         condition : cond_flags_t;
+        z, n      : std_logic;
+        c, o      : std_logic;
         execute   : out std_logic
     );
 end verify_flags;

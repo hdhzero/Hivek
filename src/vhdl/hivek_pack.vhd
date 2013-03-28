@@ -79,6 +79,9 @@ package hivek_pack is
         wren_addr0 : std_logic_vector(3 downto 0);
         wren_addr1 : std_logic_vector(3 downto 0);
 
+        update_flags0 : std_logic;
+        update_flags1 : std_logic;
+
         alu_op_0 : alu_op_t;
         alu_op_1 : alu_op_t;
         cond0    : std_logic_vector(3 downto 0);
@@ -90,7 +93,7 @@ package hivek_pack is
         reg_av1  : std_logic_vector(31 downto 0);
         reg_bv1  : std_logic_vector(31 downto 0);
         immd32_0 : std_logic_vector(31 downto 0);
-        imdd32_1 : std_logic_vector(31 downto 0);
+        immd32_1 : std_logic_vector(31 downto 0);
     end record;
 
     type EX_MEM is record
@@ -171,6 +174,16 @@ package hivek_pack is
     );
     end component;
 
+    component verify_flags is
+    port (
+        condition : cond_flags_t;
+        z, n      : std_logic;
+        c, o      : std_logic;
+        execute   : out std_logic
+    );
+    end component;
+
+
     component alu is
     port (
         alu_op : in alu_op_t;
@@ -185,5 +198,17 @@ package hivek_pack is
     );
     end component;
 
+    ---------------------
+    -- Pipeline stages --
+    ---------------------
+
+    component execution_stage is
+    port (
+        clock     : in std_logic;
+        reset     : in std_logic;
+        from_pipe : in SH_EX;
+        to_pipe   : out EX_MEM
+    );
+    end component;
 
 end package;
