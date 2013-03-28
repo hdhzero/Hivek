@@ -20,3 +20,9 @@ a.out
 icache_memory_tb
 *.ghw
 *.cf
+
+# modelsim
+*.wlf
+
+# folders
+sim/modelsim/work/

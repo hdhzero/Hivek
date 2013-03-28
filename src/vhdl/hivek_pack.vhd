@@ -14,7 +14,7 @@ package hivek_pack is
     ----------------------
     -- type definitions --
     ----------------------
-    type alu_op_t is std_logic_vector(2 downto 0);
+    subtype alu_op_t is std_logic_vector(2 downto 0);
 
     constant ALU_ADD_OP : alu_op_t := "000";
     constant ALU_SUB_OP : alu_op_t := "001";
@@ -124,5 +124,20 @@ package hivek_pack is
         data_o  : out std_logic_vector(63 downto 0)
     );
     end component;
+
+    component alu is
+    port (
+        alu_op : in alu_op_t;
+        cin    : in std_logic;
+        op_a   : in std_logic_vector(31 downto 0);
+        op_b   : in std_logic_vector(31 downto 0);
+        res    : out std_logic_vector(31 downto 0);
+        z_flag : out std_logic;
+        c_flag : out std_logic;
+        n_flag : out std_logic;
+        o_flag : out std_logic
+    );
+    end component;
+
 
 end package;
