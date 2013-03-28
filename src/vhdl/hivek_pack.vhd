@@ -25,6 +25,24 @@ package hivek_pack is
     constant ALU_NOR_OP : alu_op_t := "110";
     constant ALU_XOR_OP : alu_op_t := "111";
 
+    subtype cond_flags_t is std_logic_vector(3 downto 0);
+
+    constant COND_EQ : cond_flags_t := "0000";
+    constant COND_NE : cond_flags_t := "0001";
+    constant COND_CS : cond_flags_t := "0010";
+    constant COND_CC : cond_flags_t := "0011";
+    constant COND_MI : cond_flags_t := "0100";
+    constant COND_PL : cond_flags_t := "0101";
+    constant COND_VS : cond_flags_t := "0110";
+    constant COND_VC : cond_flags_t := "0111";
+    constant COND_HI : cond_flags_t := "1000";
+    constant COND_LS : cond_flags_t := "1001";
+    constant COND_GE : cond_flags_t := "1010";
+    constant COND_LT : cond_flags_t := "1011";
+    constant COND_GT : cond_flags_t := "1100";
+    constant COND_LE : cond_flags_t := "1101";
+    constant COND_AL : cond_flags_t := "1110";
+
     -- these types are used in the pipeline register stages
     type IF_IEXP is record
         head1 : std_logic_vector(15 downto 0);
@@ -41,24 +59,52 @@ package hivek_pack is
     type ID_SH is record
         alu_op_0 : alu_op_t;
         alu_op_1 : alu_op_t;
+        cond0    : std_logic_vector(3 downto 0);
+        cond1    : std_logic_vector(3 downto 0);
+        op2_src0 : std_logic;
+        op2_src1 : std_logic;
         reg_av0  : std_logic_vector(31 downto 0);
         reg_bv0  : std_logic_vector(31 downto 0);
         reg_av1  : std_logic_vector(31 downto 0);
         reg_bv1  : std_logic_vector(31 downto 0);
+        immd32_0 : std_logic_vector(31 downto 0);
+        imdd32_1 : std_logic_vector(31 downto 0);
     end record;
 
     type SH_EX is record
+        wren_back0 : std_logic;
+        wren_back1 : std_logic;
+        mem_load_0 : std_logic;
+        mem_load_1 : std_logic;
+        wren_addr0 : std_logic_vector(3 downto 0);
+        wren_addr1 : std_logic_vector(3 downto 0);
+
         alu_op_0 : alu_op_t;
         alu_op_1 : alu_op_t;
+        cond0    : std_logic_vector(3 downto 0);
+        cond1    : std_logic_vector(3 downto 0);
+        op2_src0 : std_logic;
+        op2_src1 : std_logic;
         reg_av0  : std_logic_vector(31 downto 0);
         reg_bv0  : std_logic_vector(31 downto 0);
         reg_av1  : std_logic_vector(31 downto 0);
         reg_bv1  : std_logic_vector(31 downto 0);
+        immd32_0 : std_logic_vector(31 downto 0);
+        imdd32_1 : std_logic_vector(31 downto 0);
     end record;
 
     type EX_MEM is record
+        wren_back0 : std_logic;
+        wren_back1 : std_logic;
         mem_load_0 : std_logic;
         mem_load_1 : std_logic;
+        wren_addr0 : std_logic_vector(3 downto 0);
+        wren_addr1 : std_logic_vector(3 downto 0);
+
+        alu_res0   : std_logic_vector(31 downto 0);
+        alu_res1   : std_logic_vector(31 downto 0);
+        dmem_i0    : std_logic_vector(31 downto 0);
+        dmem_i1    : std_logic_vector(31 downto 0);
     end record;
 
     type MEM_WB is record
