@@ -58,10 +58,10 @@ begin
     reg_bv0 <= from_pipe.reg_bv0;
     reg_bv1 <= from_pipe.reg_bv1;
 
-    op_bv0 <= reg_bv0 when from_pipe.op2_src0 = '1' else
+    op_bv0 <= reg_bv0 when from_pipe.op2_src0 = '0' else
               from_pipe.immd32_0;
 
-    op_bv1 <= reg_bv1 when from_pipe.op2_src1 = '1' else
+    op_bv1 <= reg_bv1 when from_pipe.op2_src1 = '0' else
               from_pipe.immd32_1;
   
     process (clock, reset)
