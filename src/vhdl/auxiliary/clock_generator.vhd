@@ -16,7 +16,5 @@ entity clock_generator is
 end clock_generator;
 
 architecture behavior of clock_generator is
-
 begin
-    clock1x <= clock;
 end clock_generator;

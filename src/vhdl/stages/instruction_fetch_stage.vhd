@@ -14,13 +14,17 @@ entity instruction_fetch_stage is
         imem_load   : in std_logic;
         j_taken     : in std_logic;
         j_value     : in std_logic_vector(31 downto 0);
-        imem_data_i : in std_logic_vector(31 downto 0);
+        imem_data_i : in std_logic_vector(63 downto 0);
         imem_addr   : in std_logic_vector(31 downto 0);
         to_pipe     : out IF_IEXP
     );
 end instruction_fetch_stage;
 
-architecture instruction_fetch_stage_arch of instruction_fetch_stage is
+architecture behavior of instruction_fetch_stage is
+    signal pc     : std_logic_vector(31 downto 0);
+    signal new_pc : std_logic_vector(31 downto 0);
+    signal inst64 : std_logic_vector(63 downto 0);
+
     signal sequential_inc : std_logic_vector(31 downto 0);
 
     signal add2 : std_logic_vector(31 downto 0);
@@ -32,10 +36,17 @@ architecture instruction_fetch_stage_arch of instruction_fetch_stage is
     signal head_bits : std_logic_vector(2 downto 0);
 
 begin
-    add2 <= std_logic_vector(unsigned(pc) + unsigned(x"00000002"));
-    add4 <= std_logic_vector(unsigned(pc) + unsigned(x"00000004"));
-    add6 <= std_logic_vector(unsigned(pc) + unsigned(x"00000006"));
-    add8 <= std_logic_vector(unsigned(pc) + unsigned(x"00000008"));
+    add2 <= std_logic_vector(unsigned(pc) + x"00000002");
+    add4 <= std_logic_vector(unsigned(pc) + x"00000004");
+    add6 <= std_logic_vector(unsigned(pc) + x"00000006");
+    add8 <= std_logic_vector(unsigned(pc) + x"00000008");
+
+    head_bits <= inst64(63) & inst64(62) & inst64(46);
+
+    to_pipe.head1 <= inst64(63 downto 48);
+    to_pipe.head2 <= inst64(47 downto 32);
+    to_pipe.tail1 <= inst64(31 downto 16);
+    to_pipe.tail2 <= inst64(15 downto 0);
 
     process (clock, reset, new_pc)
     begin
@@ -48,7 +59,7 @@ begin
         end if;
     end process;
 
-    process (pc_value, jmp_taken, jmp_address)
+    process (j_taken, j_value, sequential_inc)
     begin
         if j_taken = '1' then
             new_pc <= j_value;
@@ -57,7 +68,7 @@ begin
         end if;
     end process;
 
-    process (inst_size, add2, add4, add6, add8, pc_value)
+    process (inst_size, add2, add4, add6, add8, pc)
     begin
         case inst_size is
             when "00" =>     -- 16 bits
@@ -105,4 +116,4 @@ begin
         data_i  => imem_data_i,
         data_o  => inst64
     );
-end instruction_fetch_stage_arch;
+end behavior;

@@ -5,14 +5,14 @@ use ieee.numeric_std.all;
 library work;
 use work.hivek_pack.all;
 
-entity instruction_decode is
+entity instruction_decode_stage is
     port (
         clock   : in std_logic;
         clock2x : in std_logic;
     );
-end instruction_decode;
+end instruction_decode_stage;
 
-architecture behavior of instruction_decode is
+architecture behavior of instruction_decode_stage is
 begin
     instruction_decoder_u0 : instruction_decoder
     port map (
