@@ -1,0 +1,87 @@
+The Hivek has 32 registers of 32 bits
+2-issue vliw
+
+
+0000 0000 0000 0000 0000 0000 0000 0000
+
+sz  opcode cd   rs    rt    rd    op
+00 0000000 000 00000 00000 00000 00000
+00 01ooooo 00 000 000 00000 00000 00000 0
+
+00----- reg
+01----- immd
+10----- jump
+11---   others
+
+registers:
+    - arith (8)
+    add rd, rs, rt
+    sub rd, rs, rt
+    adc rd, rs, rt
+    sbc rd, rs, rt
+
+    shadd1 rd, rs, rt
+    shadd2 rd, rs, rt
+    shadd3 rd, rs, rt
+    shadd4 rd, rs, rt
+
+    - logical (4)
+    and rd, rs, rt
+    or  rd, rs, rt
+    nor rd, rs, rt
+    xor rd, rs, rt
+
+    - shift (4)
+    sll rd, rs, rt
+    slr rd, rs, rt
+    sar rd, rs, rt
+    ror rd, rs, rt
+
+    - comparison (5)
+    cmpeq  pd, rs, rt
+    cmplt  pd, rs, rt
+    cmpgt  pd, rs, rt
+    cmpltu pd, rs, rt
+    cmpgtu pd, rs, rt
+
+immediate:
+    - arith (1)
+    addi rd, rs, immd
+
+    - logical (2)
+    andi rd, rs, immd
+    andhi rd, rs, immd
+    ori  rd, rs, immd
+    orihi rd, rs, immd
+
+    - shift
+    sll rd, rs, immd
+    slr rd, rs, immd
+    sar rd, rs, immd
+    ror rd, rs, immd
+
+    - memory (8)
+    lw  rd, rs, immd
+    lh  rd, rs, immd
+    lb  rd, rs, immd
+    lhu rd, rs, immd
+    lbu rd, rs, immd
+    sw  rd, rs, immd
+    sh  rd, rs, immd
+    sb  rd, rs, immd
+    
+branch:
+    - conditional
+    (pd) j
+         - taken or not taken
+         - link
+         - register
+         - cond
+
+    - unconditional
+    j
+    jr
+    jal
+    jalr
+
+
