@@ -142,6 +142,20 @@ package hivek_pack is
     );
     end component;
 
+    component reg_bram is
+    generic (
+        vendor : string := "ALTERA"
+    );
+    port (
+        clock  : in std_logic;
+        wren   : in std_logic;
+        wraddr : in std_logic_vector(4 downto 0);
+        rdaddr : in std_logic_vector(4 downto 0);
+        din    : in std_logic_vector(31 downto 0);
+        dout   : out std_logic_vector(31 downto 0)
+    );
+    end component;
+
     -- the register bank
     component register_bank is
     port (
@@ -210,5 +224,21 @@ package hivek_pack is
         to_pipe   : out EX_MEM
     );
     end component;
+
+    ------------------------
+    -- Vendor componentes --
+    ------------------------
+    component reg_bram_altera IS
+	PORT
+	(
+		clock		: IN STD_LOGIC  := '1';
+		data		: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		rdaddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+		wraddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+		wren		: IN STD_LOGIC  := '0';
+		q		: OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
+	);
+    end component;
+
 
 end package;

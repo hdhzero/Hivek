@@ -1,17 +1,48 @@
-The Hivek has 32 registers of 32 bits
-2-issue vliw
-
-
 0000 0000 0000 0000 0000 0000 0000 0000
 
-sz  opcode cd   rs    rt    rd    op
-00 0000000 000 00000 00000 00000 00000
-00 01ooooo 00 000 000 00000 00000 00000 0
 
-00----- reg
-01----- immd
-10----- jump
-11---   others
+   immd          op  sz cnd rs     rt
+0000 0000 0000 0000 00 0000 00000 00000
+
+
+0000 0000 0000 0000 00 0000 00000 00000
+
+0ooo
+10----- jmp
+110---- regs
+111---- others
+
+1 addi
+2 lw
+3 sw
+4 andi
+5 ori
+6 addis
+7 adci
+8 adcis
+
+Type I
+sz   op cond   rs    rt     immd12
+00 0ttt cccc sssss ttttt iiii iiii iiii
+
+Type II
+sz   op    immd26
+00 100l ii iiii iiii iiii iiii iiii iiii
+- j
+- jal
+
+Type III
+sz  op   cond  immd21
+00 101pp cccc i iiii iiii iiii iiii iiii
+- j cond
+ps.: verify the usage of load hi
+
+Type IV
+sz op             cond  rd     rs    rt
+00 110 000 0000 0 0000 00000 00000 00000
+
+Type V
+00 111 uuu uuuu u uuuu uuuuu uuuuu uuuuu
 
 registers:
     - arith (8)

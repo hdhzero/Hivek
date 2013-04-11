@@ -21,8 +21,21 @@ icache_memory_tb
 *.ghw
 *.cf
 
-# modelsim
+# modelsim and quartus
 *.wlf
+*.sof
+*.rpt
+*.sdc
+*.bak
+*.cmp
+*.qip
+*.qpf
+*.qsf
+*.summary
+*.done
+*.pin
+*.mti
+*.mpf
 
 # folders
 sim/modelsim/work/
