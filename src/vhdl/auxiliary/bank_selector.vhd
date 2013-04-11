@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 library work;
 use work.hivek_pack.all;
 
-entity bank_select is
+entity bank_selector is
     port (
         clock  : in std_logic;
         load0  : in std_logic;
@@ -22,9 +22,9 @@ entity bank_select is
         sel_b1 : out std_logic
 
     );
-end bank_select;
+end bank_selector;
 
-architecture bank_select of bank_select is
+architecture bank_selector of bank_selector is
     type selectors_t is array (31 downto 0) of std_logic;
     signal selectors : selectors_t;
 begin
@@ -46,5 +46,5 @@ begin
         end if;
     end process;
 
-end bank_select;
+end bank_selector;
 

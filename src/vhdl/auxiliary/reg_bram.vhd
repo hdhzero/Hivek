@@ -62,5 +62,17 @@ begin
         );
     end generate;
 
+    generic_bram : if vendor = "GENERIC" generate
+        process (clock)
+        begin
+            if clock'event and clock = '1' then
+                if wren = '1' then
+                    ram(to_integer(unsigned(wraddr))) <= din;
+                end if;
+
+                dout_v0 <= ram(to_integer(unsigned(rdaddr))) <= din;
+            end if;
+        end process;
+    end generate;
 end reg_bram;
 
