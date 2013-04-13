@@ -26,24 +26,30 @@ begin
 
     process
     begin
-        left    <= '1';
-        logical <= '1';
-        shift   <= "00000";
-        input   <= x"00000000";
-        wait for 10 ns;
+        left    <= '0';
+        logical <= '0';
+        shift   <= "00011";
+        input   <= x"F0000003";
+        wait until clock'event and clock = '1';
 
         left    <= '0';
         logical <= '1';
-        shift   <= "00000";
-        input   <= x"00000000";
-        wait for 10 ns;
+        shift   <= "00011";
+        input   <= x"F0000003";
+        wait until clock'event and clock = '1';
+
+        left    <= '1';
+        logical <= '0';
+        shift   <= "00011";
+        input   <= x"F0000003";
+        wait until clock'event and clock = '1';
 
         left    <= '1';
         logical <= '1';
-        shift   <= "00000";
-        input   <= x"00000000";
-        wait for 10 ns;
-
+        shift   <= "00011";
+        input   <= x"F0000003";
+        wait until clock'event and clock = '1';
+ 
         wait;
     end process;
 

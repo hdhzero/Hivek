@@ -20,6 +20,7 @@ a.out
 icache_memory_tb
 *.ghw
 *.cf
+*.vcd
 
 # modelsim and quartus
 *.wlf
@@ -36,6 +37,8 @@ icache_memory_tb
 *.pin
 *.mti
 *.mpf
+*.ini
+transcript
 
 # folders
 sim/modelsim/work/
