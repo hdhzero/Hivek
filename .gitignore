@@ -39,3 +39,4 @@ icache_memory_tb
 
 # folders
 sim/modelsim/work/
+sim/work/

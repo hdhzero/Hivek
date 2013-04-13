@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-package hivek_pack is
+package hivek_pkg is
     ------------------------
     -- constants definitions
     ------------------------
@@ -197,6 +197,15 @@ package hivek_pack is
     );
     end component;
 
+    component barrel_shifter is   -- barrel shifter
+    port (
+        left    : in  std_logic; -- '1' for left, '0' for right
+        logical : in  std_logic; -- '1' for logical, '0' for arithmetic
+        shift   : in  std_logic_vector(4 downto 0);  -- shift count
+        input   : in  std_logic_vector (31 downto 0);
+        output  : out std_logic_vector (31 downto 0) 
+    );
+    end component;
 
     component alu is
     port (
