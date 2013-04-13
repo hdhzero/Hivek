@@ -7,19 +7,19 @@ use work.hivek_pack.all;
 
 entity alu is
     port (
-        alu_op : in alu_op_t;
-        cin    : in std_logic;
-        op_a   : in std_logic_vector(31 downto 0);
-        op_b   : in std_logic_vector(31 downto 0);
-        res    : out std_logic_vector(31 downto 0);
-        z_flag : out std_logic;
-        c_flag : out std_logic;
-        n_flag : out std_logic;
-        o_flag : out std_logic
+        operation     : in alu_op_t;
+        carry_in      : in std_logic;
+        operand_a     : in std_logic_vector(31 downto 0);
+        operand_b     : in std_logic_vector(31 downto 0);
+        result        : out std_logic_vector(31 downto 0);
+        zero_flag     : out std_logic;
+        carry_flag    : out std_logic;
+        negative_flag : out std_logic;
+        overflow_flag : out std_logic
     );
 end alu;
 
-architecture alu_arch of alu is
+architecture behavior of alu is
     signal add01  : std_logic_vector(31 downto 0);
     signal sel01  : std_logic;
     signal pn     : std_logic;
@@ -34,25 +34,25 @@ architecture alu_arch of alu is
 
     signal s1, s2, sum : unsigned(32 downto 0);
 begin
-    res <= res_s;
+    result <= res_s;
 
-    z_flag <= '1' when res_s = ZERO(31 downto 0) else '0';
-    n_flag <= res_s(31);
-    c_flag <= sum(32);
-    o_flag <= '1' when sbits = "001" or sbits = "110" else '0';
+    zero_flag     <= '1' when res_s = ZERO(31 downto 0) else '0';
+    negative_flag <= res_s(31);
+    carry_flag    <= sum(32);
+    overflow_flag <= '1' when sbits = "001" or sbits = "110" else '0';
 
     sbits <= s1(31) & s2(31) & sum(31);
     add01 <= ONE(31 downto 0) when sel01 = '1' else ZERO(31 downto 0);
-    t1    <= op_a;
-    t2    <= op_b when pn = '0' else not op_b;
+    t1    <= operand_a;
+    t2    <= operand_b when pn = '0' else not operand_b;
     
     s1  <= unsigned('0' & t1);
     s2  <= unsigned('0' & t2) + unsigned('0' & add01);
     sum <= s1 + s2;
 
-    process (alu_op, cin)
+    process (alu_operation, carry_in)
     begin
-        case alu_op is
+        case alu_operation is
             when ALU_ADD_OP =>
                 sel01 <= '0';
                 pn    <= '0';
@@ -83,7 +83,7 @@ begin
     v7 <= op_a nor op_b;
     v8 <= op_a xor op_b;
 
-    process (alu_op, v1, v2, v3, v4, v5, v6, v7, v8)
+    process (alu_operation, v1, v2, v3, v4, v5, v6, v7, v8)
     begin
         case alu_op is
             -- arith
@@ -109,4 +109,4 @@ begin
                 res_s <= ZERO(31 downto 0);
         end case;
     end process;
-end alu_arch;
+end behavior;

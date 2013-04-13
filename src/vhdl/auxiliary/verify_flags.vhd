@@ -7,111 +7,113 @@ use work.hivek_pack.all;
 
 entity verify_flags is
     port (
-        condition : cond_flags_t;
-        z, n      : std_logic;
-        c, o      : std_logic;
+        condition : in cond_flags_t;
+        zero      : in std_logic;
+        negative  : in std_logic;
+        carry     : in std_logic;
+        overflow  : in std_logic;
         execute   : out std_logic
     );
 end verify_flags;
 
 architecture behavior of verify_flags is
 begin
-    process (condition)
+    process (condition, zero, negative, carry, overflow)
     begin
         case condition is
             when COND_EQ => -- 1
-                if z = '1' then
+                if zero = '1' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_NE => -- 2
-                if z = '0' then
+                if zero = '0' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_CS => -- 3
-                if c = '1' then
+                if carry = '1' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_CC => -- 4
-                if c = '0' then
+                if carry = '0' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_MI => -- 5
-                if n = '1' then
+                if negative = '1' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_PL => -- 6
-                if n = '0' then
+                if negative = '0' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_VS => -- 7
-                if o = '1' then
+                if overflow = '1' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_VC => -- 8
-                if o = '0' then
+                if overflow = '0' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_HI => -- 9 
-                if c = '1' and z = '0' then
+                if carry = '1' and zero = '0' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_LS => -- 10
-                if c = '0' or z = '1' then
+                if carry = '0' or zero = '1' then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_GE => -- 11
-                if n = o then
+                if negative = overflow then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_LT => -- 12
-                if n /= o then
+                if negative /= overflow then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_GT => -- 13
-                if z = '0' and n = o then
+                if zero = '0' and negative = overflow then
                     execute <= '1';
                 else
                     execute <= '0';
                 end if;
 
             when COND_LE => -- 14
-                if z = '1' or n /= o then
+                if zero = '1' or negative /= overflow then
                     execute <= '1';
                 else
                     execute <= '0';

@@ -3,14 +3,14 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.hivek_pack.all;
+use work.hivek_pkg.all;
 
 entity execution_stage is
     port (
-        clock     : in std_logic;
-        reset     : in std_logic;
-        from_pipe : in SH_EX;
-        to_pipe   : out EX_MEM
+        clock      : in std_logic;
+        reset      : in std_logic;
+        from_sh_ex : in SH_EX;
+        to_ex_mem  : out EX_MEM
     );
 end execution_stage;
 
@@ -54,7 +54,6 @@ begin
     to_pipe.dmem_i0 <= from_pipe.reg_bv0;
     to_pipe.dmem_i1 <= from_pipe.reg_bv1;
 
-
     reg_bv0 <= from_pipe.reg_bv0;
     reg_bv1 <= from_pipe.reg_bv1;
 
@@ -66,13 +65,13 @@ begin
   
     process (clock, reset)
     begin
-        if reset = '1' then
-            rz <= '0';
-            rn <= '0';
-            rc <= '0';
-            ro <= '0';
-        elsif clock'event and clock = '1' then
-            if update_flags = '1' then
+        if clock'event and clock = '1' then
+            if reset = '1' then
+                rz <= '0';
+                rn <= '0';
+                rc <= '0';
+                ro <= '0';
+            elsif update_flags = '1' then
                 rz <= z;
                 rn <= n;
                 rc <= c;
@@ -126,21 +125,21 @@ begin
 
     verify_flags_u0 : verify_flags
     port map (
-        condition => from_pipe.cond0,
-        z => rz,
-        n => rn,
-        c => rc,
-        o => ro,
+        condition => condition--from_pipe.cond0,
+        zero      => rz,
+        negative  => rn,
+        carry     => rc,
+        overflow  => ro,
         execute   => exe0
     );
 
     verify_flags_u1 : verify_flags
     port map (
         condition => from_pipe.cond1,
-        z => rz,
-        n => rn,
-        c => rc,
-        o => ro,
+        zero      => rz,
+        negative  => rn,
+        carry     => rc,
+        overflow  => ro,
         execute   => exe1
     );
 
