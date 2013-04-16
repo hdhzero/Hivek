@@ -3,12 +3,11 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.hivek_pack.all;
+use work.hivek_pkg.all;
 
 entity instruction_fetch_stage is
     port (
         clock       : in std_logic;
-        clock2x     : in std_logic;
         reset       : in std_logic;
         pc_load     : in std_logic;
         imem_load   : in std_logic;
@@ -16,7 +15,7 @@ entity instruction_fetch_stage is
         j_value     : in std_logic_vector(31 downto 0);
         imem_data_i : in std_logic_vector(63 downto 0);
         imem_addr   : in std_logic_vector(31 downto 0);
-        to_pipe     : out IF_IEXP
+        instruction : out std_logic_vector(63 downto 0)
     );
 end instruction_fetch_stage;
 
@@ -29,54 +28,43 @@ architecture behavior of instruction_fetch_stage is
 
     signal add2 : std_logic_vector(31 downto 0);
     signal add4 : std_logic_vector(31 downto 0);
-    signal add6 : std_logic_vector(31 downto 0);
     signal add8 : std_logic_vector(31 downto 0);
 
-    signal inst_size : std_logic_vector(1 downto 0);
-    signal head_bits : std_logic_vector(2 downto 0);
+    signal inst_size    : std_logic_vector(1 downto 0);
+    signal new_inst_size : std_logic_vector(1 downto 0);
 
 begin
-    add2 <= std_logic_vector(unsigned(pc) + x"00000002");
-    add4 <= std_logic_vector(unsigned(pc) + x"00000004");
-    add6 <= std_logic_vector(unsigned(pc) + x"00000006");
-    add8 <= std_logic_vector(unsigned(pc) + x"00000008");
+    add2 <= std_logic_vector(unsigned(pc) + x"00000002"); -- 16 bits
+    add4 <= std_logic_vector(unsigned(pc) + x"00000004"); -- 2x16 or 32
+    add8 <= std_logic_vector(unsigned(pc) + x"00000008"); -- 2x32
 
-    head_bits <= inst64(63) & inst64(62) & inst64(46);
+    new_pc <= j_value when j_taken = '1' else sequential_inc;
 
-    to_pipe.head1 <= inst64(63 downto 48);
-    to_pipe.head2 <= inst64(47 downto 32);
-    to_pipe.tail1 <= inst64(31 downto 16);
-    to_pipe.tail2 <= inst64(15 downto 0);
+    new_inst_size <= "11" when j_taken = '1' else inst64(63 downto 62);
+    instruction   <= inst64;
 
     process (clock, reset, new_pc)
     begin
-        if reset = '1' then 
-            pc <= (others => '0');
-        elsif clock'event and clock = '1' then
-            if pc_load = '1' then
+        if clock'event and clock = '1' then
+            if reset = '1' then
+                pc <= (others => '0');
+                inst_size <= "11";
+            elsif pc_load = '1' then
                 pc <= new_pc;
+                inst_size <= new_inst_size;
             end if;
         end if;
     end process;
 
-    process (j_taken, j_value, sequential_inc)
-    begin
-        if j_taken = '1' then
-            new_pc <= j_value;
-        else
-            new_pc <= sequential_inc;
-        end if;
-    end process;
-
-    process (inst_size, add2, add4, add6, add8, pc)
+    process (inst_size, add2, add4, add8, pc)
     begin
         case inst_size is
             when "00" =>     -- 16 bits
                 sequential_inc <= add2;
-            when "01" =>      --32 bits or 2x16 bits
+            when "01" =>      --32 bits 
                 sequential_inc <= add4;
-            when "10" =>      -- 32+16 bits
-                sequential_inc <= add6;
+            when "10" =>      -- 2x16 bits 
+                sequential_inc <= add4;
             when "11" =>      -- 2x32 bits
                 sequential_inc <= add8;
             when others =>
@@ -84,33 +72,9 @@ begin
         end case;
     end process;
 
-    process (head_bits)
-    begin
-        case head_bits is
-            when "000" =>
-                inst_size <= "00";
-            when "001" =>
-                inst_size <= "00";
-            when "010" =>
-                inst_size <= "01";
-            when "011" =>
-                inst_size <= "01";
-            when "100" =>
-                inst_size <= "01";
-            when "101" =>
-                inst_size <= "10";
-            when "110" =>
-                inst_size <= "10";
-            when "111" =>
-                inst_size <= "11";
-            when others =>
-                inst_size <= "00";
-        end case;
-    end process;
-
     icache_memory_u : icache_memory
     port map (
-        clock   => clock2x,
+        clock   => clock,
         load    => imem_load,
         address => pc,
         data_i  => imem_data_i,

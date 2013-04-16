@@ -67,6 +67,13 @@ barrel_shifter_tb:
 	$(foreach file, $(BARREL_SHIFTER_FILES), $(COM) $(file); ${\n})
 	$(SIM) $(SIM0_FLAGS) $(BARREL_SHIFTER_TB) $(SIM1_FLAGS)
 
+# instruction_fetch_stage
+INSTRUCTION_FETCH_STAGE_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/icache_memory.vhd \
+    $(SRC_DIR)/vhdl/stages/instruction_fetch_stage.vhd \
+    $(BENCH_DIR)/stages/instruction_fetch_stage_tb.vhd
+
+INSTRUCTION_FETCH_STAGE_TB = instruction_fetch_stage_tb
 clean:
 	rm -rf *.ini
 	rm -rf $(WORK_DIR)

@@ -234,6 +234,20 @@ package hivek_pkg is
     );
     end component;
 
+    component instruction_fetch_stage is
+    port (
+        clock       : in std_logic;
+        reset       : in std_logic;
+        pc_load     : in std_logic;
+        imem_load   : in std_logic;
+        j_taken     : in std_logic;
+        j_value     : in std_logic_vector(31 downto 0);
+        imem_data_i : in std_logic_vector(63 downto 0);
+        imem_addr   : in std_logic_vector(31 downto 0);
+        instruction : out std_logic_vector(63 downto 0)
+    );
+    end component;
+
     ------------------------
     -- Vendor componentes --
     ------------------------
