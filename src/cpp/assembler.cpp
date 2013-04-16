@@ -33,15 +33,23 @@ struct Data {
 };
 
 struct Operation {
-    string op;
-    string rd;
-    string rs;
-    string rt;
+    int address;
+    int size;
+    int operation;
+    int predicate_register;
+    int predicate_value;
+    int rd;
+    int rs;
+    int rt;
+    int immd;
 };
 
 class HivekAssembler {
     private:
         enum data_type_t { DATA_ASCII, DATA_32BITS };
+        enum operation_type_t {
+            ADD, SUB
+        };
 
     private:
         int pc;
@@ -49,6 +57,7 @@ class HivekAssembler {
 
         map<string, int> labels;
         map<string, int> data_type;
+        map<string, int> operation_type;
         vector<Data> data;
         Data dt;
 
@@ -89,6 +98,7 @@ class HivekAssembler {
 
             getline(ss, str);
             dt.value = str;
+            dt.value.erase(0, 1);
 
             if (dt.type == DATA_ASCII) {
                 pc += dt.value.size() * 4;
@@ -97,6 +107,45 @@ class HivekAssembler {
             }
 
             data.push_back(dt);
+        }
+
+        void add_instruction(string& str, stringstream& ss) {
+            Operation op;
+
+            if (str[0] == '(') {
+                if (str[1] == '!') {
+                    op.predicate_value = 0;
+                    op.predicate_register = str[3] - '0';
+                } else {
+                    op.predicate_value = 1;
+                    op.predicate_register = str[2] - '0'; 
+                }
+
+                ss >> str;
+            } else {
+                op.predicate_value = 1;
+                op.predicate_register = 0;
+            }
+
+            op.operation = operation_type[str];
+            parse_operation(op, str, ss);
+        }
+
+        void parse_operation(Operation& op, string& str, stringstream ss) {
+            switch (op.operation) {
+                case ADD:
+                case SUB:
+                case AND:
+                case OR:
+                    ss >> str;
+
+                    str.erase(str.size() - 1);
+                    op.rd = 
+            }
+        }
+
+        void check() {
+            cout << pc << endl;
         }
 
         void parse() {
@@ -118,7 +167,7 @@ class HivekAssembler {
                 } else if (tmp1[0] == '.') {
                     add_data(tmp1, ss);
                 } else {
-
+                    add_instruction(tmp1, ss);
                 }
             }
         }
@@ -129,6 +178,7 @@ int main(int argc, char** argv) {
 
     as.open(argv[1]);
     as.parse();
+    as.check();
     as.close();
 
     return 0;

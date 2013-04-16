@@ -20,8 +20,8 @@ src rd, ra
 MSR[C] ← (rA)[31]
 
 Type I
-sz   op cond   rs    rt     immd12
-00 0ttt cccc sssss ttttt iiii iiii iiii
+sz   op     immd12       rs    rt   cond
+00 0tttt iiii iiii iiii sssss ttttt ccc
 
 Type II
 sz   op    immd26
