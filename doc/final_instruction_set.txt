@@ -1,25 +1,23 @@
-0000 0000 0000 0000 0000 0000 0000 0000
+The Hivek processor is a 2-issue VLIW processor that aims to
+save memory by using a variable instruction length.
 
+There are 32 registers, 32 bits each
 
-   immd          op  sz cnd rs     rt
-0000 0000 0000 0000 00 0000 00000 00000
+There are 5 instruction types:
 
+- branch with delay slot
+- jump relative to pc or absolute
+- load adding two registers
+- get and set status register
+- syscall
+- atomic
+- shift with carry
+- bitwise complement and AND
 
-0000 0000 0000 0000 00 0000 00000 00000
-
-0ooo
-10----- jmp
-110---- regs
-111---- others
-
-1 addi
-2 lw
-3 sw
-4 andi
-5 ori
-6 addis
-7 adci
-8 adcis
+src rd, ra
+(rD)[0] ← MSR[C]
+(rD)[1:31] ← (rA)[0:30]
+MSR[C] ← (rA)[31]
 
 Type I
 sz   op cond   rs    rt     immd12
@@ -44,75 +42,137 @@ sz op             cond  rd     rs    rt
 Type V
 00 111 uuu uuuu u uuuu uuuuu uuuuu uuuuu
 
+1 addi
+2 lw
+3 sw
+4 andi
+5 ori
+6 addis
+7 adci
+8 adcis
+
+
+Instructions
 registers:
     - arith (8)
-    add rd, rs, rt
-    sub rd, rs, rt
-    adc rd, rs, rt
-    sbc rd, rs, rt
+01 -    add  rd, rs, rt
+02 -    sub  rd, rs, rt
+03 -    adc  rd, rs, rt
+04 -    sbc  rd, rs, rt
+05 -    adds rd, rs, rt
+06 -    adcs rd, rs, rt
+07 -    subs rd, rs, rt
+08 -    sbcs rd, rs, rt
 
-    shadd1 rd, rs, rt
-    shadd2 rd, rs, rt
-    shadd3 rd, rs, rt
-    shadd4 rd, rs, rt
+09 -    shadd1 rd, rs, rt
+10 -    shadd2 rd, rs, rt
+11 -    shadd3 rd, rs, rt
+12 -    shadd4 rd, rs, rt
+
+13 -    addi  rd, rs, immd
+14 -    adci  rd, rs, immd
+15 -    addis rd, rs, immd
+16 -    adcis rd, rs, immd
 
     - logical (4)
-    and rd, rs, rt
-    or  rd, rs, rt
-    nor rd, rs, rt
-    xor rd, rs, rt
+17 -    and rd, rs, rt
+18 -    or  rd, rs, rt
+19 -    nor rd, rs, rt
+20 -    xor rd, rs, rt
+
+21 -    andi    rd, rs, immd
+22 -    ori     rd, rs, immd
+23 -    lhi     rd, immd
 
     - shift (4)
-    sll rd, rs, rt
-    slr rd, rs, rt
-    sar rd, rs, rt
-    ror rd, rs, rt
+24 -    sll rd, rs, rt
+25 -    slr rd, rs, rt
+26 -    sar rd, rs, rt
+
+27 -    slli rd, rs, immd
+28 -    slri rd, rs, immd
+29 -    sari rd, rs, immd
 
     - comparison (5)
-    cmpeq  pd, rs, rt
-    cmplt  pd, rs, rt
-    cmpgt  pd, rs, rt
-    cmpltu pd, rs, rt
-    cmpgtu pd, rs, rt
+30 -    cmpeq  pd, rs, rt
+31 -    cmplt  pd, rs, rt
+32 -    cmpgt  pd, rs, rt
+33 -    cmpltu pd, rs, rt
+34 -    cmpgtu pd, rs, rt
 
-immediate:
-    - arith (1)
-    addi rd, rs, immd
-
-    - logical (2)
-    andi rd, rs, immd
-    andhi rd, rs, immd
-    ori  rd, rs, immd
-    orihi rd, rs, immd
-
-    - shift
-    sll rd, rs, immd
-    slr rd, rs, immd
-    sar rd, rs, immd
-    ror rd, rs, immd
+35 -    cmpeqi  pd, rs, immd
+36 -    cmplti  pd, rs, immd
+37 -    cmpgti  pd, rs, immd
+38 -    cmpltui pd, rs, immd
+39 -    cmpgtui pd, rs, immd
 
     - memory (8)
-    lw  rd, rs, immd
-    lh  rd, rs, immd
-    lb  rd, rs, immd
-    lhu rd, rs, immd
-    lbu rd, rs, immd
-    sw  rd, rs, immd
-    sh  rd, rs, immd
-    sb  rd, rs, immd
+40 -    lw  rd, rs, immd
+41 -    lh  rd, rs, immd
+42 -    lb  rd, rs, immd
+43 -    lhu rd, rs, immd
+44 -    lbu rd, rs, immd
+45 -    sw  rd, rs, immd
+46 -    sh  rd, rs, immd
+47 -    sb  rd, rs, immd
     
-branch:
     - conditional
-    (pd) j
+48 -    (pd) j
          - taken or not taken
-         - link
-         - register
          - cond
 
     - unconditional
-    j
-    jr
-    jal
-    jalr
+49 -    j
+50 -    jr
+51 -    jal
+52 -    jalr
+
+53 - andp pd, ps, pt
+54 - orp pd, ps, pt
+55 - 
+
+while (v[i] == 0 && i < 10) {
+    ++i;
+}
 
 
+r1 = v
+r2 = i
+loop:
+        shadd r3, r1, r2 << 4 
+        cmplti p2, r1, 10 ;;
+
+	    lw r3, r3 ;;
+
+        cmpeq p1, r3, r0 ;;
+
+        andp p1, p1, p2 ;;
+
+  (!p1) j loop
+  (p1)  addi r2, r2, 1 ;;
+
+
+
+while (*src) {
+    *dst = *src;
+    ++dst;
+    ++src;
+}
+
+r1 = src
+r2 = dst
+loop:
+        lw r5, r1 ;; 16
+
+        cmpeq p1, r5, r0 ;; 32
+
+  (!p1) sw r5, r2 32
+  (!p1) j loop ;; 32
+
+  (!p1) addi r1, r1, 1 32 bytes
+  (!p1) addi r2, r2, 1 32 bytes
+
+
+void double() {
+
+}
