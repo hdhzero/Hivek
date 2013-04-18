@@ -62,6 +62,7 @@ ifeq ("$(SIMULATOR)", "ghdl")
 endif
 
 barrel_shifter_tb:
+	include $(SIM)/barrel_shiter_tb
 	$(MKLIB) $(WORK_DIR)
 	$(MAP) $(WORK_DIR)
 	$(foreach file, $(BARREL_SHIFTER_FILES), $(COM) $(file); ${\n})
