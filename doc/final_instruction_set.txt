@@ -42,7 +42,7 @@ sz   op    immd26
 
 Type III
 sz  op        immd22                 cond
-00 101pp  iii iiii iiii iiii ii  iiiii ccc
+00 101lp  iii iiii iiii iiii ii  iiiii ccc
 2 + 5 + 22 + 3 = 32
 
 j cond
@@ -54,68 +54,63 @@ j cond
 -------------
 sz op    opcode      rd     rs    rt   cond
 00 110 000 0000 0 0 ddddd ttttt sssss ccc
-add  rd, rs, rt
-sub  rd, rs, rt
-adc  rd, rs, rt
-sbc  rd, rs, rt
-adds rd, rs, rt
-adcs rd, rs, rt
-subs rd, rs, rt
-sbcs rd, rs, rt
 
-shadd1 rd, rs, rt
-shadd2 rd, rs, rt
-shadd3 rd, rs, rt
-shadd4 rd, rs, rt
+1 add  rd, rs, rt
+2 sub  rd, rs, rt
+3 adc  rd, rs, rt
+4 sbc  rd, rs, rt
+5 adds rd, rs, rt
+6 adcs rd, rs, rt
+7 subs rd, rs, rt
+8 sbcs rd, rs, rt
 
+9 shadd1 rd, rs, rt
+10 shadd2 rd, rs, rt
+11 shadd3 rd, rs, rt
+12 shadd4 rd, rs, rt
 
+13 and rd, rs, rt
+14 or  rd, rs, rt
+15 nor rd, rs, rt
+16 xor rd, rs, rt
 
-and rd, rs, rt
-or  rd, rs, rt
-nor rd, rs, rt
-xor rd, rs, rt
+17 sll rd, rs, rt
+18 slr rd, rs, rt
+19 sar rd, rs, rt
 
-
-
-sll rd, rs, rt
-slr rd, rs, rt
-sar rd, rs, rt
-
-slli rd, rs, immd
-slri rd, rs, immd
-sari rd, rs, immd
+20 slli rd, rs, immd
+21 slri rd, rs, immd
+22 sari rd, rs, immd
     
-cmpeq  pd, rs, rt
-cmplt  pd, rs, rt
-cmpgt  pd, rs, rt
-cmpltu pd, rs, rt
-cmpgtu pd, rs, rt
+23 cmpeq  pd, rs, rt
+24 cmplt  pd, rs, rt
+25 cmpgt  pd, rs, rt
+26 cmpltu pd, rs, rt
+27 cmpgtu pd, rs, rt
 
-andp pd, ps, pt
-orp  pd, ps, pt
-xorp pd, ps, pt
-norp pd, ps, pt
+28 andp pd, ps, pt
+29 orp  pd, ps, pt
+30 xorp pd, ps, pt
+31 norp pd, ps, pt
 
-andpi pd, ps, immd
-orpi  pd, ps, immd
-xorpi pd, ps, immd
-norpi pd, ps, immd
+32 andpi pd, ps, immd
+33 orpi  pd, ps, immd
+34 xorpi pd, ps, immd
+35 norpi pd, ps, immd
 
-jr
-jalr
+36 jr
+37 jalr
+38 lw rd, rs, rt
+39 sw rd, rs, rt
+40 lb rd, rs, rt
+41 sb rd, rs, rt
+42 gsr rd   # get status registers: flags, carry, protection etc
+43 ssr rd   # set status registers
 
 Type V
 00 111 uuu uuuu u uuuu uuuuu uuuuu uuuuu
 
 
-
-
-
-
-- branch with delay slot
-- jump relative to pc or absolute
-- load adding two registers
-- get and set status register
 - syscall
 - atomic
 - shift with carry
