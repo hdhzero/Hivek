@@ -9,12 +9,13 @@ using namespace std;
 /*
 
 L7:
-         add r1 r2 r3 ;;
-
-         cmpeq b1, r2, r3 ;;
-
+         add r1 r2 r3 
+;;
+         cmpeq b1, r2, r3 
+;;
     (p1) lw r5 r1 45
-         j L7 ;;
+         j L7 
+;;
 
 L8:
 
@@ -44,11 +45,22 @@ struct Operation {
     int immd;
 };
 
+void printop(Operation& op) {
+    cout << "address: " << op.address
+        << "size: " << op.size
+        << "operation: " << op.operation
+        << "predicate_register: " << op.predicate_register
+        << "predicate_value: " << op.predicate_value
+        << "rd: " << op.rd
+        << "rs: " << op.rs
+        << "rt: " << op.rt << endl;
+}
+
 class HivekAssembler {
     private:
         enum data_type_t { DATA_ASCII, DATA_32BITS };
         enum operation_type_t {
-            ADD, SUB
+            ADD, SUB, AND, OR, LW, SW, ADC, SBC
         };
 
     private:
@@ -59,6 +71,7 @@ class HivekAssembler {
         map<string, int> data_type;
         map<string, int> operation_type;
         vector<Data> data;
+        vector<Operation> operations;
         Data dt;
 
     public:
@@ -67,6 +80,15 @@ class HivekAssembler {
 
             data_type["ascii"] = DATA_ASCII;
             data_type["dw"]    = DATA_32BITS;
+
+            operation_type["add"] = ADD;
+            operation_type["sub"] = SUB;
+            operation_type["and"] = AND;
+            operation_type["or"]  = OR;
+            operation_type["lw"]  = LW;
+            operation_type["sw"]  = SW;
+            operation_type["adc"] = ADC;
+            operation_type["sbc"] = SBC;
         }
 
 
@@ -129,33 +151,74 @@ class HivekAssembler {
 
             op.operation = operation_type[str];
             parse_operation(op, str, ss);
+            operations.push_back(op);
         }
 
-        void parse_operation(Operation& op, string& str, stringstream ss) {
+        void parse_operation(Operation& op, string& str, stringstream& ss) {
             switch (op.operation) {
                 case ADD:
                 case SUB:
                 case AND:
                 case OR:
-                    ss >> str;
+                case ADC:
+                case SBC:
+                    op.address = pc;
+                    pc += 4;
+                    op.size = 4;
 
+                    ss >> str; 
                     str.erase(str.size() - 1);
-                    op.rd = 
+                    op.rd = (str[1] - '0') * 10 + (str[2] - '0');
+
+                    ss >> str;
+                    str.erase(str.size() - 1);
+                    op.rs = (str[1] - '0') * 10 + (str[2] - '0');
+
+                    ss >> str;
+                    op.rt = (str[1] - '0') * 10 + (str[2] - '0');
+                    break;
+
+                case LW:
+                case SW:
+                    op.address = pc;
+                    pc += 4;
+                    op.size = 4;
+                default:
+                    break;
+
             }
         }
 
         void check() {
             cout << pc << endl;
+            for (int i = 0; i < operations.size(); ++i) {
+                printop(operations[i]);
+            }
         }
 
         void parse() {
             int j;
+            bool f;
             string tmp0;
             string tmp1;
 
             while (file.good()) {
                 stringstream ss;
                 getline(file, tmp0);
+
+                if (tmp0.size() > 0) {
+                    f = false;
+
+                    for (int i = 0; i < tmp0.size(); ++i) {
+                        if (! (tmp0[i] == ' ' || tmp0[i] == '\t')) {
+                            f = true;
+                        }
+                    }
+
+                    if (!f) continue;
+                } else {
+                    continue;
+                }
 
                 ss << tmp0;
                 ss >> tmp1;

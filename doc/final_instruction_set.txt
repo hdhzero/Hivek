@@ -5,6 +5,113 @@ There are 32 registers, 32 bits each
 
 There are 5 instruction types:
 
+------------
+-- Type I --
+------------
+sz   op     immd12       rt    rs   cond
+00 0tttt iiii iiii iiii sssss ttttt ccc
+2 + 5 + 12 + 5 + 5 + 3 = 32
+
+1 addi  rd, rs, immd
+2 adci  rd, rs, immd
+3 addis rd, rs, immd
+4 adcis rd, rs, immd
+5 andi  rd, rs, immd
+6 ori   rd, rs, immd
+
+8 cmpeqi  pd, rs, immd
+9 cmplti  pd, rs, immd
+A cmpgti  pd, rs, immd
+B cmpltui pd, rs, immd
+C cmpgtui pd, rs, immd
+
+    - memory (8)
+D lw  rd, rs, immd
+E sw  rd, rs, immd
+7 lb  rd, rs, immd
+F sw  rd, rs, immd
+
+-------------
+-- Type II --
+-------------
+sz   op    immd26
+00 100l ii iiii iiii iiii iiii iiii iiii
+2 + 4 + 26 = 32
+- j
+- jal
+
+Type III
+sz  op        immd22                 cond
+00 101pp  iii iiii iiii iiii ii  iiiii ccc
+2 + 5 + 22 + 3 = 32
+
+j cond
+
+
+
+-------------
+-- Type IV --
+-------------
+sz op    opcode      rd     rs    rt   cond
+00 110 000 0000 0 0 ddddd ttttt sssss ccc
+add  rd, rs, rt
+sub  rd, rs, rt
+adc  rd, rs, rt
+sbc  rd, rs, rt
+adds rd, rs, rt
+adcs rd, rs, rt
+subs rd, rs, rt
+sbcs rd, rs, rt
+
+shadd1 rd, rs, rt
+shadd2 rd, rs, rt
+shadd3 rd, rs, rt
+shadd4 rd, rs, rt
+
+
+
+and rd, rs, rt
+or  rd, rs, rt
+nor rd, rs, rt
+xor rd, rs, rt
+
+
+
+sll rd, rs, rt
+slr rd, rs, rt
+sar rd, rs, rt
+
+slli rd, rs, immd
+slri rd, rs, immd
+sari rd, rs, immd
+    
+cmpeq  pd, rs, rt
+cmplt  pd, rs, rt
+cmpgt  pd, rs, rt
+cmpltu pd, rs, rt
+cmpgtu pd, rs, rt
+
+andp pd, ps, pt
+orp  pd, ps, pt
+xorp pd, ps, pt
+norp pd, ps, pt
+
+andpi pd, ps, immd
+orpi  pd, ps, immd
+xorpi pd, ps, immd
+norpi pd, ps, immd
+
+jr
+jalr
+
+Type V
+00 111 uuu uuuu u uuuu uuuuu uuuuu uuuuu
+
+
+
+
+
+
 - branch with delay slot
 - jump relative to pc or absolute
 - load adding two registers
@@ -18,118 +125,6 @@ src rd, ra
 (rD)[0] ← MSR[C]
 (rD)[1:31] ← (rA)[0:30]
 MSR[C] ← (rA)[31]
-
-Type I
-sz   op     immd12       rs    rt   cond
-00 0tttt iiii iiii iiii sssss ttttt ccc
-
-Type II
-sz   op    immd26
-00 100l ii iiii iiii iiii iiii iiii iiii
-- j
-- jal
-
-Type III
-sz  op   cond  immd21
-00 101pp cccc i iiii iiii iiii iiii iiii
-- j cond
-ps.: verify the usage of load hi
-
-Type IV
-sz op             cond  rd     rs    rt
-00 110 000 0000 0 0000 00000 00000 00000
-
-Type V
-00 111 uuu uuuu u uuuu uuuuu uuuuu uuuuu
-
-1 addi
-2 lw
-3 sw
-4 andi
-5 ori
-6 addis
-7 adci
-8 adcis
-
-
-Instructions
-registers:
-    - arith (8)
-01 -    add  rd, rs, rt
-02 -    sub  rd, rs, rt
-03 -    adc  rd, rs, rt
-04 -    sbc  rd, rs, rt
-05 -    adds rd, rs, rt
-06 -    adcs rd, rs, rt
-07 -    subs rd, rs, rt
-08 -    sbcs rd, rs, rt
-
-09 -    shadd1 rd, rs, rt
-10 -    shadd2 rd, rs, rt
-11 -    shadd3 rd, rs, rt
-12 -    shadd4 rd, rs, rt
-
-13 -    addi  rd, rs, immd
-14 -    adci  rd, rs, immd
-15 -    addis rd, rs, immd
-16 -    adcis rd, rs, immd
-
-    - logical (4)
-17 -    and rd, rs, rt
-18 -    or  rd, rs, rt
-19 -    nor rd, rs, rt
-20 -    xor rd, rs, rt
-
-21 -    andi    rd, rs, immd
-22 -    ori     rd, rs, immd
-23 -    lhi     rd, immd
-
-    - shift (4)
-24 -    sll rd, rs, rt
-25 -    slr rd, rs, rt
-26 -    sar rd, rs, rt
-
-27 -    slli rd, rs, immd
-28 -    slri rd, rs, immd
-29 -    sari rd, rs, immd
-
-    - comparison (5)
-30 -    cmpeq  pd, rs, rt
-31 -    cmplt  pd, rs, rt
-32 -    cmpgt  pd, rs, rt
-33 -    cmpltu pd, rs, rt
-34 -    cmpgtu pd, rs, rt
-
-35 -    cmpeqi  pd, rs, immd
-36 -    cmplti  pd, rs, immd
-37 -    cmpgti  pd, rs, immd
-38 -    cmpltui pd, rs, immd
-39 -    cmpgtui pd, rs, immd
-
-    - memory (8)
-40 -    lw  rd, rs, immd
-41 -    lh  rd, rs, immd
-42 -    lb  rd, rs, immd
-43 -    lhu rd, rs, immd
-44 -    lbu rd, rs, immd
-45 -    sw  rd, rs, immd
-46 -    sh  rd, rs, immd
-47 -    sb  rd, rs, immd
-    
-    - conditional
-48 -    (pd) j
-         - taken or not taken
-         - cond
-
-    - unconditional
-49 -    j
-50 -    jr
-51 -    jal
-52 -    jalr
-
-53 - andp pd, ps, pt
-54 - orp pd, ps, pt
-55 - 
 
 while (v[i] == 0 && i < 10) {
     ++i;
@@ -176,3 +171,26 @@ loop:
 void double() {
 
 }
+
+00 00000 000 000 000
+00 1ppcc cii iii iii
+00 01111 000 000 000
+00 01111 0 0000 0000
+00 01111 0000 00000
+
+1 add
+2 sub
+3 addi
+4 lw
+5 sw
+6 lw fp
+7 sw fp
+8 mov
+9 movi
+A and
+B or
+C cmpeq
+D cmplt
+E cmpgt
+F add
+
