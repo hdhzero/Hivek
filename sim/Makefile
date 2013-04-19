@@ -14,9 +14,11 @@ SIMULATOR   = $(sim)
 
 TESTBENCH = none
 RUNTIME = 100
+FILES = none
 
 # on the two ifeq below, update the paths for your modelsim
 # and/or ghdl
+# for modelsim wave visualization, use vcd2vliw
 ifeq ("$(SIMULATOR)", "modelsim")
     MKLIB  = vlib
     MAP    = vmap WORK
@@ -57,20 +59,35 @@ BARREL_SHIFTER_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
 BARREL_SHIFTER_TB = barrel_shifter_tb
 
 barrel_shifter_tb: TESTBENCH = $(BARREL_SHIFTER_TB)
-barrel_shifter_tb: RUNTIME = 500
+barrel_shifter_tb: RUNTIME   = 500
+barrel_shifter_tb: FILES     = $(BARREL_SHIFTER_FILES)
 barrel_shifter_tb:
 	$(MKLIB) $(WORK_DIR)
 	$(MAP) $(WORK_DIR)
-	$(foreach file, $(BARREL_SHIFTER_FILES), $(COM) $(file); ${\n})
+	$(foreach file, $(FILES), $(COM) $(file); ${\n})
 	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
 
-# instruction_fetch_stage
-INSTRUCTION_FETCH_STAGE_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/icache_memory.vhd \
-    $(SRC_DIR)/vhdl/stages/instruction_fetch_stage.vhd \
-    $(BENCH_DIR)/stages/instruction_fetch_stage_tb.vhd
 
-INSTRUCTION_FETCH_STAGE_TB = instruction_fetch_stage_tb
+# register bank
+REGISTER_BANK_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/bank_selector.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/reg_bram_altera.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/reg_bram.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/reg_block.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/register_bank.vhd \
+    $(BENCH_DIR)/auxiliary/register_bank_tb.vhd
+
+REGISTER_BANK_TB = register_bank_tb
+
+register_bank_tb: TESTBENCH = $(REGISTER_BANK_TB)
+register_bank_tb: RUNTIME   = 500
+register_bank_tb: FILES     = $(REGISTER_BANK_FILES)
+register_bank_tb:
+	$(MKLIB) $(WORK_DIR)
+	$(MAP) $(WORK_DIR)
+	$(foreach file, $(FILES), $(COM) $(file); ${\n})
+	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
+
 clean:
 	rm -rf *.ini
 	rm -rf $(WORK_DIR)

@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.hivek_pack.all;
+use work.hivek_pkg.all;
 
 entity reg_bram is
     generic (
@@ -30,6 +30,22 @@ architecture reg_bram of reg_bram is
     signal rdaddr_r : std_logic_vector(4 downto 0);
 
     signal wren_r : std_logic;
+
+    -- if you need to use a vendor bram because you want to or
+    -- because the synthesis tool isnt inferring the bram from the
+    -- generic code, instantiate the vendor component here
+    component reg_bram_altera IS
+	PORT
+	(
+		clock		: IN STD_LOGIC  := '1';
+		data		: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		rdaddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+		wraddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+		wren		: IN STD_LOGIC  := '0';
+		q		: OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
+	);
+    end component;
+
 begin
     process (wraddr_r, rdaddr_r, dout_v1, dout_v0)
     begin
@@ -70,7 +86,7 @@ begin
                     ram(to_integer(unsigned(wraddr))) <= din;
                 end if;
 
-                dout_v0 <= ram(to_integer(unsigned(rdaddr))) <= din;
+                dout_v0 <= ram(to_integer(unsigned(rdaddr)));
             end if;
         end process;
     end generate;

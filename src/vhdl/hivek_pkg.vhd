@@ -130,15 +130,22 @@ package hivek_pkg is
     end component;
 
     -- used in the register bank
-    component single_register is
+    component bank_selector is
     port (
-        clock : in std_logic;
-        reset : in std_logic;
-        load1 : in std_logic;
-        load2 : in std_logic;
-        din1  : in std_logic_vector(31 downto 0);
-        din2  : in std_logic_vector(31 downto 0);
-        dout  : out std_logic_vector(31 downto 0)
+        clock  : in std_logic;
+        load0  : in std_logic;
+        load1  : in std_logic;
+        addrc0 : in std_logic_vector(4 downto 0);
+        addrc1 : in std_logic_vector(4 downto 0);
+        addra0 : in std_logic_vector(4 downto 0);
+        addra1 : in std_logic_vector(4 downto 0);
+        addrb0 : in std_logic_vector(4 downto 0);
+        addrb1 : in std_logic_vector(4 downto 0);
+        sel_a0 : out std_logic;
+        sel_a1 : out std_logic;
+        sel_b0 : out std_logic;
+        sel_b1 : out std_logic
+
     );
     end component;
 
@@ -156,27 +163,48 @@ package hivek_pkg is
     );
     end component;
 
-    -- the register bank
+    component reg_block is
+    generic (
+        vendor : string := "ALTERA"
+    );
+    port (
+        clock  : in std_logic;
+        sel    : in std_logic;
+        load0  : in std_logic;
+        load1  : in std_logic;
+        addr0  : in std_logic_vector(4 downto 0);
+        addr1  : in std_logic_vector(4 downto 0);
+        rdaddr : in std_logic_vector(4 downto 0);
+        din0   : in std_logic_vector(31 downto 0);
+        din1   : in std_logic_vector(31 downto 0);
+        dout   : out std_logic_vector(31 downto 0)
+    );
+    end component;
+
     component register_bank is
+    generic (
+        vendor : string := "ALTERA"
+    );
     port (
         clock   : in std_logic;
         reset   : in std_logic;
+        load0   : in std_logic;
         load1   : in std_logic;
-        load2   : in std_logic;
-        reg_a1  : in std_logic_vector(3 downto 0);
-        reg_b1  : in std_logic_vector(3 downto 0);
-        reg_a2  : in std_logic_vector(3 downto 0);
-        reg_b2  : in std_logic_vector(3 downto 0);
-        reg_c1  : in std_logic_vector(3 downto 0);
-        reg_c2  : in std_logic_vector(3 downto 0);
+        reg_a0  : in std_logic_vector(4 downto 0);
+        reg_b0  : in std_logic_vector(4 downto 0);
+        reg_a1  : in std_logic_vector(4 downto 0);
+        reg_b1  : in std_logic_vector(4 downto 0);
+        reg_c0  : in std_logic_vector(4 downto 0);
+        reg_c1  : in std_logic_vector(4 downto 0);
+        din_c0  : in std_logic_vector(31 downto 0);
         din_c1  : in std_logic_vector(31 downto 0);
-        din_c2  : in std_logic_vector(31 downto 0);
+        dout_a0 : out std_logic_vector(31 downto 0);
+        dout_b0 : out std_logic_vector(31 downto 0);
         dout_a1 : out std_logic_vector(31 downto 0);
-        dout_b1 : out std_logic_vector(31 downto 0);
-        dout_a2 : out std_logic_vector(31 downto 0);
-        dout_b2 : out std_logic_vector(31 downto 0)
+        dout_b1 : out std_logic_vector(31 downto 0)
     );
     end component;
+
 
     component icache_memory is
     port (
