@@ -121,11 +121,120 @@ begin
         din_c0 <= x"00000000";
         din_c1 <= x"00000000";
         wait until clock'event and clock = '1';
+        wait until clock'event and clock = '1';
+        wait until clock'event and clock = '1';
+
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00001";
+        reg_b0 <= "00010";
+        reg_a1 <= "00011";
+        reg_b1 <= "00100";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00100";
+        reg_b0 <= "00011";
+        reg_a1 <= "00010";
+        reg_b1 <= "00001";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00001";
+        reg_b0 <= "00010";
+        reg_a1 <= "00011";
+        reg_b1 <= "00100";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00100";
+        reg_b0 <= "00011";
+        reg_a1 <= "00010";
+        reg_b1 <= "00001";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00001";
+        reg_b0 <= "00001";
+        reg_a1 <= "00001";
+        reg_b1 <= "00001";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00010";
+        reg_b0 <= "00010";
+        reg_a1 <= "00010";
+        reg_b1 <= "00010";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00011";
+        reg_b0 <= "00011";
+        reg_a1 <= "00011";
+        reg_b1 <= "00011";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00100";
+        reg_b0 <= "00100";
+        reg_a1 <= "00100";
+        reg_b1 <= "00100";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
 
         wait;        
     end process;
 
     register_bank_u : register_bank
+    generic map (
+        vendor => "GENERIC"
+    )
     port map (
         clock   => clock,
         reset   => reset,

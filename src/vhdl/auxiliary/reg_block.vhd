@@ -49,5 +49,4 @@ begin
         din    => din1,
         dout   => dout1
     );
-
 end reg_block;

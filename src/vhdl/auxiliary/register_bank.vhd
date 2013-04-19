@@ -38,9 +38,9 @@ begin
 
     bank_selector_u : bank_selector
     port map (
-        clock => clock,
-        load0 => load0,
-        load1 => load1,
+        clock  => clock,
+        load0  => load0,
+        load1  => load1,
         addrc0 => reg_c0,
         addrc1 => reg_c1,
         addra0 => reg_a0,

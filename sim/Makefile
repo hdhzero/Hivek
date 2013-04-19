@@ -88,6 +88,23 @@ register_bank_tb:
 	$(foreach file, $(FILES), $(COM) $(file); ${\n})
 	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
 
+
+REG_BRAM_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/reg_bram_altera.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/reg_bram.vhd \
+    $(BENCH_DIR)/auxiliary/reg_bram_tb.vhd
+
+REG_BRAM_TB = reg_bram_tb
+
+reg_bram_tb: TESTBENCH = $(REG_BRAM_TB)
+reg_bram_tb: RUNTIME   = 500
+reg_bram_tb: FILES     = $(REG_BRAM_FILES)
+reg_bram_tb:
+	$(MKLIB) $(WORK_DIR)
+	$(MAP) $(WORK_DIR)
+	$(foreach file, $(FILES), $(COM) $(file); ${\n})
+	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
+
 clean:
 	rm -rf *.ini
 	rm -rf $(WORK_DIR)

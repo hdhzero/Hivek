@@ -27,15 +27,25 @@ end bank_selector;
 architecture bank_selector of bank_selector is
     type selectors_t is array (31 downto 0) of std_logic;
     signal selectors : selectors_t;
+
+    signal addra0_r : std_logic_vector(4 downto 0);
+    signal addra1_r : std_logic_vector(4 downto 0);
+    signal addrb0_r : std_logic_vector(4 downto 0);
+    signal addrb1_r : std_logic_vector(4 downto 0);
 begin
-    sel_a0 <= selectors(to_integer(unsigned(addra0)));
-    sel_a1 <= selectors(to_integer(unsigned(addra1)));
-    sel_b0 <= selectors(to_integer(unsigned(addrb0)));
-    sel_b1 <= selectors(to_integer(unsigned(addrb1)));
+    sel_a0 <= selectors(to_integer(unsigned(addra0_r)));
+    sel_a1 <= selectors(to_integer(unsigned(addra1_r)));
+    sel_b0 <= selectors(to_integer(unsigned(addrb0_r)));
+    sel_b1 <= selectors(to_integer(unsigned(addrb1_r)));
 
     process (clock, load0, load1, addrc0, addrc1)
     begin
         if clock'event and clock = '1' then
+            addra0_r <= addra0;
+            addra1_r <= addra1;
+            addrb0_r <= addrb0;
+            addrb1_r <= addrb1;
+        
             if load0 = '1' then
                 selectors(to_integer(unsigned(addrc0))) <= '0';
             end if;
