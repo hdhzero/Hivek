@@ -9,7 +9,11 @@ SIM_DIR     = $(PROJECT_DIR)/sim
 WORK_DIR    = $(SIM_DIR)/work
 
 # simulator used: modelsim or ghdl
-SIMULATOR   = modelsim
+sim         = modelsim
+SIMULATOR   = $(sim)
+
+TESTBENCH = none
+RUNTIME = 100
 
 # on the two ifeq below, update the paths for your modelsim
 # and/or ghdl
@@ -19,8 +23,8 @@ ifeq ("$(SIMULATOR)", "modelsim")
     COM    = vcom -work $(WORK_DIR) -93 -explicit 
     SIM    = vsim -c
     COM_FLAGS =
-    SIM0_FLAGS =
-    SIM1_FLAGS =
+    SIM0_FLAGS = -do "vcd file $(TESTBENCH).vcd; vcd add /$(TESTBENCH)/*; run $(RUNTIME)ns; quit -sim; quit"
+    SIM1_FLAGS = 
 endif
 
 ifeq ("$(SIMULATOR)", "ghdl")
@@ -29,8 +33,8 @@ ifeq ("$(SIMULATOR)", "ghdl")
     COM    = ghdl -a --workdir=$(WORK_DIR)
     SIM    = ghdl --elab-run
     COM_FLAGS =
-    SIM0_FLAGS =
-    SIM1_FLAGS =
+    SIM0_FLAGS = --workdir=$(WORK_DIR)
+    SIM1_FLAGS = --stop-time=$(RUNTIME)ns --vcd=$(TESTBENCH).vcd
 endif
 
 define \n
@@ -44,6 +48,7 @@ endef
 ## - waves to be added
 ###############################
 
+
 # barrel shifter related stuff
 BARREL_SHIFTER_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
     $(SRC_DIR)/vhdl/auxiliary/barrel_shifter.vhd \
@@ -51,22 +56,13 @@ BARREL_SHIFTER_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
 
 BARREL_SHIFTER_TB = barrel_shifter_tb
 
-ifeq ("$(SIMULATOR)", "modelsim")
-    SIM0_FLAGS = -do "vcd file teste.vcd; vcd add /barrel_shifter_tb/*; run 100ns; quit -sim; quit"
-    SIM1_FLAGS = 
-endif
-
-ifeq ("$(SIMULATOR)", "ghdl")
-    SIM0_FLAGS = --workdir=$(WORK_DIR)
-    SIM1_FLAGS = --stop-time=100ns --vcd=barrel_shifter_tb.vcd
-endif
-
+barrel_shifter_tb: TESTBENCH = $(BARREL_SHIFTER_TB)
+barrel_shifter_tb: RUNTIME = 500
 barrel_shifter_tb:
-	include $(SIM)/barrel_shiter_tb
 	$(MKLIB) $(WORK_DIR)
 	$(MAP) $(WORK_DIR)
 	$(foreach file, $(BARREL_SHIFTER_FILES), $(COM) $(file); ${\n})
-	$(SIM) $(SIM0_FLAGS) $(BARREL_SHIFTER_TB) $(SIM1_FLAGS)
+	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
 
 # instruction_fetch_stage
 INSTRUCTION_FETCH_STAGE_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
