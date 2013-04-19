@@ -7,7 +7,7 @@ use work.hivek_pkg.all;
 
 entity register_bank is
     generic (
-        vendor : string := "ALTERA"
+        vendor : string := "GENERIC"
     );
     port (
         clock   : in std_logic;

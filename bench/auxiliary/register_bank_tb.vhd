@@ -228,6 +228,63 @@ begin
         din_c1 <= x"00000000";
         wait until clock'event and clock = '1';
 
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00000";
+        reg_b0 <= "00000";
+        reg_a1 <= "00000";
+        reg_b1 <= "00000";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+        wait until clock'event and clock = '1';
+        wait until clock'event and clock = '1';
+        wait until clock'event and clock = '1';
+
+        -- read and write in the same cycle
+        -- 7 and 8
+        reset  <= '0';
+        load0  <= '1';
+        load1  <= '1';
+        reg_a0 <= "00111";
+        reg_b0 <= "01000";
+        reg_a1 <= "00111";
+        reg_b1 <= "00111";
+        reg_c0 <= "00111";
+        reg_c1 <= "01000";
+        din_c0 <= x"00000007";
+        din_c1 <= x"00000008";
+        wait until clock'event and clock = '1';
+       
+        reset  <= '0';
+        load0  <= '1';
+        load1  <= '0';
+        reg_a0 <= "01000";
+        reg_b0 <= "00111";
+        reg_a1 <= "00111";
+        reg_b1 <= "01000";
+        reg_c0 <= "01000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000009";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+
+        reset  <= '0';
+        load0  <= '0';
+        load1  <= '0';
+        reg_a0 <= "00111";
+        reg_b0 <= "01000";
+        reg_a1 <= "01000";
+        reg_b1 <= "00111";
+        reg_c0 <= "00000";
+        reg_c1 <= "00000";
+        din_c0 <= x"00000000";
+        din_c1 <= x"00000000";
+        wait until clock'event and clock = '1';
+
         wait;        
     end process;
 
