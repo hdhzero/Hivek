@@ -1,6 +1,6 @@
 # project directories
 # update project_dir to the folder where your files are
-PROJECT_DIR = /home/hdhzero/projetos/Hivek
+PROJECT_DIR = /home/hdhzero/Projects/Hivek
 
 # do not modify below unless you know what you are doing
 SRC_DIR     = $(PROJECT_DIR)/src

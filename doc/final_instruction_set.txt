@@ -47,8 +47,6 @@ sz  op        immd22                 cond
 
 j cond
 
-
-
 -------------
 -- Type IV --
 -------------
@@ -168,24 +166,24 @@ void double() {
 }
 
 00 00000 000 000 000
-00 1ppcc cii iii iii
+00 1pccc iii iii iii
 00 01111 000 000 000
 00 01111 0 0000 0000
 00 01111 0000 00000
 
-1 add
-2 sub
-3 addi
-4 lw
-5 sw
-6 lw fp
-7 sw fp
-8 mov
-9 movi
-A and
-B or
-C cmpeq
-D cmplt
-E cmpgt
+1 add    rd, rs, rt
+2 sub    rd, rs, rt
+3 addi   rd, rd, immd5
+4 lw     rd, rs
+5 sw     rd, rs
+6 lw fp  rs, immd5
+7 sw fp  rs, immd5
+8 mov    rd, rs
+9 movi   rs, immd5
+A and    rd, rs, rt
+B or     rd, rs, rt
+C cmpeq  pd, rs, rt
+D cmplt  pd, rs, rt
+E cmpgt  pd, rs, rt
 F add
 
