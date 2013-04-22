@@ -12,24 +12,24 @@ sz   op     immd12       rt    rs   cond
 00 0tttt iiii iiii iiii sssss ttttt ccc
 2 + 5 + 12 + 5 + 5 + 3 = 32
 
-1 addi  rd, rs, immd
-2 adci  rd, rs, immd
-3 addis rd, rs, immd
-4 adcis rd, rs, immd
-5 andi  rd, rs, immd
-6 ori   rd, rs, immd
+0 addi  rd, rs, immd
+1 adci  rd, rs, immd
+2 addis rd, rs, immd
+3 adcis rd, rs, immd
+4 andi  rd, rs, immd
+5 ori   rd, rs, immd
 
-8 cmpeqi  pd, rs, immd
-9 cmplti  pd, rs, immd
-A cmpgti  pd, rs, immd
-B cmpltui pd, rs, immd
-C cmpgtui pd, rs, immd
+6 cmpeqi  pd, rs, immd
+7 cmplti  pd, rs, immd
+8 cmpgti  pd, rs, immd
+9 cmpltui pd, rs, immd
+A cmpgtui pd, rs, immd
 
     - memory (8)
-D lw  rd, rs, immd
+B lw  rd, rs, immd
+C sw  rd, rs, immd
+D lb  rd, rs, immd
 E sw  rd, rs, immd
-7 lb  rd, rs, immd
-F sw  rd, rs, immd
 
 -------------
 -- Type II --
@@ -52,7 +52,11 @@ j cond
 -------------
 sz op    opcode      rd     rs    rt   cond
 00 110 000 0000 0 0 ddddd ttttt sssss ccc
+2 + 3 + 9 + 5 + 5 + 5 + 3 = 32
 
+
+opcodes:
+# alu (5 bits)
 1 add  rd, rs, rt
 2 sub  rd, rs, rt
 3 adc  rd, rs, rt
@@ -62,46 +66,51 @@ sz op    opcode      rd     rs    rt   cond
 7 subs rd, rs, rt
 8 sbcs rd, rs, rt
 
-9 shadd1 rd, rs, rt
-10 shadd2 rd, rs, rt
-11 shadd3 rd, rs, rt
-12 shadd4 rd, rs, rt
+9  and rd, rs, rt
+10 or  rd, rs, rt
+11 nor rd, rs, rt
+12 xor rd, rs, rt
+13 sll rd, rs, rt 
+14 slr rd, rs, rt
+15 sar rd, rs, rt
 
-13 and rd, rs, rt
-14 or  rd, rs, rt
-15 nor rd, rs, rt
-16 xor rd, rs, rt
+# memory (2 bits)
+16 lw rd, rs, rt
+17 sw rd, rs, rt
+18 lb rd, rs, rt
+19 sb rd, rs, rt
 
-17 sll rd, rs, rt
-18 slr rd, rs, rt
-19 sar rd, rs, rt
 
-20 slli rd, rs, immd
-21 slri rd, rs, immd
-22 sari rd, rs, immd
-    
-23 cmpeq  pd, rs, rt
-24 cmplt  pd, rs, rt
-25 cmpgt  pd, rs, rt
-26 cmpltu pd, rs, rt
-27 cmpgtu pd, rs, rt
+# comparison (3 bits)
+20 cmpeq  pd, rs, rt
+21 cmplt  pd, rs, rt
+22 cmpgt  pd, rs, rt
+23 cmpltu pd, rs, rt
+24 cmpgtu pd, rs, rt
 
-28 andp pd, ps, pt
-29 orp  pd, ps, pt
-30 xorp pd, ps, pt
-31 norp pd, ps, pt
+# logical (2 bits)
+25 andp pd, ps, pt
+26 orp  pd, ps, pt
+27 xorp pd, ps, pt
+28 norp pd, ps, pt
 
-32 andpi pd, ps, immd
-33 orpi  pd, ps, immd
-34 xorpi pd, ps, immd
-35 norpi pd, ps, immd
+# branch (1 bit)
+29 jr rd
+30 jalr rd
 
-36 jr
-37 jalr
-38 lw rd, rs, rt
-39 sw rd, rs, rt
-40 lb rd, rs, rt
-41 sb rd, rs, rt
+0tssiiiii
+    - t: 0 - add, 1 - sub
+    - ss: >>, << etc
+    - iiiii: value to shift by
+
+# shift (2 + 5 bits)
+17 shadd1 rd, rs, rt
+16 shsub  rd, rs, rt
+
+22 slli rd, rs, immd # same as shadd rd, rs, r0
+23 slri rd, rs, immd # same as sradd rd, rs, r0
+24 sari rd, rs, immd # same as saaad rd, rs, r0
+
 42 gsr rd   # get status registers: flags, carry, protection etc
 43 ssr rd   # set status registers
 
@@ -161,6 +170,11 @@ loop:
   (!p1) addi r2, r2, 1 32 bytes
 
 
+    add r1, r2, r3
+    lw r5, r1
+
+    lw r1, r1
+    add r1, r1, r2
 void double() {
 
 }
