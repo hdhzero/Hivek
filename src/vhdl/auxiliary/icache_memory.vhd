@@ -6,6 +6,10 @@ library work;
 use work.hivek_pkg.all;
 
 entity icache_memory is
+    generic (
+        VENDOR     : string := "GENERIC";
+        ADDR_WIDTH : integer := 8
+    );
     port (
         clock   : in std_logic;
         load    : in std_logic;
@@ -20,33 +24,8 @@ architecture icache_memory_arch of icache_memory is
 
     -- 2x32 16, 16, 2x16, 32, 2x32, 32, 2x16 j
     -- 16 = 00 - 0, 32 = 01 - 4, 2x16 = 10 - 8, 2x32 = 11 - F
---    signal mem0 : ram;
---    signal mem1 : ram;
---    signal mem2 : ram;
---    signal mem3 : ram;
 
-
-
-
- signal mem0 : ram := (
-        0 => x"0000",
-        1 => x"0002",
-        2 => x"0006",
-        others => x"0000");
-    signal mem1 : ram := (
-        0 => x"0000",
-        1 => x"8003",
-        2 => x"0006",
-        others => x"0000");
-    signal mem2 : ram := (
-        0 => x"0001",
-        1 => x"4004",
-        others => x"0000");
-    signal mem3 : ram := (
-        0 => x"0001",
-        1 => x"0005",
-        others => x"0000");
-signal addr0 : std_logic_vector(31 downto 0);
+    signal addr0 : std_logic_vector(31 downto 0);
     signal addr1 : std_logic_vector(31 downto 0);
     signal addr2 : std_logic_vector(31 downto 0);
     signal addr3 : std_logic_vector(31 downto 0);
@@ -61,8 +40,7 @@ signal addr0 : std_logic_vector(31 downto 0);
     signal ONE : std_logic_vector(31 downto 0);
 
 begin
-    ONE <= (3 => '1', others => '0');
-    address_plus_one <= std_logic_vector(unsigned(address) + unsigned(ONE));
+    address_plus_one <= std_logic_vector(unsigned(address) + unsigned(ONE(31 downto 0)));
     addr_sel <= address(2 downto 1);
 
     process (addr_sel, address, address_plus_one)
@@ -114,20 +92,60 @@ begin
         end case;
     end process;
 
-    process (clock, load, data_i, addr0, addr1, addr2, addr3)
-    begin
-        if clock'event and clock = '1' then
-            if load = '1' then
-                mem0(to_integer(unsigned(addr0))) <= data_i(63 downto 48);
-                mem1(to_integer(unsigned(addr1))) <= data_i(47 downto 32);
-                mem2(to_integer(unsigned(addr2))) <= data_i(31 downto 16);
-                mem3(to_integer(unsigned(addr3))) <= data_i(15 downto 0);
-            end if;
+    mem0 : memory_bram
+    generic map (
+        VENDOR => VENDOR,
+        DATA_WIDTH => 16,
+        ADDR_WIDTH => ADDR_WIDTH
+    )
+    port map (
+        clock  => clock,
+        wren   => wren,
+        addr   => addr0,
+        data_i => data_i(63 downto 48),
+        data_o => out0
+    );
 
-            out0 <= mem0(to_integer(unsigned(addr0)));
-            out1 <= mem1(to_integer(unsigned(addr1)));
-            out2 <= mem2(to_integer(unsigned(addr2)));
-            out3 <= mem3(to_integer(unsigned(addr3)));
-        end if;
-    end process;
+    mem1 : memory_bram
+    generic map (
+        VENDOR => VENDOR,
+        DATA_WIDTH => 16,
+        ADDR_WIDTH => ADDR_WIDTH
+    )
+    port map (
+        clock  => clock,
+        wren   => wren,
+        addr   => addr1,
+        data_i => data_i(47 downto 32),
+        data_o => out1
+    );
+
+    mem2 : memory_bram
+    generic map (
+        VENDOR => VENDOR,
+        DATA_WIDTH => 16,
+        ADDR_WIDTH => ADDR_WIDTH
+    )
+    port map (
+        clock  => clock,
+        wren   => wren,
+        addr   => addr2,
+        data_i => data_i(31 downto 16),
+        data_o => out2
+    );
+
+    mem3 : memory_bram
+    generic map (
+        VENDOR => VENDOR,
+        DATA_WIDTH => 16,
+        ADDR_WIDTH => ADDR_WIDTH
+    )
+    port map (
+        clock  => clock,
+        wren   => wren,
+        addr   => addr3,
+        data_i => data_i(15 downto 0),
+        data_o => out3
+    );
+
 end icache_memory_arch;

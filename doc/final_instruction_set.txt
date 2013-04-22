@@ -199,5 +199,5 @@ B or     rd, rs, rt
 C cmpeq  pd, rs, rt
 D cmplt  pd, rs, rt
 E cmpgt  pd, rs, rt
-F add
+F addhi  rd, rs, rt
 
