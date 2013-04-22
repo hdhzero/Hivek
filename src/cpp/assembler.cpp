@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <stack>
 #include <map>
 #include <fstream>
 #include <string>
@@ -9,11 +10,11 @@ using namespace std;
 /*
 
 L7:
-         add r1 r2 r3 
+         add r1 r2 r3 0
 ;;
-         cmpeq b1, r2, r3 
+         cmpeq b1, r2, r3 4
 ;;
-    (p1) lw r5 r1 45
+    (p1) lw r5 r1 45 8
          j L7 
 ;;
 
@@ -37,12 +38,20 @@ struct Operation {
     int address;
     int size;
     int operation;
+    int type;
     int predicate_register;
     int predicate_value;
     int rd;
     int rs;
     int rt;
-    int immd;
+    int immd; //string because immd can be a number or a label
+    string label;
+};
+
+struct MultipleOperation {
+    int size;
+    Operation op1;
+    Operation op2;
 };
 
 void printop(Operation& op) {
@@ -58,9 +67,21 @@ void printop(Operation& op) {
 
 class HivekAssembler {
     private:
-        enum data_type_t { DATA_ASCII, DATA_32BITS };
-        enum operation_type_t {
-            ADD, SUB, AND, OR, LW, SW, ADC, SBC
+        enum multiop_size_t {
+            MULTI_OP1x16, MULTI_OP1x32, MULTI_OP2x32, MULTI_OP2x16 
+        };
+
+        enum data_type_t { 
+            DATA_ASCII, DATA_32BITS 
+        };
+
+        enum operation_func_t { 
+            // TYPE_I
+            ADD, SUB, AND, OR, LWR, SWR, ADC, SBC 
+        };
+
+        enum operation_type_t { 
+            TYPE_I, TYPE_II, TYPE_III, TYPE_IV, TYPE_V 
         };
 
     private:
@@ -69,9 +90,13 @@ class HivekAssembler {
 
         map<string, int> labels;
         map<string, int> data_type;
-        map<string, int> operation_type;
-        vector<Data> data;
-        vector<Operation> operations;
+        map<string, int> str2op;
+        map<int, int>    operation_type;
+
+        vector<Data>     data;
+        stack<Operation> op_stack;
+        vector<MultipleOperation> multiops;
+
         Data dt;
 
     public:
@@ -81,14 +106,20 @@ class HivekAssembler {
             data_type["ascii"] = DATA_ASCII;
             data_type["dw"]    = DATA_32BITS;
 
-            operation_type["add"] = ADD;
+            #define assoc(a, b, c) { str2op[a] = b; operation_type[b] = c; }
+            assoc("add", ADD, TYPE_I);
+            assoc("sub", SUB, TYPE_I);
+            assoc("and", AND, TYPE_I);
+            assoc("or", OR, TYPE_I);
+            assoc("lwr", LWR, TYPE_I);
+/*            operation_type["add"] = ADD;
             operation_type["sub"] = SUB;
             operation_type["and"] = AND;
             operation_type["or"]  = OR;
             operation_type["lw"]  = LW;
             operation_type["sw"]  = SW;
             operation_type["adc"] = ADC;
-            operation_type["sbc"] = SBC;
+            operation_type["sbc"] = SBC;*/
         }
 
 
@@ -105,7 +136,27 @@ class HivekAssembler {
 
             str.erase(str.size() - 1);
             labels[str] = pc;
+        }
 
+        int label2int(string& str) {
+            stringstream ss;
+            int tmp = 0;
+
+            if (labels.count(str) == 1) {
+                return labels[str];
+            } else {
+                for (int i = 0; i < data.size(); ++i) {
+                    if (data[i].name.compare(str) == 0) {
+                        return data[i].address;
+                    }
+                }
+
+                // if we are here, it is because it can only be a number
+                ss << str;
+                ss >> tmp;
+
+                return tmp;
+            }
         }
 
         void add_data(string& str, stringstream& ss) {
@@ -134,6 +185,14 @@ class HivekAssembler {
         void add_instruction(string& str, stringstream& ss) {
             Operation op;
 
+            add_predicate(str, ss, op);
+            op.operation = str2op[str];
+            op.type = operation_type[op.operation];
+            parse_operation(op, str, ss);
+            op_stack.push(op);
+        }
+
+        void add_predicate(string& str, stringstream& ss, Operation& op) {
             if (str[0] == '(') {
                 if (str[1] == '!') {
                     op.predicate_value = 0;
@@ -148,57 +207,77 @@ class HivekAssembler {
                 op.predicate_value = 1;
                 op.predicate_register = 0;
             }
+        }
 
-            op.operation = operation_type[str];
-            parse_operation(op, str, ss);
-            operations.push_back(op);
+        void parse_type_i(Operation& op, string& str, stringstream& ss) {
+            op.address = pc;
+            pc += 4;
+            op.size = 4;
+
+            ss >> str; 
+            str.erase(str.size() - 1);
+            op.rd = (str[1] - '0') * 10 + (str[2] - '0');
+
+            ss >> str;
+            str.erase(str.size() - 1);
+            op.rs = (str[1] - '0') * 10 + (str[2] - '0');
+
+            ss >> str;
+            op.rt = (str[1] - '0') * 10 + (str[2] - '0');
+        }
+
+        void parse_type_ii(Operation& op, string& str, stringstream& ss) {
+            op.address = pc;
+            pc += 4;
+            op.size = 4;
+
+            ss >> str;                   
+            str.erase(str.size() - 1);
+            op.rd = (str[1] - '0') * 10 + (str[2] - '0');
+
+            ss >> str;
+            str.erase(str.size() - 1);
+            op.rs = (str[1] - '0') * 10 + (str[2] - '0');
+
+            ss >> op.label;
         }
 
         void parse_operation(Operation& op, string& str, stringstream& ss) {
-            switch (op.operation) {
-                case ADD:
-                case SUB:
-                case AND:
-                case OR:
-                case ADC:
-                case SBC:
-                    op.address = pc;
-                    pc += 4;
-                    op.size = 4;
-
-                    ss >> str; 
-                    str.erase(str.size() - 1);
-                    op.rd = (str[1] - '0') * 10 + (str[2] - '0');
-
-                    ss >> str;
-                    str.erase(str.size() - 1);
-                    op.rs = (str[1] - '0') * 10 + (str[2] - '0');
-
-                    ss >> str;
-                    op.rt = (str[1] - '0') * 10 + (str[2] - '0');
+            switch (op.type) {
+                case TYPE_I:
+                    parse_type_i(op, str, ss);
                     break;
 
-                case LW:
-                case SW:
-                    op.address = pc;
-                    pc += 4;
-                    op.size = 4;
+                case TYPE_II:
+                    parse_type_ii(op, str, ss);
+                    break;
+
                 default:
                     break;
 
             }
         }
 
-        void check() {
-            cout << pc << endl;
-            for (int i = 0; i < operations.size(); ++i) {
-                printop(operations[i]);
+        bool is_empty_string(string& str) {
+            bool f;
+
+            if (str.size() == 0) {
+                return true;
             }
+
+            f = false;
+
+            for (int i = 0; i < str.size(); ++i) {
+                if (! (str[i] == ' ' || str[i] == '\t' || str[i] == '#')) {
+                    f = true;
+                }
+            }
+
+            return !f;
         }
 
         void parse() {
             int j;
-            bool f;
             string tmp0;
             string tmp1;
 
@@ -206,17 +285,7 @@ class HivekAssembler {
                 stringstream ss;
                 getline(file, tmp0);
 
-                if (tmp0.size() > 0) {
-                    f = false;
-
-                    for (int i = 0; i < tmp0.size(); ++i) {
-                        if (! (tmp0[i] == ' ' || tmp0[i] == '\t')) {
-                            f = true;
-                        }
-                    }
-
-                    if (!f) continue;
-                } else {
+                if (is_empty_string(tmp0)) {
                     continue;
                 }
 
@@ -229,11 +298,55 @@ class HivekAssembler {
                     add_label(tmp1);
                 } else if (tmp1[0] == '.') {
                     add_data(tmp1, ss);
+                } else if (tmp1[0] == ';' && tmp1[1] == ';') {
+                    add_multiple_instruction();
                 } else {
                     add_instruction(tmp1, ss);
                 }
             }
         }
+
+        void add_multiple_instruction() {
+            if (op_stack.size() == 2) {
+                add_mop_2();
+            } else {
+                add_mop_1();
+            }
+
+        }
+
+        void add_mop_1() {
+            MultipleOperation mop;
+
+            mop.op1 = op_stack.top();
+            op_stack.pop();
+
+            if (mop.op1.size == 2) {
+                mop.size = MULTI_OP1x16;
+            } else {
+                mop.size = MULTI_OP1x32;
+            }
+
+            multiops.push_back(mop);
+        }
+
+        void add_mop_2() {
+            MultipleOperation mop;
+
+            mop.op2 = op_stack.top();
+            op_stack.pop();
+            mop.op1 = op_stack.top();
+            op_stack.pop();
+
+            if (mop.op1.size == 4) {
+                mop.size = MULTI_OP2x32;
+            } else {
+                mop.size = MULTI_OP2x16;
+            }
+
+            multiops.push_back(mop);
+        }
+
 };
 
 int main(int argc, char** argv) {
@@ -241,7 +354,6 @@ int main(int argc, char** argv) {
 
     as.open(argv[1]);
     as.parse();
-    as.check();
     as.close();
 
     return 0;
