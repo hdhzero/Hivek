@@ -55,18 +55,20 @@ struct MultipleOperation {
 };
 
 void printop(Operation& op) {
-    cout << "address: " << op.address
-        << "size: " << op.size
-        << "operation: " << op.operation
-        << "predicate_register: " << op.predicate_register
-        << "predicate_value: " << op.predicate_value
-        << "rd: " << op.rd
-        << "rs: " << op.rs
-        << "rt: " << op.rt << endl;
+    cout << "addr: " << op.address
+        << " sz: " << op.size
+        << " op: " << op.operation
+        << " p_reg: " << op.predicate_register
+        << " p_value: " << op.predicate_value
+        << " rd: " << op.rd
+        << " rs: " << op.rs
+        << " rt: " << op.rt 
+        << " immd: " << op.immd 
+        << " lbl: " << op.label << endl;
 }
 
 class HivekAssembler {
-    private:
+    public:
         enum multiop_size_t {
             MULTI_OP1x16, MULTI_OP1x32, MULTI_OP2x32, MULTI_OP2x16 
         };
@@ -77,11 +79,33 @@ class HivekAssembler {
 
         enum operation_func_t { 
             // TYPE_I
-            ADD, SUB, AND, OR, LWR, SWR, ADC, SBC 
+            ADD, SUB, ADC, SBC, ADDS, ADCS, SUBS, SBCS, 
+            AND, OR, NOR, XOR,
+            SLL, SRL, SRA,
+            LWR, SWR, LBR, SBR,
+            CMPEQ, CMPLT, CMPGT, CMPLTU, CMPGTU,
+            ANDP, ORP, XORP, NORP,
+
+            //TYPE_Ib
+            JR, JALR,
+
+            // TYPE_II
+            ADDI, ADCI, ADDIS, ADCIS,
+            ANDI, ORI,
+            CMPEQI, CMPLTI, CMPGTI, CMPLTUI, CMPGTUI,
+            LW, SW, LB, SB,
+
+            // TYPE_III
+            JC, JALC,
+
+            // TYPE_IV
+            J, JAL
+
         };
 
         enum operation_type_t { 
-            TYPE_I, TYPE_II, TYPE_III, TYPE_IV, TYPE_V 
+            TYPE_I, TYPE_II, TYPE_III, TYPE_IV, TYPE_V,
+            TYPE_Ib 
         };
 
     private:
@@ -107,21 +131,74 @@ class HivekAssembler {
             data_type["dw"]    = DATA_32BITS;
 
             #define assoc(a, b, c) { str2op[a] = b; operation_type[b] = c; }
+
+            // type I
             assoc("add", ADD, TYPE_I);
             assoc("sub", SUB, TYPE_I);
+            assoc("adc", ADC, TYPE_I);
+            assoc("sbc", SBC, TYPE_I);
+            assoc("adds", ADDS, TYPE_I);
+            assoc("adcs", ADCS, TYPE_I);
+            assoc("subs", SUBS, TYPE_I);
+            assoc("sbcs", SBCS, TYPE_I);
+
             assoc("and", AND, TYPE_I);
             assoc("or", OR, TYPE_I);
-            assoc("lwr", LWR, TYPE_I);
-/*            operation_type["add"] = ADD;
-            operation_type["sub"] = SUB;
-            operation_type["and"] = AND;
-            operation_type["or"]  = OR;
-            operation_type["lw"]  = LW;
-            operation_type["sw"]  = SW;
-            operation_type["adc"] = ADC;
-            operation_type["sbc"] = SBC;*/
-        }
+            assoc("nor", NOR, TYPE_I);
+            assoc("xor", XOR, TYPE_I);
 
+            assoc("sll", SLL, TYPE_I);
+            assoc("srl", SRL, TYPE_I);
+            assoc("sra", SRA, TYPE_I);
+
+            assoc("lwr", LWR, TYPE_I);
+            assoc("swr", SWR, TYPE_I);
+            assoc("lbr", LBR, TYPE_I);
+            assoc("swr", SWR, TYPE_I);
+
+            assoc("cmpeq", CMPEQ, TYPE_I);
+            assoc("cmplt", CMPLT, TYPE_I);
+            assoc("cmpgt", CMPGT, TYPE_I);
+            assoc("cmpltu", CMPLTU, TYPE_I);
+            assoc("cmpgtu", CMPGTU, TYPE_I);
+
+            assoc("andp", ANDP, TYPE_I);
+            assoc("orp", ORP, TYPE_I);
+            assoc("xorp", XORP, TYPE_I);
+            assoc("norp", NORP, TYPE_I);
+
+            // type Ib
+            assoc("jr", JR, TYPE_Ib);
+            assoc("jalr", JALR, TYPE_Ib);
+
+            // type ii
+            assoc("addi", ADDI, TYPE_II);
+            assoc("adci", ADCI, TYPE_II);
+            assoc("addis", ADDIS, TYPE_II);
+            assoc("adcis", ADCIS, TYPE_II);
+
+            assoc("andi", ANDI, TYPE_II);
+            assoc("ori", ORI, TYPE_II);
+
+            assoc("cmpeqi", CMPEQI, TYPE_II);
+            assoc("cmplti", CMPLTI, TYPE_II);
+            assoc("cmpgti", CMPGTI, TYPE_II);
+            assoc("cmpltui", CMPLTUI, TYPE_II);
+            assoc("cmpgtui", CMPGTUI, TYPE_II);
+
+            assoc("lw", LW, TYPE_II);
+            assoc("sw", SW, TYPE_II);
+            assoc("lb", LB, TYPE_II);
+            assoc("sb", SB, TYPE_II);
+
+            // type iii
+            assoc("jc", JC, TYPE_III);
+            assoc("jalc", JALC, TYPE_III);
+
+            // type iv
+            assoc("j", J, TYPE_IV);
+            assoc("jal", JAL, TYPE_IV);
+        }
 
         void open(char* filename) {
             file.open(filename);
@@ -226,6 +303,15 @@ class HivekAssembler {
             op.rt = (str[1] - '0') * 10 + (str[2] - '0');
         }
 
+        void parse_type_ib(Operation& op, string& str, stringstream& ss) {
+            op.address = pc;
+            pc += 4;
+            op.size = 4;
+
+            ss >> str;
+            op.rd = (str[1] - '0') * 10 + (str[2] - '0');
+        }
+
         void parse_type_ii(Operation& op, string& str, stringstream& ss) {
             op.address = pc;
             pc += 4;
@@ -242,14 +328,42 @@ class HivekAssembler {
             ss >> op.label;
         }
 
+        void parse_type_iii(Operation& op, string& str, stringstream& ss) {
+            op.address = pc;
+            pc += 4;
+            op.size = 4;
+
+            ss >> op.label;
+        }
+
+        void parse_type_iv(Operation& op, string& str, stringstream& ss) {
+            op.address = pc;
+            pc += 4;
+            op.size = 4;
+
+            ss >> op.label;
+        }
+
         void parse_operation(Operation& op, string& str, stringstream& ss) {
             switch (op.type) {
-                case TYPE_I:
+                case TYPE_I: // add rd, rs, rt
                     parse_type_i(op, str, ss);
                     break;
 
-                case TYPE_II:
+                case TYPE_Ib:
+                    parse_type_ib(op, str, ss);
+                    break;
+
+                case TYPE_II: // addi rs, rt, immd
                     parse_type_ii(op, str, ss);
+                    break;
+
+                case TYPE_III: // jc jalc immd
+                    parse_type_iii(op, str, ss);
+                    break;
+
+                case TYPE_IV: // j jal immd 
+                    parse_type_iv(op, str, ss);
                     break;
 
                 default:
@@ -345,6 +459,60 @@ class HivekAssembler {
             }
 
             multiops.push_back(mop);
+        }
+
+        void convert_labels() {
+            int i;
+
+            for (i = 0; i < multiops.size(); ++i) {
+                switch (multiops[i].size) {
+                    case MULTI_OP1x16:
+                    case MULTI_OP1x32:
+                        convert_label(multiops[i].op1);
+                        break;
+
+                    case MULTI_OP2x16:
+                    case MULTI_OP2x32:
+                        convert_label(multiops[i].op1);
+                        convert_label(multiops[i].op2);
+                        break;
+
+                    default:
+                        break;
+                   
+                }
+            }
+        }
+
+        void convert_label(Operation& op) {
+
+        }
+
+        // current_address  = op.address + op.size
+        // branch_target = label.address
+        // difference = branch_target - current_address
+        // immd = difference / 2
+        void convert_label_branch(Operation& op) {
+            int current_address;
+            int branch_target;
+            int difference;
+
+            current_address = op.address + op.size;
+            branch_target   = labels[op.label];
+            difference      = branch_target - current_address;
+
+            op.immd = difference / 2;
+        }
+
+        void convert_label_data(Operation& op) {
+            int i;
+
+            for (i = 0; i < data.size(); ++i) {
+                if (data[i].name.compare(op.label) == 0) {
+                    op.immd = data[i].address;
+                    break;
+                }
+            }
         }
 
 };

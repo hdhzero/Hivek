@@ -71,8 +71,8 @@ opcodes:
 11 nor rd, rs, rt
 12 xor rd, rs, rt
 13 sll rd, rs, rt 
-14 slr rd, rs, rt
-15 sar rd, rs, rt
+14 srl rd, rs, rt
+15 sra rd, rs, rt
 
 # memory (2 bits)
 16 lw rd, rs, rt
