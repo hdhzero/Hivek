@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <stdint.h>
 using namespace std;
 
 /*
@@ -170,6 +171,8 @@ class HivekAssembler {
             // type Ib
             assoc("jr", JR, TYPE_Ib);
             assoc("jalr", JALR, TYPE_Ib);
+
+            //type Ic
 
             // type ii
             assoc("addi", ADDI, TYPE_II);
@@ -423,10 +426,9 @@ class HivekAssembler {
         void add_multiple_instruction() {
             if (op_stack.size() == 2) {
                 add_mop_2();
-            } else {
+            } else if (op_stack.size() == 1) {
                 add_mop_1();
             }
-
         }
 
         void add_mop_1() {
@@ -472,7 +474,7 @@ class HivekAssembler {
                         break;
 
                     case MULTI_OP2x16:
-                    case MULTI_OP2x32:
+                    case MULTI_OP2x32: 
                         convert_label(multiops[i].op1);
                         convert_label(multiops[i].op2);
                         break;
@@ -485,7 +487,19 @@ class HivekAssembler {
         }
 
         void convert_label(Operation& op) {
+            switch (op.type) {
+                case TYPE_III:
+                case TYPE_IV:
+                    convert_label_branch(op);
+                    break;
 
+                case TYPE_II:
+                    convert_label_data(op);
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         // current_address  = op.address + op.size
@@ -502,6 +516,11 @@ class HivekAssembler {
             difference      = branch_target - current_address;
 
             op.immd = difference / 2;
+
+            cout << "ca: " << current_address
+                << ", bt: " << branch_target 
+                << ", diff: " << difference
+                << endl;
         }
 
         void convert_label_data(Operation& op) {
@@ -515,6 +534,122 @@ class HivekAssembler {
             }
         }
 
+        void check() {
+            int i;
+
+            for (i = 0; i < multiops.size(); ++i) {
+                switch (multiops[i].size) {
+                    case MULTI_OP1x16:
+                    case MULTI_OP1x32:
+                        printop(multiops[i].op1);
+                        break;
+
+                    case MULTI_OP2x16:
+                    case MULTI_OP2x32:
+                        printop(multiops[i].op1);
+                        printop(multiops[i].op2);
+                        break;
+
+                    default:
+                        break;
+                   
+                }
+            }
+
+        }
+
+        void gen_code() {
+            int i;
+
+            for (i = 0; i < multiops.size() - 1; ++i) {
+                multiop2bin(multiops[i], multiops[i + 1]);
+            }
+        }
+
+/*struct Operation {
+    int address;
+    int size;
+    int operation;
+    int type;
+    int predicate_register;
+    int predicate_value;
+    int rd;
+    int rs;
+    int rt;
+    int immd; //string because immd can be a number or a label
+    string label;
+};*/
+
+        void multiop2bin(MultipleOperation& mop, MultipleOperation& next) {
+            uint32_t instruction1;
+            uint32_t instruction2;
+            uint16_t p[4];
+            uint32_t size;
+
+            if (next.size == MULTI_OP1x16) {
+                size = 0;
+            } else if (next.size == MULTI_OP1x32) {
+                size = 0x40000000;
+            } else if (next.size == MULTI_OP2x16) {
+                size = 0x80000000;
+            } else if (next.size == MULTI_OP2x32) {
+                size = 0xC0000000;
+            }
+
+            if (mop.size == MULTI_OP1x32) {
+                instruction1 = op2bin(mop.op1);
+                instruction1 |= size;
+
+                printop(mop.op1);
+                cout << instruction1 << endl;
+            }
+
+        }
+
+        uint32_t op2bin(Operation& op) {
+            uint32_t instruction = 0;
+
+            uint32_t rd32 = op.rd << 13;
+            uint32_t rs32 = op.rs << 3;
+            uint32_t rt32 = op.rt << 8;
+            uint32_t cond32 = (op.predicate_value << 2) | op.predicate_register;
+            uint32_t immd12 = (op.immd << 20) >> 20;
+            uint32_t opcode = 0;
+
+            switch (op.operation) {
+                case ADD:
+                    opcode = 0x30000000; break;
+                case SUB:
+                    opcode = 0x30040000; break;
+                case ADC:
+                    opcode = 0x30080000; break;
+                case SBC:
+                    opcode = 0x300C0000; break;
+                case ADDS:
+                    opcode = 0x30100000; break;
+                case ADCS:
+                    opcode = 0x30140000; break;
+                case SUBS:
+                    opcode = 0x30180000; break;
+                case SBCS:
+                    opcode = 0x301C0000; break;
+                default:
+                    opcode = 0;
+                    break;
+            }
+
+            switch (op.type) {
+                case TYPE_I:
+                    instruction |= opcode | rd32 | rt32 | rs32 | cond32;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return instruction;
+        }
+
 };
 
 int main(int argc, char** argv) {
@@ -522,7 +657,16 @@ int main(int argc, char** argv) {
 
     as.open(argv[1]);
     as.parse();
+    as.convert_labels();
+    as.check();
+    as.gen_code();
     as.close();
 
     return 0;
 }
+
+
+
+
+
+
