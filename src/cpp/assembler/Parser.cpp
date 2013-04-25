@@ -1,81 +1,96 @@
 #include "HivekAssembler.h"
 
-namespace Hivek {
-    Parser::Parser {
-        pc = 0;
+namespace HivekAssembler {
+    void Parser::open(char* filename) {
+        file.open(filename);
+    }
 
-        data_type["ascii"] = DATA_ASCII;
-        data_type["dw"]    = DATA_32BITS;
+    void Parser::close() {
+        file.close();
+    }
 
-        #define assoc(a, b, c) { str2op[a] = b; operation_type[b] = c; }
+    void Parser::set_table(Table* table) {
+        this->table = table;
+    }
 
-        // type I
-        assoc("add", ADD, TYPE_I);
-        assoc("sub", SUB, TYPE_I);
-        assoc("adc", ADC, TYPE_I);
-        assoc("sbc", SBC, TYPE_I);
-        assoc("adds", ADDS, TYPE_I);
-        assoc("adcs", ADCS, TYPE_I);
-        assoc("subs", SUBS, TYPE_I);
-        assoc("sbcs", SBCS, TYPE_I);
+    bool Parser::empty_line() {
+        int i;
+        bool flag;
 
-        assoc("and", AND, TYPE_I);
-        assoc("or", OR, TYPE_I);
-        assoc("nor", NOR, TYPE_I);
-        assoc("xor", XOR, TYPE_I);
+        if (str.size() == 0) {
+            return true;
+        }
 
-        assoc("sll", SLL, TYPE_I);
-        assoc("srl", SRL, TYPE_I);
-        assoc("sra", SRA, TYPE_I);
+        flag = false;
 
-        assoc("lwr", LWR, TYPE_I);
-        assoc("swr", SWR, TYPE_I);
-        assoc("lbr", LBR, TYPE_I);
-        assoc("swr", SWR, TYPE_I);
+        for (i = 0; i < str.size(); ++i) {
+            flag = ! (str[i] == ' ' || str[i] == '\t' || str[i] == '#');
 
-        assoc("cmpeq", CMPEQ, TYPE_I);
-        assoc("cmplt", CMPLT, TYPE_I);
-        assoc("cmpgt", CMPGT, TYPE_I);
-        assoc("cmpltu", CMPLTU, TYPE_I);
-        assoc("cmpgtu", CMPGTU, TYPE_I);
+            if (flag) return false;
+        }
 
-        assoc("andp", ANDP, TYPE_I);
-        assoc("orp", ORP, TYPE_I);
-        assoc("xorp", XORP, TYPE_I);
-        assoc("norp", NORP, TYPE_I);
+        return true;
+    }
 
-        // type Ib
-        assoc("jr", JR, TYPE_Ib);
-        assoc("jalr", JALR, TYPE_Ib);
+    void Parser::parse() {
+        int i;
 
-        //type Ic
+        while (file.good()) {
+            // reset stringstream
+            stream.str("");
+            stream.clear();
 
-        // type ii
-        assoc("addi", ADDI, TYPE_II);
-        assoc("adci", ADCI, TYPE_II);
-        assoc("addis", ADDIS, TYPE_II);
-        assoc("adcis", ADCIS, TYPE_II);
+            // read a line from file
+            getline(file, str);
 
-        assoc("andi", ANDI, TYPE_II);
-        assoc("ori", ORI, TYPE_II);
+            // if empty line or a comment, skip
+            if (empty_line()) {
+                continue;
+            }
 
-        assoc("cmpeqi", CMPEQI, TYPE_II);
-        assoc("cmplti", CMPLTI, TYPE_II);
-        assoc("cmpgti", CMPGTI, TYPE_II);
-        assoc("cmpltui", CMPLTUI, TYPE_II);
-        assoc("cmpgtui", CMPGTUI, TYPE_II);
+            stream << str;
+            stream >> str;
 
-        assoc("lw", LW, TYPE_II);
-        assoc("sw", SW, TYPE_II);
-        assoc("lb", LB, TYPE_II);
-        assoc("sb", SB, TYPE_II);
+            i = str.size() - 1;
 
-        // type iii
-        assoc("jc", JC, TYPE_III);
-        assoc("jalc", JALC, TYPE_III);
+            if (str[i] == ':') {
+                parse_branch_label();
+            } else if (str[0] == '.') {
+                parse_data();
+            } else if (str[0] == ';') {
+                /* add code to add multiop */
+            } else {
+                parse_instruction();
+            }
+        }
+    }
 
-        // type iv
-        assoc("j", J, TYPE_IV);
-        assoc("jal", JAL, TYPE_IV);
+    void Parser::parse_branch_label() {
+        // erase : from label:
+        str.erase(str.size() - 1);
+
+        table->add_branch_label(str);
+    }
+
+    void Parser::parse_data() {
+        std::string name;
+        std::string type;
+        std::string value;
+
+        // erase . from .label
+        str.erase(0, 1);
+        name = str;
+
+        // read type
+        stream >> type;
+
+        // read value
+        getline(stream, value);
+        table->add_data(name, type, value);
+    }
+
+    void Parser::parse_instruction() {
+
     }
 }
+

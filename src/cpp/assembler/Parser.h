@@ -1,33 +1,33 @@
-#ifndef HIVEK_PARSER_H
-#define HIVEK_PARSER_H
+#ifndef HIVEK_ASSEMBLER_PARSER_H
+#define HIVEK_ASSEMBLER_PARSER_H
 
 #include "HivekAssembler.h"
 
-namespace Hivek {
+namespace HivekAssembler {
     class Parser {
         private:
-            int pc;
-            map<string, int> labels;
-            map<string, int> data_type;
-            map<string, int> str2op;
-            map<int, int>    operation_type;
+            int address;
+            std::ifstream file;
 
-            vector<Data> data;
-            vector<Operation> op_stack;
-            vector<MultiOperation> multiops;
+            // used for read and extract txt from file
+            std::stringstream stream;
+            std::string str;
+
+            // table
+            Table* table;
 
         private:
-            void parse_label();
+            bool empty_line();
+            void parse_branch_label();
             void parse_data();
-            void parse_predicate();
-            void parse_type_i();
-            void parse_type_ii();
-            void parse_type_iii();
-            void parse_type_iv();
-
+            void parse_instruction();
+            
         public:
             void open(char* filename);
             void close();
+
+            void set_table(Table* table);
+
             void parse();
     };
 }
