@@ -5,6 +5,22 @@ namespace HivekAssembler {
         branch_labels[str] = address;
     }
 
+    void Table::add_instruction (
+        std::string& predicate, 
+        std::string& operation,
+        std::string& destination,
+        std::string& operand1,
+        std::string& operand2,
+        std::string& shift_type,
+        std::string& shamt
+    ) 
+    {
+        std::cout << "hello from table\n";
+        std::cout << predicate << ' ' << operation << ' ' << destination
+            << ' ' << operand1 << ' ' << operand2 << ' ' << shift_type
+            << ' ' << shamt << std::endl;
+    }
+
     void Table::add_data(std::string& n, std::string& t, std::string& v) {
         Data dt;
 

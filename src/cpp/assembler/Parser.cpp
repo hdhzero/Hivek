@@ -21,15 +21,18 @@ namespace HivekAssembler {
             return true;
         }
 
-        flag = false;
+        flag = true;
 
         for (i = 0; i < str.size(); ++i) {
-            flag = ! (str[i] == ' ' || str[i] == '\t' || str[i] == '#');
-
-            if (flag) return false;
+            if (! (str[i] == ' ' || str[i] == '\t')) {
+                flag = false;
+            } 
+            if (str[i] == '#') {
+                return true;
+            }
         }
 
-        return true;
+        return flag;
     }
 
     void Parser::parse() {
@@ -60,6 +63,7 @@ namespace HivekAssembler {
             } else if (str[0] == ';') {
                 /* add code to add multiop */
             } else {
+                std::cout << "calling parse_instruction with: " << str << ' ' << empty_line() << std::endl;
                 parse_instruction();
             }
         }
@@ -90,7 +94,49 @@ namespace HivekAssembler {
     }
 
     void Parser::parse_instruction() {
+        bool read;
+        std::string pr;     // predicate
+        std::string op;     // operation
+        std::string dst;    // destination
+        std::string op1;    // operand1
+        std::string op2;    // operand2
+        std::string shamt;  // shift ammount
+        std::string sht;    // shift type
 
+        // verify if has a predicate and read operation
+        if (str[0] == '(') {
+            pr = str;
+            stream >> op;
+        } else {
+            op = str;
+        }
+
+
+        // read destination
+        // we also verify if there is more data to read
+        // note: jr r1, so there are no more operands
+        read = (stream >> dst);
+
+        // yeah! goto!
+        if (!read) {
+            goto ADD_INST;
+        }
+
+        // read operand1 and operand2
+        // if we reach here, then it must have two operands
+        stream >> op1;
+        read = (stream >> op2);
+
+        if (!read) {
+            goto ADD_INST;
+        }
+
+        // if we reach here, then it must be a shift type and shift ammount
+        stream >> sht;
+        stream >> shamt;
+
+        ADD_INST:
+            table->add_instruction(pr, op, dst, op1, op2, sht, shamt);
     }
 }
 

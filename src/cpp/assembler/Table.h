@@ -21,6 +21,17 @@ namespace HivekAssembler {
         public:
             void add_branch_label(const std::string& str);
             void add_data(std::string& n, std::string& t, std::string& v);
+
+            void add_instruction (
+                std::string& predicate, 
+                std::string& operation,
+                std::string& destination,
+                std::string& operand1,
+                std::string& operand2,
+                std::string& shift_type,
+                std::string& shamt
+            );
+
             Data get_data_at(int i);
             int data_size();
     };
