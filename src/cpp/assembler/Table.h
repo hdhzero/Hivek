@@ -5,8 +5,10 @@ namespace HivekAssembler {
     class Table {
         private:
             std::map<std::string, int> str2data_type;
-            std::map<std::string, int> str2op;
-            std::map<int, int> op2type;
+            std::map<std::string, int> str2operation;
+            std::map<std::string, int> str2predicate;
+            std::map<std::string, int> str2type;
+            std::map<std::string, int> str2register;
             
 
         private:
@@ -14,6 +16,12 @@ namespace HivekAssembler {
             std::map<std::string, int> branch_labels;
             std::vector<Data> data;
             std::vector<MultiInstruction> multiops;
+
+        private:
+            void get_predicate(std::string& str, Instruction& op);
+            void get_operation(std::string& str, Instruction& op);
+            void get_destination(std::string& str, Instruction& op);
+            void get_operand1(std::string& str, Instruction& op);
 
         public:
             Table();

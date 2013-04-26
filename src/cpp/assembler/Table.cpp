@@ -15,10 +15,62 @@ namespace HivekAssembler {
         std::string& shamt
     ) 
     {
-        std::cout << "hello from table\n";
-        std::cout << predicate << ' ' << operation << ' ' << destination
-            << ' ' << operand1 << ' ' << operand2 << ' ' << shift_type
-            << ' ' << shamt << std::endl;
+        Instruction op;
+
+        get_predicate(predicate, op);
+        get_operation(operation, op);
+        get_destination(destination, op);
+    }
+
+    void Table::get_predicate(std::string& str, Instruction& op) {
+        if (str.size() == 0) {
+            op.predicate_register = 0;
+            op.predicate_value = 1;
+            return;
+        }
+
+        // remove ( and )
+        str.erase(0, 1);
+        str.erase(str.size() - 1);
+
+        if (str[0] == '!') {
+            op.predicate_value = 0;
+            str.erase(0, 1);
+        } else {
+            op.predicate_value = 1;
+        }
+
+        op.predicate_register = str2predicate[str];
+    }
+
+    void Table::get_operation(std::string& str, Instruction& op) {
+        op.operation = str2operation[str];
+        op.type      = str2type[str];
+    }
+
+    void Table::get_destination(std::string& str, Instruction& op) {
+        if (str[str.size() - 1] == ',') {
+            str.erase(str.size() - 1);
+        }
+
+        if (str2register.count(str) > 0) {
+            // here, dest is a register
+            op.destination = str2register[str];
+        } else {
+            // here, dest is a label from branch and should be
+            // calculated in a second pass
+            op.label = str;
+        }
+    }
+
+    // add16 r1, r2, r4
+    // addi16 r1, r0, 7
+    // lwfp16 r3, fp, 89
+    void Table::get_operand1(std::string& str, Instruction& op) {
+        // operand1 is always a register
+        if (str.size() > 0) {
+            op.operand1 = str2register[str];
+        }
     }
 
     void Table::add_data(std::string& n, std::string& t, std::string& v) {
@@ -52,7 +104,7 @@ namespace HivekAssembler {
         str2data_type["ascii"] = DATA_ASCII;
         str2data_type["dw"]    = DATA_INT32;
 
-        #define assoc(a, b, c) { str2op[a] = b; op2type[b] = c; }
+        #define assoc(a, b, c) { str2operation[a] = b; str2type[a] = c; }
         assoc("add", ADD, TYPE_I);
         assoc("sub", SUB, TYPE_I);
         assoc("adc", ADC, TYPE_I);

@@ -12,7 +12,7 @@ namespace HivekAssembler {
             int type;
             int predicate_register;
             int predicate_value;
-            int destionation; // rs or rd
+            int destination; // rs or rd
             int operand1; // rs
             int operand2; // rt or immd
             int operand3; // for shamt ammount
