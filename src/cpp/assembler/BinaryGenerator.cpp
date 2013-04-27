@@ -77,11 +77,76 @@ namespace HivekAssembler {
         }
     }
 
-
-    void BinaryGenerator::generate_instructions() {
-        table->convert_labels();
+    void BinaryGenerator::write32op(uint32_t inst) {
+        file << byte2str(get_byte(inst, 3)) << std::endl;
+        file << byte2str(get_byte(inst, 2)) << std::endl;
+        file << byte2str(get_byte(inst, 1)) << std::endl;
+        file << byte2str(get_byte(inst, 0)) << std::endl;
     }
 
+    void BinaryGenerator::generate_instructions() {
+        int i;
+        int sz;
+        MultiInstruction mop;
+
+        table->convert_labels();
+        table->update_multi_instruction_sizes();
+
+        for (i = 0; i < table->get_multi_instructions_size(); ++i) {
+            mop = table->get_multi_instruction_at(i);
+            sz  = mop.size << 30;
+
+            switch (mop.size) {
+                case MULTI_OP1x16:
+                    break;
+
+                case MULTI_OP1x32:
+                    instruction1 = sz | op2bin(mop.inst1);
+                    write32op(instruction1);
+                    break;
+
+                case MULTI_OP2x16:
+                    break;
+
+                case MULTI_OP2x32:
+                    instruction1 = sz | op2bin(mop.inst1);
+                    instruction2 = op2bin(mop.inst2);
+                    write32op(instruction1);
+                    write32op(instruction2);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+/*
+    void multiop2bin(MultipleOperation& mop, MultipleOperation& next) {
+        uint32_t instruction1;
+        uint32_t instruction2;
+        uint16_t p[4];
+        uint32_t size;
+
+        if (next.size == MULTI_OP1x16) {
+            size = 0;
+        } else if (next.size == MULTI_OP1x32) {
+            size = 0x40000000;
+        } else if (next.size == MULTI_OP2x16) {
+            size = 0x80000000;
+        } else if (next.size == MULTI_OP2x32) {
+            size = 0xC0000000;
+        }
+
+        if (mop.size == MULTI_OP1x32) {
+            instruction1 = op2bin(mop.op1);
+            instruction1 |= size;
+
+            printop(mop.op1);
+            cout << instruction1 << endl;
+        }
+    }
+*/
     uint32_t BinaryGenerator::op2bin(Instruction& op) {
         uint32_t instruction = 0;
 

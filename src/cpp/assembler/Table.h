@@ -41,6 +41,7 @@ namespace HivekAssembler {
             void add_data(std::string& n, std::string& t, std::string& v);
             void add_multi_instruction();
             void convert_labels();
+            void update_multi_instruction_sizes();
 
             void add_instruction (
                 std::string& predicate, 

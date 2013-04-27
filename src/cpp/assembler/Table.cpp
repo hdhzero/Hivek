@@ -252,6 +252,16 @@ namespace HivekAssembler {
         }
     }
 
+    void Table::update_multi_instruction_sizes() {
+        int i;
+
+        for (i = 0; i < multi_instructions.size() - 1; ++i) {
+            multi_instructions[i].size = multi_instructions[i + 1].size;
+        }
+
+        multi_instructions[i].size = MULTI_OP1x16;
+    }
+
     Table::Table() {
         address = 0;
 
