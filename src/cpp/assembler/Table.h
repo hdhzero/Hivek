@@ -54,9 +54,9 @@ namespace HivekAssembler {
             );
 
             Data get_data_at(int i);
-//            Instruction get_instruction_at(int i);
+            MultiInstruction get_multi_instruction_at(int i);
             int data_size();
-            int instructions_size();
+            int get_multi_instructions_size();
     };
 }
 

@@ -166,21 +166,12 @@ namespace HivekAssembler {
         return data[i];
     }
 
-/*    Instruction Table::get_instruction_at(int i) {
-        Instruction op;
-        op.stop_bit = true;
-        op.size = 4;
-        op.type = TYPE_I;
+    MultiInstruction Table::get_multi_instruction_at(int i) {
+        return multi_instructions[i];
+    }
 
-        if (i < instructions_size()) {
-            return instructions[i];
-        } else {
-            return op;
-        }
-    }*/
-
-    int Table::instructions_size() {
-        return instructions.size();
+    int Table::get_multi_instructions_size() {
+        return multi_instructions.size();
     }
 
     int Table::data_size() {
@@ -256,10 +247,10 @@ namespace HivekAssembler {
         int i;
 
         for (i = 0; i < multi_instructions.size() - 1; ++i) {
-            multi_instructions[i].size = multi_instructions[i + 1].size;
+            multi_instructions[i].next_size = multi_instructions[i + 1].size;
         }
 
-        multi_instructions[i].size = MULTI_OP1x16;
+        multi_instructions[i].next_size = MULTI_OP1x16;
     }
 
     Table::Table() {

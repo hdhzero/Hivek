@@ -5,7 +5,7 @@
 
 namespace HivekAssembler {
     enum MultiOpSize {
-        MULTI_OP1x16, MULTI_OP1x32, MULTI_OP2x32, MULTI_OP2x16 
+        MULTI_OP1x16, MULTI_OP1x32, MULTI_OP2x16, MULTI_OP2x32 
     };
 
     enum DataType { 

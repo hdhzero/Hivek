@@ -7,6 +7,7 @@ namespace HivekAssembler {
     class MultiInstruction {
         public:
             int size;
+            int next_size;
             Instruction inst1;
             Instruction inst2;
     };

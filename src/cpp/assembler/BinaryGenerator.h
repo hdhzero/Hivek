@@ -12,6 +12,7 @@ namespace HivekAssembler {
         private:
             uint32_t op2bin(Instruction& op);
             uint8_t get_byte(uint32_t v, int pos);
+            void write32op(uint32_t inst);
 
             void generate_data();
             void generate_instructions();

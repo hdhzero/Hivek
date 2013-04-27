@@ -87,6 +87,8 @@ namespace HivekAssembler {
     void BinaryGenerator::generate_instructions() {
         int i;
         int sz;
+        uint32_t instruction1;
+        uint32_t instruction2;
         MultiInstruction mop;
 
         table->convert_labels();
@@ -94,13 +96,13 @@ namespace HivekAssembler {
 
         for (i = 0; i < table->get_multi_instructions_size(); ++i) {
             mop = table->get_multi_instruction_at(i);
-            sz  = mop.size << 30;
+            sz  = mop.next_size << 30;
 
             switch (mop.size) {
                 case MULTI_OP1x16:
                     break;
 
-                case MULTI_OP1x32:
+                case MULTI_OP1x32: std::cout << "aqui 1\n";
                     instruction1 = sz | op2bin(mop.inst1);
                     write32op(instruction1);
                     break;
@@ -108,7 +110,7 @@ namespace HivekAssembler {
                 case MULTI_OP2x16:
                     break;
 
-                case MULTI_OP2x32:
+                case MULTI_OP2x32: std::cout << "aqui 2\n";
                     instruction1 = sz | op2bin(mop.inst1);
                     instruction2 = op2bin(mop.inst2);
                     write32op(instruction1);
