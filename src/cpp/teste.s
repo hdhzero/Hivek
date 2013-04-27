@@ -8,19 +8,19 @@ draw_line:
     
 
 L1:
-          add r01, r02, r04
+          add $r1, $r2, $r4
 ;;
-          or  r07, r05, r03
+          or  $r7, $r5, $r3
 ;;
 L8:
-   (!p01) sub r01, r05, r05
+   (!p1) sub $r1, $r5, $r5
 ;;
-          lw r01, r00, msg
-          andp p01, r12, r07
+          lw $r1, $r0, msg
+          andp p1, $r12, $r7
 ;;
-   (p01)  jalc L8
+   (p1)  jalc $L8
 ;;
-          jr r07
+          jr $r7
 ;;
 L9:
 L10:

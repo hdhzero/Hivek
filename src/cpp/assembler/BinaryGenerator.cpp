@@ -14,6 +14,7 @@ namespace HivekAssembler {
     }
 
     void BinaryGenerator::generate_binary() {
+        generate_instructions();
         generate_data();
     }
 
@@ -74,5 +75,54 @@ namespace HivekAssembler {
                 file << byte2str(get_byte(0, 0)) << std::endl;
             }
         }
+    }
+
+
+    void BinaryGenerator::generate_instructions() {
+        table->convert_labels();
+    }
+
+    uint32_t BinaryGenerator::op2bin(Instruction& op) {
+        uint32_t instruction = 0;
+
+        uint32_t rd32 = op.destination << 13;
+        uint32_t rs32 = op.operand1 << 3;
+        uint32_t rt32 = op.operand2 << 8;
+        uint32_t cond32 = (op.predicate_value << 2) | op.predicate_register;
+        uint32_t immd12 = (op.operand2 << 20) >> 20;
+        uint32_t opcode = 0;
+
+        switch (op.operation) {
+            case ADD:
+                opcode = 0x30000000; break;
+            case SUB:
+                opcode = 0x30040000; break;
+            case ADC:
+                opcode = 0x30080000; break;
+            case SBC:
+                opcode = 0x300C0000; break;
+            case ADDS:
+                opcode = 0x30100000; break;
+            case ADCS:
+                opcode = 0x30140000; break;
+            case SUBS:
+                opcode = 0x30180000; break;
+            case SBCS:
+                opcode = 0x301C0000; break;
+            default:
+                opcode = 0;
+                break;
+        }
+
+        switch (op.type) {
+            case TYPE_I:
+                instruction |= opcode | rd32 | rt32 | rs32 | cond32;
+                break;
+
+            default:
+                break;
+        }
+
+        return instruction;
     }
 }

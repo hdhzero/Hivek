@@ -10,8 +10,11 @@ namespace HivekAssembler {
             std::ofstream file;
 
         private:
+            uint32_t op2bin(Instruction& op);
             uint8_t get_byte(uint32_t v, int pos);
+
             void generate_data();
+            void generate_instructions();
 
         public:
             void set_table(Table* table);

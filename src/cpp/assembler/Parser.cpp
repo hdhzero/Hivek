@@ -61,9 +61,8 @@ namespace HivekAssembler {
             } else if (str[0] == '.') {
                 parse_data();
             } else if (str[0] == ';') {
-                /* add code to add multiop */
+                table->add_multi_instruction();
             } else {
-                std::cout << "calling parse_instruction with: " << str << ' ' << empty_line() << std::endl;
                 parse_instruction();
             }
         }

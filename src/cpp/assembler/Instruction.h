@@ -6,6 +6,7 @@
 namespace HivekAssembler {
     class Instruction {
         public:
+            bool stop_bit; // used only in assembler
             int address; // addres where it appears
             int size;    // 16 bits or 32 bits
             int operation; 
@@ -15,8 +16,17 @@ namespace HivekAssembler {
             int destination; // rs or rd
             int operand1; // rs
             int operand2; // rt or immd
-            int operand3; // for shamt ammount
+            int shamt; // for shamt ammount
+            int shift_type;
             std::string label;
+
+        public:
+            void print() {
+                std::cout << "(" << predicate_value << "," 
+                    << predicate_register << ") "
+                    << operation << ' ' << destination << ", "
+                    << operand1 << ", " << operand2 << std::endl;
+            }
     };
 }
 
