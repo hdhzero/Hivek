@@ -14,8 +14,8 @@ sz   op     immd12       rt    rs   cond
 
 0 addi  rd, rs, immd
 1 adci  rd, rs, immd
-2 addis rd, rs, immd
-3 adcis rd, rs, immd
+2 
+3 
 4 andi  rd, rs, immd
 5 ori   rd, rs, immd
 
@@ -34,26 +34,30 @@ E sw  rd, rs, immd
 -------------
 -- Type II --
 -------------
-sz   op    immd26
-00 100l ii iiii iiii iiii iiii iiii iiii
-2 + 4 + 26 = 32
+sz   op    immd27
+00 10l i ii iiii iiii iiii iiii iiii iiii
+2 + 3 + 1 + 26 = 32
 - j
 - jal
 
 Type III
 sz  op        immd22                 cond
-00 101lp  iii iiii iiii iiii ii  iiiii ccc
-2 + 5 + 22 + 3 = 32
+00 110lp  iii iiii iiii iiii ii  iiiii ccc
+2 + 3 + 1 + 1 + 22 + 3 = 32
 
 j cond
+j
+jal
 
 -------------
 -- Type IV --
 -------------
 sz op    opcode      rd     rs    rt   cond
-00 110 000 0000 0 0 ddddd ttttt sssss ccc
+00 11100 000 0000 ddddd ttttt sssss ccc
 2 + 3 + 9 + 5 + 5 + 5 + 3 = 32
 
+Type V
+00 111 uu uuu uuuu u uuuu uuuuu uuuuu uuuuu
 
 opcodes:
 # alu (5 bits)
@@ -114,8 +118,6 @@ opcodes:
 42 gsr rd   # get status registers: flags, carry, protection etc
 43 ssr rd   # set status registers
 
-Type V
-00 111 uuu uuuu u uuuu uuuuu uuuuu uuuuu
 
 
 - syscall

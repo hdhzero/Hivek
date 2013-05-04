@@ -102,7 +102,7 @@ namespace HivekAssembler {
                 case MULTI_OP1x16:
                     break;
 
-                case MULTI_OP1x32: std::cout << "aqui 1\n";
+                case MULTI_OP1x32: 
                     instruction1 = sz | op2bin(mop.inst1);
                     write32op(instruction1);
                     break;
@@ -110,7 +110,7 @@ namespace HivekAssembler {
                 case MULTI_OP2x16:
                     break;
 
-                case MULTI_OP2x32: std::cout << "aqui 2\n";
+                case MULTI_OP2x32: 
                     instruction1 = sz | op2bin(mop.inst1);
                     instruction2 = op2bin(mop.inst2);
                     write32op(instruction1);
@@ -123,40 +123,14 @@ namespace HivekAssembler {
         }
     }
 
-/*
-    void multiop2bin(MultipleOperation& mop, MultipleOperation& next) {
-        uint32_t instruction1;
-        uint32_t instruction2;
-        uint16_t p[4];
-        uint32_t size;
-
-        if (next.size == MULTI_OP1x16) {
-            size = 0;
-        } else if (next.size == MULTI_OP1x32) {
-            size = 0x40000000;
-        } else if (next.size == MULTI_OP2x16) {
-            size = 0x80000000;
-        } else if (next.size == MULTI_OP2x32) {
-            size = 0xC0000000;
-        }
-
-        if (mop.size == MULTI_OP1x32) {
-            instruction1 = op2bin(mop.op1);
-            instruction1 |= size;
-
-            printop(mop.op1);
-            cout << instruction1 << endl;
-        }
-    }
-*/
     uint32_t BinaryGenerator::op2bin(Instruction& op) {
         uint32_t instruction = 0;
 
-        uint32_t rd32 = op.destination << 13;
-        uint32_t rs32 = op.operand1 << 3;
-        uint32_t rt32 = op.operand2 << 8;
+        uint32_t rd32;
+        uint32_t rs32;
+        uint32_t rt32;
         uint32_t cond32 = (op.predicate_value << 2) | op.predicate_register;
-        uint32_t immd12 = (op.operand2 << 20) >> 20;
+        uint32_t immd12;
         uint32_t opcode = 0;
 
         switch (op.operation) {
@@ -176,6 +150,19 @@ namespace HivekAssembler {
                 opcode = 0x30180000; break;
             case SBCS:
                 opcode = 0x301C0000; break;
+
+            // immediate
+            case ADDI:
+                opcode = 0; break;
+            case ADCI:
+                opcode = 0x02000000; break;
+            case ANDI:
+                opcode = 0x06000000; break;
+            case ORI:
+                opcode = 0x08000000; break;
+            case CMPEQI:
+                opcode = 0x0A000000; break;
+
             default:
                 opcode = 0;
                 break;
@@ -183,7 +170,17 @@ namespace HivekAssembler {
 
         switch (op.type) {
             case TYPE_I:
+                rd32 = op.destination << 13;
+                rs32 = op.operand1 << 3;
+                rt32 = op.operand2 << 8;
                 instruction |= opcode | rd32 | rt32 | rs32 | cond32;
+                break;
+
+            case TYPE_II:
+                rs32   = op.destination << 3;
+                rt32   = op.operand1 << 8;
+                immd12 = (op.operand2 << 13) & 0x01FFE000; 
+                instruction |= opcode | immd12 | rt32 | rs32 | cond32;
                 break;
 
             default:

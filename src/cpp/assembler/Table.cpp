@@ -233,14 +233,20 @@ namespace HivekAssembler {
     }
 
     void Table::convert_label_data(Instruction& op) {
+        std::stringstream stream;
         int i;
+
 
         for (i = 0; i < data.size(); ++i) {
             if (data[i].name.compare(op.label) == 0) {
                 op.operand2 = data[i].address;
-                break;
+                return;
             }
         }
+
+        // if we reach here, it is a number
+        stream << op.label;
+        stream >> op.operand2;        
     }
 
     void Table::update_multi_instruction_sizes() {

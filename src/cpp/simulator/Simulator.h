@@ -7,9 +7,9 @@ namespace HivekSimulator {
     class Simulator {
         private:
             int pc;
+            int new_pc;
             int regs[32];
             bool status[32];
-            bool jump;
             bool j_taken;
             int sz;
             int new_sz;
@@ -20,17 +20,19 @@ namespace HivekSimulator {
 
         private:
             uint8_t str2byte(std::string& str);
-/*            uint32_t expand(uint32_t n);
+            uint32_t expand(uint32_t n);
 
             void fetch_instructions();
             void decode_instructions();
-            void execute_instructions();
-
+ /*                       void execute_instructions();
+*/
         public:
-            Simulator();*/
+            Simulator();
 
         public:
             void open(char* filename);
+            void print_registers();
+            void run();
     };
 }
 
