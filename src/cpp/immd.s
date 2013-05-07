@@ -1,12 +1,15 @@
 start:
-         addi $r1, $r5, 47
-         adci $r7, $r7, 77
+         addi $r1, $r1, 1
+         adci $r2, $r2, 2
 ;;
-         andi $r0, $r8, 72
+         cmpeqi $p1, $r1, 1
 ;;
-    (p1) ori $r0, $r0, -2
-         lw  $r1, $r4, 16
+    (p1) addi $r2, $r2, 7
+   (!p1) addi $r2, $r2, 77
 ;;
+         addi $r30, $r0, 1
+;;
+
 
 .pos_x  dw  0
 .pos_y  dw  0

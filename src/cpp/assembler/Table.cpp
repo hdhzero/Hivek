@@ -239,7 +239,7 @@ namespace HivekAssembler {
 
         for (i = 0; i < data.size(); ++i) {
             if (data[i].name.compare(op.label) == 0) {
-                op.operand2 = data[i].address;
+                op.operand2 = data[i].address - data[0].address;
                 return;
             }
         }
@@ -318,10 +318,10 @@ namespace HivekAssembler {
         reg_assoc("$r30", "$R30", "$fp", 30);
         reg_assoc("$r31", "$R31", "$ra", 31);
 
-        str2register["p0"] = 0;
-        str2register["p1"] = 1;
-        str2register["p2"] = 2;
-        str2register["p3"] = 3;
+        str2register["$p0"] = 0;
+        str2register["$p1"] = 1;
+        str2register["$p2"] = 2;
+        str2register["$p3"] = 3;
 
         instruction_size[TYPE_I]   = 4;
         instruction_size[TYPE_Ib]  = 4;

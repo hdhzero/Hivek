@@ -24,19 +24,19 @@ namespace HivekSimulator {
         AND = 2,
 
         // immediates
-        ADDI   = 0,
-        ADCI   = 1,
-        ANDI   = 2,
-        ORI    = 3,
-        CMPEQI = 4,
-        CMPLTI = 5,
-        CMPGTI = 6,
-        CMPLTUI = 7,
-        CMPGTUI = 8,
-        LW = 9,
-        LB = 10,
-        SW = 11,
-        SB = 12,
+        ADDI   = 1000,
+        ADCI   = 1001,
+        ANDI   = 1002,
+        ORI    = 1003,
+        CMPEQI = 1004,
+        CMPLTI = 1005,
+        CMPGTI = 1006,
+        CMPLTUI = 1007,
+        CMPGTUI = 1008,
+        LW = 1009,
+        LB = 1010,
+        SW = 1011,
+        SB = 1012,
         JC
     };
 

@@ -18,25 +18,41 @@ namespace HivekSimulator {
 
         file.open(filename);
 
+        file >> str;
+
+        if (str.compare(".text") == 0) {
+            while (file.good()) {
+                file >> str;
+
+                if (str.compare(".data") == 0) {
+                    break;
+                }
+
+                v = str2byte(str);
+                instruction_memory.push_back(v);
+            }
+        }
+
         while (file.good()) {
             file >> str;
             v = str2byte(str);
-            instruction_memory.push_back(v);
+            data_memory.push_back(v);
         }
 
         file.close();
-
-        for (int i = 0; i < instruction_memory.size(); ++i) {
-            std::cout << (unsigned int) instruction_memory[i] << std::endl;
-        }
     }
 
     void Simulator::print_registers() {
         std::cout << "pc: " << pc << std::endl;
 
         for (int i = 0; i < 32; ++i) {
-            std::cout << "regs[" << i << "]: " << i << std::endl;
+            std::cout << "regs[" << i << "]: " << regs[i] << std::endl;
         }
+
+        std::cout << "pr_reg[0]: " << pr_regs[0] << std::endl;
+        std::cout << "pr_reg[1]: " << pr_regs[1] << std::endl;
+        std::cout << "pr_reg[2]: " << pr_regs[2] << std::endl;
+        std::cout << "pr_reg[3]: " << pr_regs[3] << std::endl;
     }
 
     void Simulator::fetch_instructions() {
@@ -47,31 +63,32 @@ namespace HivekSimulator {
 
         instruction2  = instruction_memory[pc + 4] << 24;
         instruction2 |= instruction_memory[pc + 5] << 16;
-        instruction2 |=instruction_memory[pc + 6] << 8;
+        instruction2 |= instruction_memory[pc + 6] << 8;
         instruction2 |= instruction_memory[pc + 7];
     }
 
     void Simulator::update_status() {
+        pc = new_pc;
+
         if (j_taken) {
             new_pc += pc + 8;
             j_taken = false;
         } else {
+            sz = new_sz;
+            sz = (instruction1 & 0xC0000000) >> 30;
+
             switch ((instruction1 & 0xC0000000) >> 30) {
                 case 0:
-                    new_pc += 2; break;
+                    new_pc = pc + 2; break;
                 case 1:
                 case 2:
-                    new_pc += 4; break;
+                    new_pc = pc + 4; break;
                 case 3:
-                    new_pc += 8; break;
+                    new_pc = pc + 8; break;
                 default:
                     break;
             }
         }
-
-        sz = new_sz;
-        new_sz = (instruction1 & 0xC0000000) >> 30;
-
     }
 
     void Simulator::decode_instructions() {
@@ -111,44 +128,44 @@ namespace HivekSimulator {
     }
 
     void Simulator::execute_instructions() {
-        execute(instruction1);
-        execute(instruction2);
+        execute(instruction1, 0);
+        execute(instruction2, 1);
     }
 
-    void Simulator::execute(uint32_t n) {
-        int p_reg   = n & 0x03;
+    void Simulator::execute(uint32_t n, int u) {
+        int operation;
+        int p_reg = n & 0x03;
         int p_value = (n & 0x04) >> 2;
-        int rs      = (n & 0x0F8) >> 3;
-        int rt      = (n & 0x01F00) >> 8;
-        int rd      = (n & 0x03E000) >> 13;
-        int immd12  = (n & 0x01FFE000) >> 13;
-        int immd22  = (n & 0x01FFFFFF) >> 3;
-        int immd27  = (n & 0x07FFFFFF);
+        int rs = (n & 0x0F8) >> 3;
+        int rt = (n & 0x01F00) >> 8;
+        int rd = (n & 0x03E000) >> 13;
+        int immd12 = (n & 0x01FFE000) >> 13;
+        int immd22;
+        int immd27;
+        bool exec = pr_regs[p_reg] == p_value;
 
-        bool exec = pr_regs[preg] == pv;
-
-        if (0x20000000 & n == 0) {
+        if ((0x20000000 & n) == 0) { 
             operation = (n & 0x1E000000) >> 25;
-            exec = 
-        } else if (j_uncond) {
-            exec = true;
+            operation += 1000;
+        } 
+
+        if (!exec) {
+            return;
         }
 
-
-        if (exec) 
         switch (operation) {
             case ADD:
                 regs[rd] = regs[rs] + regs[rt];
                 break;
             case ADC:
                 regs[rd] = regs[rs] + regs[rt];
-                carry[bank] = regs[rd] < regs[rs];
+                carry[u] = regs[rd] < regs[rs];
                 break;
             case AND:
                 regs[rd] = regs[rs] & regs[rt];
                 break;
             case JC:
-                pc = pc + immd;
+                //pc = pc + immd;
                 break;
 
         /* immediates */
@@ -169,28 +186,28 @@ namespace HivekSimulator {
                 break;
 
             case CMPEQI:
-                predicate_regs[rs] = cmpeq(regs[rt], sign_ext(immd12, 12));
-                predicate_regs[rs] = predicate_regs[rs] || rs == 0;
+                pr_regs[rs] = cmpeq(regs[rt], sign_ext(immd12, 12));
+                pr_regs[rs] = pr_regs[rs] || rs == 0;
                 break;
 
             case CMPLTI:
-                predicate_regs[rs] = cmplt(regs[rt], sign_ext(immd12, 12));
-                predicate_regs[rs] = predicate_regs[rs] || rs == 0;
+                pr_regs[rs] = cmplt(regs[rt], sign_ext(immd12, 12));
+                pr_regs[rs] = pr_regs[rs] || rs == 0;
                 break;
 
             case CMPGTI:
-                predicate_regs[rs] = cmpgt(regs[rt], sign_ext(immd12, 12));
-                predicate_regs[rs] = predicate_regs[rs] || rs == 0;
+                pr_regs[rs] = cmpgt(regs[rt], sign_ext(immd12, 12));
+                pr_regs[rs] = pr_regs[rs] || rs == 0;
                 break;
 
             case CMPLTUI:
-                predicate_regs[rs] = cmpltu(regs[rt], sign_ext(immd12, 12));
-                predicate_regs[rs] = predicate_regs[rs] || rs == 0;
+                pr_regs[rs] = cmpltu(regs[rt], sign_ext(immd12, 12));
+                pr_regs[rs] = pr_regs[rs] || rs == 0;
                 break;
 
             case CMPGTUI:
-                predicate_regs[rs] = cmpgtu(regs[rt], sign_ext(immd12, 12));
-                predicate_regs[rs] = predicate_regs[rs] || rs == 0;
+                pr_regs[rs] = cmpgtu(regs[rt], sign_ext(immd12, 12));
+                pr_regs[rs] = pr_regs[rs] || rs == 0;
                 break;
 
             case LW:
@@ -212,6 +229,14 @@ namespace HivekSimulator {
             default:
                 break;
         }
+    }
+
+    uint32_t Simulator::sign_ext(uint32_t v, int pos) {
+        if ((1 << (pos - 1)) & v) {
+            return ((0xFFFFFFFF >> pos) << pos) | v;
+        } 
+
+        return v;
     }
 
     bool Simulator::cmpeq(uint32_t a, uint32_t b) {
@@ -243,24 +268,34 @@ namespace HivekSimulator {
     }
 
     void Simulator::run() {
-        fetch_instructions();
-        decode_instructions();
-        execute_instructions();
-        update_status();
+        while (regs[30] == 0) {
+            fetch_instructions(); 
+            decode_instructions();
+            execute_instructions();
+            update_status();
+        }
     }
 
-    Simulator::Simulator() {
+    void Simulator::reset() {
         pc = 0;
-        new_pc = 0;
+        new_pc = 8;
         sz = 3;
         new_sz = 3;
+        j_taken = false;
 
         for (int i = 0; i < 32; ++i) {
             regs[i] = 0;
         }
 
-        regs[1] = 2;
-        regs[2] = 5;
+        pr_regs[0] = true;
+        pr_regs[1] = false;
+        pr_regs[2] = false;
+        pr_regs[3] = false;
+
+    }
+
+    Simulator::Simulator() {
+        reset();
     }
 }
 

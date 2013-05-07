@@ -14,7 +14,9 @@ namespace HivekAssembler {
     }
 
     void BinaryGenerator::generate_binary() {
+        file << ".text\n";
         generate_instructions();
+        file << ".data\n";
         generate_data();
     }
 
@@ -157,11 +159,11 @@ namespace HivekAssembler {
             case ADCI:
                 opcode = 0x02000000; break;
             case ANDI:
-                opcode = 0x06000000; break;
+                opcode = 0x04000000; break;
             case ORI:
-                opcode = 0x08000000; break;
+                opcode = 0x06000000; break;
             case CMPEQI:
-                opcode = 0x0A000000; break;
+                opcode = 0x08000000; break;
 
             default:
                 opcode = 0;
