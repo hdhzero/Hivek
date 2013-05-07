@@ -3,109 +3,108 @@ save memory by using a variable instruction length.
 
 There are 32 registers, 32 bits each
 
-There are 5 instruction types:
+These are the instruction types:
 
-------------
--- Type I --
-------------
+-------------
+-- Type I  --
+-------------
+sz op    opcode   rd    rs    rt   cond
+00 11100 0000000 ddddd ttttt sssss ccc
+2 + 5 + 7 + 5 + 5 + 5 + 3 = 32
+
+- arith
+add  rd, rs, rt
+sub  rd, rs, rt
+adc  rd, rs, rt
+sbc  rd, rs, rt
+shadd rd, rs, rt SHT immd
+
+- logical
+and rd, rs, rt
+or  rd, rs, rt
+nor rd, rs, rt
+xor rd, rs, rt
+
+- shift
+sllv rd, rs, rt
+srlv rd, rs, rt
+srav rd, rs, rt
+slli rd, rs, immd5 # shadd rd, r0, rs SLL immd5
+
+- memory 
+lwr rd, rs, rt
+swr rd, rs, rt
+lbr rd, rs, rt
+sbr rd, rs, rt
+
+- comparison 
+cmpeq  pd, rs, rt
+cmplt  pd, rs, rt
+cmpgt  pd, rs, rt
+cmpltu pd, rs, rt
+cmpgtu pd, rs, rt
+
+- logical predicate
+andp pd, ps, pt
+orp  pd, ps, pt
+xorp pd, ps, pt
+norp pd, ps, pt
+
+- branch
+jr rd
+jalr rd
+
+-------------
+-- Type II --
+-------------
 sz   op     immd12       rt    rs   cond
 00 0tttt iiii iiii iiii sssss ttttt ccc
 2 + 5 + 12 + 5 + 5 + 3 = 32
 
 0 addi  rd, rs, immd
 1 adci  rd, rs, immd
-2 
-3 
-4 andi  rd, rs, immd
-5 ori   rd, rs, immd
+2 andi  rd, rs, immd
+3 ori   rd, rs, immd
 
-6 cmpeqi  pd, rs, immd
-7 cmplti  pd, rs, immd
-8 cmpgti  pd, rs, immd
-9 cmpltui pd, rs, immd
-A cmpgtui pd, rs, immd
+4 cmpeqi  pd, rs, immd
+5 cmplti  pd, rs, immd
+6 cmpgti  pd, rs, immd
+7 cmpltui pd, rs, immd
+8 cmpgtui pd, rs, immd
 
-    - memory (8)
-B lw  rd, rs, immd
-C sw  rd, rs, immd
-D lb  rd, rs, immd
-E sw  rd, rs, immd
+    - memory 
+9 lw  rd, rs, immd
+A sw  rd, rs, immd
+B lb  rd, rs, immd
+C sb  rd, rs, immd
+D
+E
 
--------------
--- Type II --
--------------
+--------------
+-- Type III --
+--------------
 sz   op    immd27
-00 10l i ii iiii iiii iiii iiii iiii iiii
-2 + 3 + 1 + 26 = 32
+00 10 l iiii iiii iiii iiii iiii iiii iii
+2 + 2 + 1 + 27 = 32
 - j
 - jal
-
-Type III
-sz  op        immd22                 cond
-00 110lp  iii iiii iiii iiii ii  iiiii ccc
-2 + 3 + 1 + 1 + 22 + 3 = 32
-
-j cond
-j
-jal
 
 -------------
 -- Type IV --
 -------------
-sz op    opcode      rd     rs    rt   cond
-00 11100 000 0000 ddddd ttttt sssss ccc
-2 + 3 + 9 + 5 + 5 + 5 + 3 = 32
+sz  op              immd22              cond
+00 110 l p  iiii iiii iiii iiii iiii ii ccc
+2 + 3 + 1 + 1 + 22 + 3 = 32
 
-Type V
-00 111 uu uuu uuuu u uuuu uuuuu uuuuu uuuuu
+j cond
 
-opcodes:
-# alu (5 bits)
-1 add  rd, rs, rt
-2 sub  rd, rs, rt
-3 adc  rd, rs, rt
-4 sbc  rd, rs, rt
-5 adds rd, rs, rt
-6 adcs rd, rs, rt
-7 subs rd, rs, rt
-8 sbcs rd, rs, rt
+------------
+-- Type V --
+------------
+00 11101 uuu uuuu u uuuu uuuuu uuuuu uuuuu
+00 11110 uuu uuuu u uuuu uuuuu uuuuu uuuuu
+00 11111 uuu uuuu u uuuu uuuuu uuuuu uuuuu
 
-9  and rd, rs, rt
-10 or  rd, rs, rt
-11 nor rd, rs, rt
-12 xor rd, rs, rt
-13 sll rd, rs, rt 
-14 srl rd, rs, rt
-15 sra rd, rs, rt
-
-# memory (2 bits)
-16 lw rd, rs, rt
-17 sw rd, rs, rt
-18 lb rd, rs, rt
-19 sb rd, rs, rt
-
-
-# comparison (3 bits)
-20 cmpeq  pd, rs, rt
-21 cmplt  pd, rs, rt
-22 cmpgt  pd, rs, rt
-23 cmpltu pd, rs, rt
-24 cmpgtu pd, rs, rt
-
-# logical (2 bits)
-25 andp pd, ps, pt
-26 orp  pd, ps, pt
-27 xorp pd, ps, pt
-28 norp pd, ps, pt
-
-# branch (1 bit)
-29 jr rd
-30 jalr rd
-
-0tssiiiii
-    - t: 0 - add, 1 - sub
-    - ss: >>, << etc
-    - iiiii: value to shift by
 
 # shift (2 + 5 bits)
 17 shadd1 rd, rs, rt

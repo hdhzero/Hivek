@@ -128,12 +128,14 @@ namespace HivekAssembler {
     uint32_t BinaryGenerator::op2bin(Instruction& op) {
         uint32_t instruction = 0;
 
-        uint32_t rd32;
-        uint32_t rs32;
-        uint32_t rt32;
-        uint32_t cond32 = (op.predicate_value << 2) | op.predicate_register;
+        uint32_t rd;
+        uint32_t rs;
+        uint32_t rt;
+        uint32_t cond;
         uint32_t immd12;
         uint32_t opcode = 0;
+
+        cond = (op.predicate_value << 2) | op.predicate_register;
 
         switch (op.operation) {
             case ADD:
@@ -164,6 +166,22 @@ namespace HivekAssembler {
                 opcode = 0x06000000; break;
             case CMPEQI:
                 opcode = 0x08000000; break;
+            case CMPLTI:
+                opcode = 0x0A000000; break;
+            case CMPGTI:
+                opcode = 0x0C000000; break;
+            case CMPLTUI:
+                opcode = 0x0E000000; break;
+            case CMPGTUI:
+                opcode = 0x10000000; break;
+            case LW:
+                opcode = 0x12000000; break;
+            case SW:
+                opcode = 0x14000000; break;
+            case LB:
+                opcode = 0x16000000; break;
+            case SB:
+                opcode = 0x18000000; break;
 
             default:
                 opcode = 0;
@@ -172,17 +190,17 @@ namespace HivekAssembler {
 
         switch (op.type) {
             case TYPE_I:
-                rd32 = op.destination << 13;
-                rs32 = op.operand1 << 3;
-                rt32 = op.operand2 << 8;
-                instruction |= opcode | rd32 | rt32 | rs32 | cond32;
+                rd = op.destination << 13;
+                rs = op.operand1 << 3;
+                rt = op.operand2 << 8;
+                instruction |= opcode | rd | rt | rs | cond;
                 break;
 
             case TYPE_II:
-                rs32   = op.destination << 3;
-                rt32   = op.operand1 << 8;
+                rs     = op.destination << 3;
+                rt     = op.operand1 << 8;
                 immd12 = (op.operand2 << 13) & 0x01FFE000; 
-                instruction |= opcode | immd12 | rt32 | rs32 | cond32;
+                instruction |= opcode | immd12 | rt | rs | cond;
                 break;
 
             default:
