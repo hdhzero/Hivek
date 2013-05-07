@@ -132,7 +132,7 @@ namespace HivekAssembler {
         uint32_t rs;
         uint32_t rt;
         uint32_t cond;
-        uint32_t immd12;
+        uint32_t immd;
         uint32_t opcode = 0;
 
         cond = (op.predicate_value << 2) | op.predicate_register;
@@ -176,12 +176,28 @@ namespace HivekAssembler {
                 opcode = 0x10000000; break;
             case LW:
                 opcode = 0x12000000; break;
-            case SW:
-                opcode = 0x14000000; break;
             case LB:
+                opcode = 0x14000000; break;
+            case SW:
                 opcode = 0x16000000; break;
             case SB:
                 opcode = 0x18000000; break;
+
+            // conditional jumps
+            case JC:
+                opcode = 0x32000000; break;
+            case JCN:
+                opcode = 0x30000000; break;
+            case JALC:
+                opcode = 0x36000000; break;
+            case JALCN:
+                opcode = 0x34000000; break;
+
+            // unconditional jumps:
+            case J:
+                opcode = 0x20000000; break;
+            case JAL:
+                opcode = 0x28000000; break;
 
             default:
                 opcode = 0;
@@ -197,10 +213,20 @@ namespace HivekAssembler {
                 break;
 
             case TYPE_II:
-                rs     = op.destination << 3;
-                rt     = op.operand1 << 8;
-                immd12 = (op.operand2 << 13) & 0x01FFE000; 
-                instruction |= opcode | immd12 | rt | rs | cond;
+                rs   = op.destination << 3;
+                rt   = op.operand1 << 8;
+                immd = (op.operand2 << 13) & 0x01FFE000; 
+                instruction |= opcode | immd | rt | rs | cond;
+                break;
+
+            case TYPE_III:
+                immd = (op.destination << 3) & 0x01FFFFF8;
+                instruction |= opcode | immd | cond;
+                break;
+
+            case TYPE_IV:
+                immd = op.destination & 0x07FFFFFF;
+                instruction |= opcode | immd;
                 break;
 
             default:
@@ -210,3 +236,4 @@ namespace HivekAssembler {
         return instruction;
     }
 }
+

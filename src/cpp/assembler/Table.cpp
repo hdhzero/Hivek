@@ -185,13 +185,17 @@ namespace HivekAssembler {
             switch (multi_instructions[i].size) {
                 case MULTI_OP1x16:
                 case MULTI_OP1x32:
-                    convert_label(multi_instructions[i].inst1);
+                    convert_label(multi_instructions[i].inst1, 0);
                     break;
 
                 case MULTI_OP2x16:
+                    convert_label(multi_instructions[i].inst1, 2);
+                    convert_label(multi_instructions[i].inst2, 0);
+                    break;
+
                 case MULTI_OP2x32: 
-                    convert_label(multi_instructions[i].inst1);
-                    convert_label(multi_instructions[i].inst2);
+                    convert_label(multi_instructions[i].inst1, 4);
+                    convert_label(multi_instructions[i].inst2, 0);
                     break;
 
                 default:
@@ -200,11 +204,11 @@ namespace HivekAssembler {
         }
     }
 
-    void Table::convert_label(Instruction& op) {
+    void Table::convert_label(Instruction& op, int i) {
         switch (op.type) {
             case TYPE_III:
             case TYPE_IV:
-                convert_label_branch(op);
+                convert_label_branch(op, i);
                 break;
 
             case TYPE_II:
@@ -216,16 +220,16 @@ namespace HivekAssembler {
         }
     }
 
-    // current_address  = op.address + op.size
+    // current_address  = op.address + op.size + i
     // branch_target = label.address
     // difference = branch_target - current_address
     // immd = difference / 2
-    void Table::convert_label_branch(Instruction& op) {
+    void Table::convert_label_branch(Instruction& op, int i) {
         int current_address;
         int branch_target;
         int difference;
 
-        current_address = op.address + op.size;
+        current_address = op.address + op.size + i;
         branch_target   = branch_labels[op.label];
         difference      = branch_target - current_address;
 
@@ -393,7 +397,9 @@ namespace HivekAssembler {
 
         // type iii
         assoc("jc", JC, TYPE_III);
+        assoc("jcn", JCN, TYPE_III);
         assoc("jalc", JALC, TYPE_III);
+        assoc("jalcn", JALCN, TYPE_III);
 
         // type iv
         assoc("j", J, TYPE_IV);

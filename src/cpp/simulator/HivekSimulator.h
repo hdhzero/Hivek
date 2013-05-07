@@ -37,7 +37,16 @@ namespace HivekSimulator {
         LB = 1010,
         SW = 1011,
         SB = 1012,
-        JC
+
+        // conditional jumps
+        JCN   = 2000,
+        JC    = 2001,
+        JALC  = 2003,
+        JALCN = 2002,
+
+        // unconditional jumps
+        J   = 3000,
+        JAL = 3001
     };
 
     #define NOP 0

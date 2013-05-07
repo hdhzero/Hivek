@@ -80,23 +80,24 @@ C sb  rd, rs, immd
 D
 E
 
+
 --------------
 -- Type III --
 --------------
-sz   op    immd27
-00 10 l iiii iiii iiii iiii iiii iiii iii
-2 + 2 + 1 + 27 = 32
-- j
-- jal
-
--------------
--- Type IV --
--------------
 sz  op              immd22              cond
 00 110 l p  iiii iiii iiii iiii iiii ii ccc
 2 + 3 + 1 + 1 + 22 + 3 = 32
 
 j cond
+
+-------------
+-- Type IV --
+-------------
+sz   op    immd27
+00 10 l iiii iiii iiii iiii iiii iiii iii
+2 + 2 + 1 + 27 = 32
+- j
+- jal
 
 ------------
 -- Type V --

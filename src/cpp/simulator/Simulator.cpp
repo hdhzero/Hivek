@@ -65,30 +65,24 @@ namespace HivekSimulator {
         instruction2 |= instruction_memory[pc + 5] << 16;
         instruction2 |= instruction_memory[pc + 6] << 8;
         instruction2 |= instruction_memory[pc + 7];
+
+        sz     = new_sz;
+        new_sz = (instruction1 & 0xC0000000) >> 30;
+
+        switch (sz) {
+            case 0: std::cout << instruction1 << " aqui\n";
+                pc += 2; break;
+            case 1:
+            case 2:
+                pc += 4; break;
+            case 3:
+                pc += 8; break;
+            default:
+                break;
+        }
     }
 
     void Simulator::update_status() {
-        pc = new_pc;
-
-        if (j_taken) {
-            new_pc += pc + 8;
-            j_taken = false;
-        } else {
-            sz = new_sz;
-            sz = (instruction1 & 0xC0000000) >> 30;
-
-            switch ((instruction1 & 0xC0000000) >> 30) {
-                case 0:
-                    new_pc = pc + 2; break;
-                case 1:
-                case 2:
-                    new_pc = pc + 4; break;
-                case 3:
-                    new_pc = pc + 8; break;
-                default:
-                    break;
-            }
-        }
     }
 
     void Simulator::decode_instructions() {
@@ -140,15 +134,21 @@ namespace HivekSimulator {
         int rt = (n & 0x01F00) >> 8;
         int rd = (n & 0x03E000) >> 13;
         int immd12 = (n & 0x01FFE000) >> 13;
-        int immd22;
-        int immd27;
+        int immd22 = (n & 0x01FFFFF8) >> 3;
+        int immd27 = n & 0x07FFFFFF;
         bool exec = pr_regs[p_reg] == p_value;
 
+        // immediates - type II
         if ((0x20000000 & n) == 0) { 
             operation = (n & 0x1E000000) >> 25;
             operation += 1000;
-        } 
+        } else if ((0x38000000 & n) == 0x30000000) {
+            operation = (n & 0x06000000) >> 25;
+            operation += 2000;
+            std::cout << "op: " << operation << '\n';
+        }
 
+            std::cout << "np: " << n << ' ' << pc << '\n';
         if (!exec) {
             return;
         }
@@ -163,9 +163,6 @@ namespace HivekSimulator {
                 break;
             case AND:
                 regs[rd] = regs[rs] & regs[rt];
-                break;
-            case JC:
-                //pc = pc + immd;
                 break;
 
         /* immediates */
@@ -218,14 +215,39 @@ namespace HivekSimulator {
                 regs[rs] = read_dmem(regs[rt] + sign_ext(immd12, 12), 8);
                 break;
 
-            case SW:
+            case SW: std::cout << "sw\n";
                 write_dmem(regs[rs], regs[rt] + sign_ext(immd12, 12), 32);
                 break;
 
              case SB:
                 write_dmem(regs[rs], regs[rt] + sign_ext(immd12, 12), 8);
                 break;
-           
+          
+            // conditional jumps
+            case JC:
+            case JCN:
+                new_sz = 3;
+                pc += sign_ext(immd22 << 1, 22);
+                break;
+
+            case JALC:
+            case JALCN:
+                new_sz = 3;
+                regs[31] = pc;
+                pc += sign_ext(immd22 << 1, 22);
+                break;
+
+            case J:
+                new_sz = 3;
+                pc += sign_ext(immd27 << 1, 27);
+                break;
+
+            case JAL:
+                new_sz = 3;
+                regs[31] = pc;
+                pc += sign_ext(immd27 << 1, 27);
+                break;
+
             default:
                 break;
         }
@@ -260,11 +282,29 @@ namespace HivekSimulator {
     }
 
     void Simulator::write_dmem(uint32_t v, uint32_t address, int bits) {
-
+        if (bits == 32) {
+            data_memory[address]     = (v & 0xFF000000) >> 24;
+            data_memory[address + 1] = (v & 0x00FF0000) >> 16;
+            data_memory[address + 2] = (v & 0x0000FF00) >> 8;
+            data_memory[address + 3] = (v & 0x000000FF);
+        } else if (bits == 8) {
+            data_memory[address] = (v & 0x000000FF);
+        }
     }
 
     uint32_t Simulator::read_dmem(uint32_t address, int bits) {
+        uint32_t v = 0;
 
+        if (bits == 32) {
+            v |= data_memory[address] << 24;
+            v |= data_memory[address + 1] << 16;
+            v |= data_memory[address + 2] << 8;
+            v |= data_memory[address + 3];
+        } else if (bits == 8) {
+            v |= data_memory[address];
+        }
+
+        return v;
     }
 
     void Simulator::run() {

@@ -29,8 +29,8 @@ namespace HivekAssembler {
             void get_shift_type(std::string& str, Instruction& op);
             void get_shamt(std::string& str, Instruction& op);
 
-            void convert_label(Instruction& op);
-            void convert_label_branch(Instruction& op);
+            void convert_label(Instruction& op, int i);
+            void convert_label_branch(Instruction& op, int i);
             void convert_label_data(Instruction& op);
 
         public:

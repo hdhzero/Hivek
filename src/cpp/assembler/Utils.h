@@ -31,7 +31,7 @@ namespace HivekAssembler {
         LW, SW, LB, SB,
 
         // TYPE_III
-        JC, JALC,
+        JC, JCN, JALC, JALCN, 
 
         // TYPE_IV
         J, JAL
