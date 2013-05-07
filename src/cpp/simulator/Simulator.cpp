@@ -70,7 +70,7 @@ namespace HivekSimulator {
         new_sz = (instruction1 & 0xC0000000) >> 30;
 
         switch (sz) {
-            case 0: std::cout << instruction1 << " aqui\n";
+            case 0: 
                 pc += 2; break;
             case 1:
             case 2:
@@ -95,6 +95,7 @@ namespace HivekSimulator {
         } else if (sz == 1) {
             instruction2 = NOP;
         }
+        std::cout << "insts: " << instruction1 << ", " << instruction2 << ' ' << pc << '\n';
     }
 
     uint32_t Simulator::expand(uint32_t n) {
@@ -145,10 +146,8 @@ namespace HivekSimulator {
         } else if ((0x38000000 & n) == 0x30000000) {
             operation = (n & 0x06000000) >> 25;
             operation += 2000;
-            std::cout << "op: " << operation << '\n';
         }
 
-            std::cout << "np: " << n << ' ' << pc << '\n';
         if (!exec) {
             return;
         }
