@@ -20,8 +20,37 @@ namespace HivekSimulator {
 
     enum OPERATIONS {
         ADD = 0,
-        ADC = 1,
-        AND = 2,
+        SUB = 1,
+        ADC = 2,
+        SBC = 3,
+
+        AND = 4,
+        OR  = 5,
+        NOR = 6,
+        XOR = 7,
+
+        SLLV = 8,
+        SRLV = 9,
+        SRAV = 10,
+        
+        LWR = 11,
+        LBR = 12,
+        SWR = 13,
+        SBR = 14,
+
+        CMPEQ = 15,
+        CMPLT = 16,
+        CMPGT = 17,
+        CMPLTU = 18,
+        CMPGTU = 19,
+
+        ANDP = 20,
+        ORP  = 21,
+        XORP = 22,
+        NORP = 23,
+
+        JR = 24,
+        JALR = 25,
 
         // immediates
         ADDI   = 1000,

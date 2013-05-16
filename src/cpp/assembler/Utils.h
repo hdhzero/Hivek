@@ -16,10 +16,10 @@ namespace HivekAssembler {
         // TYPE_I
         ADD, SUB, ADC, SBC, ADDS, ADCS, SUBS, SBCS, 
         AND, OR, NOR, XOR,
-        SLL, SRL, SRA,
+        SLLV, SRLV, SRAV,
         LWR, SWR, LBR, SBR,
         CMPEQ, CMPLT, CMPGT, CMPLTU, CMPGTU,
-        ANDP, ORP, XORP, NORP,
+        ANDP, ORP, XORP, NORP, SHADD,
 
         //TYPE_Ib
         JR, JALR,

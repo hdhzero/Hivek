@@ -269,9 +269,9 @@ namespace HivekAssembler {
         str2data_type["ascii"] = DATA_ASCII;
         str2data_type["dw"]    = DATA_INT32;
 
-        str2shift_type["SLL"]  = SLL;
-        str2shift_type["SRL"]  = SRL;
-        str2shift_type["SRA"]  = SRA;
+        str2shift_type["SLLV"]  = SLLV;
+        str2shift_type["SRLV"]  = SRLV;
+        str2shift_type["SRAV"]  = SRAV;
 
         str2predicate["p0"] = 0;
         str2predicate["p1"] = 1;
@@ -349,9 +349,9 @@ namespace HivekAssembler {
         assoc("nor", NOR, TYPE_I);
         assoc("xor", XOR, TYPE_I);
 
-        assoc("sll", SLL, TYPE_I);
-        assoc("srl", SRL, TYPE_I);
-        assoc("sra", SRA, TYPE_I);
+        assoc("sllv", SLLV, TYPE_I);
+        assoc("srlv", SRLV, TYPE_I);
+        assoc("srav", SRAV, TYPE_I);
 
         assoc("lwr", LWR, TYPE_I);
         assoc("swr", SWR, TYPE_I);

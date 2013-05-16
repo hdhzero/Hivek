@@ -139,21 +139,74 @@ namespace HivekAssembler {
 
         switch (op.operation) {
             case ADD:
-                opcode = 0x30000000; break;
+                opcode = 0x38000000 | (0 << 18); break;
             case SUB:
-                opcode = 0x30040000; break;
+                opcode = 0x38000000 | (1 << 18); break;
             case ADC:
-                opcode = 0x30080000; break;
+                opcode = 0x38000000 | (2 << 18); break;
             case SBC:
-                opcode = 0x300C0000; break;
-            case ADDS:
-                opcode = 0x30100000; break;
-            case ADCS:
-                opcode = 0x30140000; break;
-            case SUBS:
-                opcode = 0x30180000; break;
-            case SBCS:
-                opcode = 0x301C0000; break;
+                opcode = 0x38000000 | (3 << 18); break;
+            case SHADD:
+                // op.shift_type
+                opcode = 0x38000000 | (3 << 18); break;
+
+            case AND:
+                opcode = 0x38000000 | (4 << 18); break;
+            case OR:
+                opcode = 0x38000000 | (5 << 18); break;
+            case NOR:
+                opcode = 0x38000000 | (6 << 18); break;
+            case XOR:
+                opcode = 0x38000000 | (7 << 18); break;
+
+            case SLLV:
+                opcode = 0x38000000 | (8 << 18); break;
+            case SRLV:
+                opcode = 0x38000000 | (9 << 18); break;
+            case SRAV:
+                opcode = 0x38000000 | (10 << 18); break;
+
+            case LWR:
+                opcode = 0x38000000 | (11 << 18); break;
+
+            case LBR:
+                opcode = 0x38000000 | (12 << 18); break;
+
+            case SWR:
+                opcode = 0x38000000 | (13 << 18); break;
+
+            case SBR:
+                opcode = 0x38000000 | (14 << 18); break;
+
+
+            case CMPEQ:
+                opcode = 0x38000000 | (15 << 18); break;
+
+            case CMPLT:
+                opcode = 0x38000000 | (16 << 18); break;
+
+            case CMPGT:
+                opcode = 0x38000000 | (17 << 18); break;
+
+            case CMPLTU:
+                opcode = 0x38000000 | (18 << 18); break;
+
+            case CMPGTU:
+                opcode = 0x38000000 | (19 << 18); break;
+
+            case ANDP:
+                opcode = 0x38000000 | (20 << 18); break;
+            case ORP:
+                opcode = 0x38000000 | (21 << 18); break;
+            case XORP:
+                opcode = 0x38000000 | (22 << 18); break;
+            case NORP:
+                opcode = 0x38000000 | (23 << 18); break;
+
+            case JR:
+                opcode = 0x38000000 | (24 << 18); break;
+            case JALR:
+                opcode = 0x38000000 | (25 << 18); break;
 
             // immediate
             case ADDI:
@@ -209,6 +262,13 @@ namespace HivekAssembler {
                 rd = op.destination << 13;
                 rs = op.operand1 << 3;
                 rt = op.operand2 << 8;
+                instruction |= opcode | rd | rt | rs | cond;
+                break;
+
+            case TYPE_Ib:
+                rd = op.destination << 13;
+                rs = 0;
+                rt = 0;
                 instruction |= opcode | rd | rt | rs | cond;
                 break;
 

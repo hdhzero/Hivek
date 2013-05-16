@@ -39,6 +39,7 @@ namespace HivekSimulator {
             data_memory.push_back(v);
         }
 
+        data_memory.resize(4096);
         file.close();
     }
 
@@ -95,7 +96,6 @@ namespace HivekSimulator {
         } else if (sz == 1) {
             instruction2 = NOP;
         }
-        std::cout << "insts: " << instruction1 << ", " << instruction2 << ' ' << pc << '\n';
     }
 
     uint32_t Simulator::expand(uint32_t n) {
@@ -139,13 +139,24 @@ namespace HivekSimulator {
         int immd27 = n & 0x07FFFFFF;
         bool exec = pr_regs[p_reg] == p_value;
 
+        // type I
+        if ((0x3E000000 & n) == 0x38000000) {
+            operation = (n & 0x01FC0000) >> 18;
+        }
         // immediates - type II
-        if ((0x20000000 & n) == 0) { 
+        else if ((0x20000000 & n) == 0) { 
             operation = (n & 0x1E000000) >> 25;
             operation += 1000;
+        // conditional jumps
         } else if ((0x38000000 & n) == 0x30000000) {
             operation = (n & 0x06000000) >> 25;
             operation += 2000;
+        // unconditional jumps
+        } else if ((0x30000000 & n) == 0x20000000) { 
+            operation = 3000;
+            operation += ((n & 0x08000000) ? 1 : 0);
+            std::cout << "jump: " << operation << '\n';
+            exec = true;
         }
 
         if (!exec) {
@@ -156,12 +167,115 @@ namespace HivekSimulator {
             case ADD:
                 regs[rd] = regs[rs] + regs[rt];
                 break;
+
+            case SUB:
+                regs[rd] = regs[rs] + ~regs[rt] + 1;
+                break;
+
             case ADC:
                 regs[rd] = regs[rs] + regs[rt];
                 carry[u] = regs[rd] < regs[rs];
                 break;
+
             case AND:
                 regs[rd] = regs[rs] & regs[rt];
+                break;
+
+            case OR:
+                regs[rd] = regs[rs] | regs[rt];
+                break;
+
+            case NOR:
+                regs[rd] = ~(regs[rs] | regs[rt]);
+                break;
+
+            case XOR:
+                regs[rd] = regs[rs] ^ regs[rt];
+                break;
+
+            case SLLV:
+                regs[rd] = regs[rs] << (regs[rt] & 0x01F);
+                break;
+
+            case SRLV:
+                regs[rd] = regs[rs] >> (regs[rt] & 0x01F);
+                break;
+
+            case SRAV:
+                if (regs[rs] & 0x80000000) {
+                    regs[rd] = regs[rs] >> (regs[rt] & 0x01F);
+                    regs[rd] |= ~0 << 32 - (regs[rt] & 0x01F);
+                } else {
+                    regs[rd] = regs[rs] >> (regs[rt] & 0x01F);
+                }
+                break;
+
+            case LWR:
+                regs[rd] = read_dmem(regs[rs] + regs[rt], 32);
+                break;
+
+             case LBR:
+                regs[rd] = read_dmem(regs[rs] + regs[rt], 8);
+                break;
+
+            case SWR: 
+                write_dmem(regs[rd], regs[rs] + regs[rt], 32);
+                break;
+
+             case SBR:
+                write_dmem(regs[rd], regs[rs] + regs[rt], 8);
+                break;
+
+            case CMPEQ:
+                pr_regs[rd] = cmpeq(regs[rs], regs[rt]);
+                pr_regs[rd] = pr_regs[rd] || rd == 0;
+                break;
+
+            case CMPLT:
+                pr_regs[rd] = cmplt(regs[rs], regs[rt]);
+                pr_regs[rd] = pr_regs[rd] || rd == 0;
+                break;
+
+            case CMPGT:
+                pr_regs[rd] = cmpgt(regs[rs], regs[rt]);
+                pr_regs[rd] = pr_regs[rd] || rd == 0;
+                break;
+
+            case CMPLTU:
+                pr_regs[rd] = cmpltu(regs[rs], regs[rt]);
+                pr_regs[rd] = pr_regs[rd] || rd == 0;
+                break;
+
+            case CMPGTU:
+                pr_regs[rd] = cmpgtu(regs[rs], regs[rt]);
+                pr_regs[rd] = pr_regs[rd] || rd == 0;
+                break;
+
+            case ANDP:
+                pr_regs[rd] = pr_regs[rs] && pr_regs[rt];
+                break;
+
+            case ORP:
+                pr_regs[rd] = pr_regs[rs] || pr_regs[rt];
+                break;
+
+            case XORP:
+                pr_regs[rd] = (int) pr_regs[rs] ^ (int) pr_regs[rt];
+                break;
+
+            case NORP:
+                pr_regs[rd] = ! (pr_regs[rs] || pr_regs[rt]);
+                break;
+
+            case JR:
+                new_sz = 3;
+                pc = regs[rd];
+                break;
+
+            case JALR:
+                new_sz = 3;
+                regs[31] = pc;
+                pc = regs[rd];
                 break;
 
         /* immediates */
@@ -214,7 +328,7 @@ namespace HivekSimulator {
                 regs[rs] = read_dmem(regs[rt] + sign_ext(immd12, 12), 8);
                 break;
 
-            case SW: std::cout << "sw\n";
+            case SW: 
                 write_dmem(regs[rs], regs[rt] + sign_ext(immd12, 12), 32);
                 break;
 
@@ -241,7 +355,7 @@ namespace HivekSimulator {
                 pc += sign_ext(immd27 << 1, 27);
                 break;
 
-            case JAL:
+            case JAL: std::cout << "jal\n";
                 new_sz = 3;
                 regs[31] = pc;
                 pc += sign_ext(immd27 << 1, 27);
