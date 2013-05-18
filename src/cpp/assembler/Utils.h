@@ -17,7 +17,6 @@ namespace HivekAssembler {
         ADD, SUB, ADC, SBC, ADDS, ADCS, SUBS, SBCS, 
         AND, OR, NOR, XOR,
         SLLV, SRLV, SRAV,
-        LWR, SWR, LBR, SBR,
         CMPEQ, CMPLT, CMPGT, CMPLTU, CMPGTU,
         ANDP, ORP, XORP, NORP, SHADD,
 

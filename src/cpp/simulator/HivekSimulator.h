@@ -33,24 +33,19 @@ namespace HivekSimulator {
         SRLV = 9,
         SRAV = 10,
         
-        LWR = 11,
-        LBR = 12,
-        SWR = 13,
-        SBR = 14,
+        CMPEQ = 11,
+        CMPLT = 12,
+        CMPGT = 13,
+        CMPLTU = 14,
+        CMPGTU = 15,
 
-        CMPEQ = 15,
-        CMPLT = 16,
-        CMPGT = 17,
-        CMPLTU = 18,
-        CMPGTU = 19,
+        ANDP = 16,
+        ORP  = 17,
+        XORP = 18,
+        NORP = 19,
 
-        ANDP = 20,
-        ORP  = 21,
-        XORP = 22,
-        NORP = 23,
-
-        JR = 24,
-        JALR = 25,
+        JR = 20,
+        JALR = 21,
 
         // immediates
         ADDI   = 1000,

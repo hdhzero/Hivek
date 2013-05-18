@@ -166,47 +166,34 @@ namespace HivekAssembler {
             case SRAV:
                 opcode = 0x38000000 | (10 << 18); break;
 
-            case LWR:
+            case CMPEQ:
                 opcode = 0x38000000 | (11 << 18); break;
 
-            case LBR:
+            case CMPLT:
                 opcode = 0x38000000 | (12 << 18); break;
 
-            case SWR:
+            case CMPGT:
                 opcode = 0x38000000 | (13 << 18); break;
 
-            case SBR:
+            case CMPLTU:
                 opcode = 0x38000000 | (14 << 18); break;
 
-
-            case CMPEQ:
+            case CMPGTU:
                 opcode = 0x38000000 | (15 << 18); break;
 
-            case CMPLT:
+            case ANDP:
                 opcode = 0x38000000 | (16 << 18); break;
-
-            case CMPGT:
+            case ORP:
                 opcode = 0x38000000 | (17 << 18); break;
-
-            case CMPLTU:
+            case XORP:
                 opcode = 0x38000000 | (18 << 18); break;
-
-            case CMPGTU:
+            case NORP:
                 opcode = 0x38000000 | (19 << 18); break;
 
-            case ANDP:
-                opcode = 0x38000000 | (20 << 18); break;
-            case ORP:
-                opcode = 0x38000000 | (21 << 18); break;
-            case XORP:
-                opcode = 0x38000000 | (22 << 18); break;
-            case NORP:
-                opcode = 0x38000000 | (23 << 18); break;
-
             case JR:
-                opcode = 0x38000000 | (24 << 18); break;
+                opcode = 0x38000000 | (20 << 18); break;
             case JALR:
-                opcode = 0x38000000 | (25 << 18); break;
+                opcode = 0x38000000 | (21 << 18); break;
 
             // immediate
             case ADDI:

@@ -353,11 +353,6 @@ namespace HivekAssembler {
         assoc("srlv", SRLV, TYPE_I);
         assoc("srav", SRAV, TYPE_I);
 
-        assoc("lwr", LWR, TYPE_I);
-        assoc("swr", SWR, TYPE_I);
-        assoc("lbr", LBR, TYPE_I);
-        assoc("swr", SWR, TYPE_I);
-
         assoc("cmpeq", CMPEQ, TYPE_I);
         assoc("cmplt", CMPLT, TYPE_I);
         assoc("cmpgt", CMPGT, TYPE_I);

@@ -210,22 +210,6 @@ namespace HivekSimulator {
                 }
                 break;
 
-            case LWR:
-                regs[rd] = read_dmem(regs[rs] + regs[rt], 32);
-                break;
-
-             case LBR:
-                regs[rd] = read_dmem(regs[rs] + regs[rt], 8);
-                break;
-
-            case SWR: 
-                write_dmem(regs[rd], regs[rs] + regs[rt], 32);
-                break;
-
-             case SBR:
-                write_dmem(regs[rd], regs[rs] + regs[rt], 8);
-                break;
-
             case CMPEQ:
                 pr_regs[rd] = cmpeq(regs[rs], regs[rt]);
                 pr_regs[rd] = pr_regs[rd] || rd == 0;

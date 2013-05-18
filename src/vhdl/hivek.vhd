@@ -10,7 +10,7 @@ entity hivek is
         clock : in std_logic;
         reset : in std_logic
     );
-end ikev;
+end hivek;
 
 architecture hivek_arch of hivek is
 begin

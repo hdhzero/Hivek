@@ -26,5 +26,7 @@ entity instruction_decode_stage is
 end instruction_decode_stage;
 
 architecture behavior of instruction_decode_stage is
+    signal immd27_0 : std_logic_vector(26 downto 0);
+    signal immd12_0 : std_logic_vector(11 downto 0);
 begin
 end behavior;

@@ -31,12 +31,6 @@ srlv rd, rs, rt
 srav rd, rs, rt
 slli rd, rs, immd5 # shadd rd, r0, rs SLL immd5
 
-- memory 
-lwr rd, rs, rt
-swr rd, rs, rt
-lbr rd, rs, rt
-sbr rd, rs, rt
-
 - comparison 
 cmpeq  pd, rs, rt
 cmplt  pd, rs, rt
