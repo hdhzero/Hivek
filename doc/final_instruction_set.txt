@@ -100,6 +100,16 @@ sz   op    immd27
 00 11110 uuu uuuu u uuuu uuuuu uuuuu uuuuu
 00 11111 uuu uuuu u uuuu uuuuu uuuuu uuuuu
 
+control signals:
+alu_op
+shift_type
+shift_ammount
+reg_dst
+mem_wren
+reg_wren
+ula_src #choose between alu and shift
+pred_wren
+pred_sel
 
 # shift (2 + 5 bits)
 17 shadd1 rd, rs, rt
