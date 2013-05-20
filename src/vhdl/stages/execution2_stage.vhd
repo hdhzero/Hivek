@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 library work;
 use work.hivek_pkg.all;
 
-entity execution_stage is
+entity execution2_stage is
     port (
         clock      : in std_logic;
         reset      : in std_logic;
@@ -16,17 +16,9 @@ entity execution_stage is
         hazard_i
         hazard_o
     );
-end execution_stage;
+end execution2_stage;
 
-architecture behavior of execution_stage is
+architecture behavior of execution2_stage is
 begin
-    alu_shifter_u0 : alu_shifter
-    port map (
-
-    );
-
-    alu_shifter_u1 : alu_shifter
-    port map (
-
-    );
+    
 end behavior;
