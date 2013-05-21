@@ -71,13 +71,4 @@ begin
                 sequential_inc <= pc;
         end case;
     end process;
-
-    icache_memory_u : icache_memory
-    port map (
-        clock   => clock,
-        load    => imem_load,
-        address => pc,
-        data_i  => imem_data_i,
-        data_o  => inst64
-    );
 end behavior;

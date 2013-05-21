@@ -6,7 +6,6 @@ package hivek_pkg is
     ------------------------
     -- constants definitions
     ------------------------
-
     constant ZERO : std_logic_vector(63 downto 0) := x"0000000000000000";
     constant ONES : std_logic_vector(63 downto 0) := x"FFFFFFFFFFFFFFFF";
     constant ONE  : std_logic_vector(63 downto 0) := x"0000000000000001";
@@ -25,271 +24,112 @@ package hivek_pkg is
     constant ALU_NOR_OP : alu_op_t := "110";
     constant ALU_XOR_OP : alu_op_t := "111";
 
-    subtype cond_flags_t is std_logic_vector(3 downto 0);
+    -- opcodes type I
+    subtype opcodes_i_t is std_logic_vector(4 downto 0);
 
-    constant COND_EQ : cond_flags_t := "0000";
-    constant COND_NE : cond_flags_t := "0001";
-    constant COND_CS : cond_flags_t := "0010";
-    constant COND_CC : cond_flags_t := "0011";
-    constant COND_MI : cond_flags_t := "0100";
-    constant COND_PL : cond_flags_t := "0101";
-    constant COND_VS : cond_flags_t := "0110";
-    constant COND_VC : cond_flags_t := "0111";
-    constant COND_HI : cond_flags_t := "1000";
-    constant COND_LS : cond_flags_t := "1001";
-    constant COND_GE : cond_flags_t := "1010";
-    constant COND_LT : cond_flags_t := "1011";
-    constant COND_GT : cond_flags_t := "1100";
-    constant COND_LE : cond_flags_t := "1101";
-    constant COND_AL : cond_flags_t := "1110";
+    -- arith
+    constant OP_ADD : opcodes_i_t := "00000";
+    constant OP_SUB : opcodes_i_t := "00001";
+    constant OP_ADC : opcodes_i_t := "00010";
+    constant OP_SBC : opcodes_i_t := "00011";
 
-    -- these types are used in the pipeline register stages
-    type IF_IEXP is record
-        head1 : std_logic_vector(15 downto 0);
-        head2 : std_logic_vector(15 downto 0);
-        tail1 : std_logic_vector(15 downto 0);
-        tail2 : std_logic_vector(15 downto 0);
-    end record;
+    -- logical
+    constant OP_AND : opcodes_i_t := "00100";
+    constant OP_OR  : opcodes_i_t  := "00101";
+    constant OP_NOR : opcodes_i_t := "00110";
+    constant OP_XOR : opcodes_i_t := "00111";
 
-    type IEXP_ID is record
-        instruction_0 : std_logic_vector(31 downto 0);
-        instruction_1 : std_logic_vector(31 downto 0);       
-    end record;
+    -- shift
+    constant OP_SLLV : opcodes_i_t := "01000";
+    constant OP_SRLV : opcodes_i_t := "01001";
+    constant OP_SRAV : opcodes_i_t := "01010";
 
-    type ID_SH is record
-        alu_op_0 : alu_op_t;
-        alu_op_1 : alu_op_t;
-        cond0    : std_logic_vector(3 downto 0);
-        cond1    : std_logic_vector(3 downto 0);
-        op2_src0 : std_logic;
-        op2_src1 : std_logic;
-        reg_av0  : std_logic_vector(31 downto 0);
-        reg_bv0  : std_logic_vector(31 downto 0);
-        reg_av1  : std_logic_vector(31 downto 0);
-        reg_bv1  : std_logic_vector(31 downto 0);
-        immd32_0 : std_logic_vector(31 downto 0);
-        imdd32_1 : std_logic_vector(31 downto 0);
-    end record;
+    -- comparison
+    constant OP_CMPEQ  : opcodes_i_t := "01011";
+    constant OP_CMPLT  : opcodes_i_t := "01100";
+    constant OP_CMPGT  : opcodes_i_t := "01101";
+    constant OP_CMPLTU : opcodes_i_t := "01110";
+    constant OP_CMPGTU : opcodes_i_t := "01111";
 
-    type SH_EX is record
-        wren_back0 : std_logic;
-        wren_back1 : std_logic;
-        mem_load_0 : std_logic;
-        mem_load_1 : std_logic;
-        wren_addr0 : std_logic_vector(3 downto 0);
-        wren_addr1 : std_logic_vector(3 downto 0);
+    -- branch
+    constant OP_JR   : opcodes_i_t := "10000";
+    constant OP_JALR : opcodes_i_t := "10001";
 
-        update_flags0 : std_logic;
-        update_flags1 : std_logic;
+    -- opcodes type II
+    subtype opcodes_ii_t is std_logic_vector(3 downto 0);
 
-        alu_op_0 : alu_op_t;
-        alu_op_1 : alu_op_t;
-        cond0    : std_logic_vector(3 downto 0);
-        cond1    : std_logic_vector(3 downto 0);
-        op2_src0 : std_logic;
-        op2_src1 : std_logic;
-        reg_av0  : std_logic_vector(31 downto 0);
-        reg_bv0  : std_logic_vector(31 downto 0);
-        reg_av1  : std_logic_vector(31 downto 0);
-        reg_bv1  : std_logic_vector(31 downto 0);
-        immd32_0 : std_logic_vector(31 downto 0);
-        immd32_1 : std_logic_vector(31 downto 0);
-    end record;
+    -- arith
+    constant OP_ADDI : opcodes_ii_t := "0000";
+    constant OP_ADCI : opcodes_ii_t := "0001";
 
-    type EX_MEM is record
-        wren_back0 : std_logic;
-        wren_back1 : std_logic;
-        mem_load_0 : std_logic;
-        mem_load_1 : std_logic;
-        wren_addr0 : std_logic_vector(3 downto 0);
-        wren_addr1 : std_logic_vector(3 downto 0);
+    -- logical
+    constant OP_ANDI : opcodes_ii_t := "0010";
+    constant OP_ORI  : opcodes_ii_t := "0011";
 
-        alu_res0   : std_logic_vector(31 downto 0);
-        alu_res1   : std_logic_vector(31 downto 0);
-        dmem_i0    : std_logic_vector(31 downto 0);
-        dmem_i1    : std_logic_vector(31 downto 0);
-    end record;
+    -- comparison
+    constant OP_CMPEQI  : opcodes_ii_t := "0100";
+    constant OP_CMPLTI  : opcodes_ii_t := "0101";
+    constant OP_CMPGTI  : opcodes_ii_t := "0110";
+    constant OP_CMPLTUI : opcodes_ii_t := "0111";
+    constant OP_CMPGTUI : opcodes_ii_t := "1000";
 
-    type MEM_WB is record
-        reg_c0 : std_logic_vector(3 downto 0);
-        reg_c1 : std_logic_vector(3 downto 0);
-        load_0 : std_logic;
-        load_1 : std_logic;
-    end record;
+    -- memory
+    constant OP_LW : opcodes_ii_t := "1001";
+    constant OP_LB : opcodes_ii_t := "1010";
+    constant OP_SW : opcodes_ii_t := "1011";
+    constant OP_SB : opcodes_ii_t := "1100";
 
+    
     -------------------------
     -- components definitions
     -------------------------
 
-    -- used in the register bank
-    component load_decoder is
-    port (
-        address : in std_logic_vector(3 downto 0);
-        loads   : out std_logic_vector(15 downto 0)
-    );
-    end component;
+    ----------------------------------------------------------
+    -- barrel shifter
+    ----------------------------------------------------------
+    type barrel_shifter_in_t is record
+        left    : std_logic; -- '1' for left, '0' for right
+        logical : std_logic; -- '1' for logical, '0' for arithmetic
+        shift   : std_logic_vector(4 downto 0);  -- shift count
+        input   : std_logic_vector (31 downto 0);
+    end record;
 
-    -- used in the register bank
-    component bank_selector is
-    port (
-        clock  : in std_logic;
-        load0  : in std_logic;
-        load1  : in std_logic;
-        addrc0 : in std_logic_vector(4 downto 0);
-        addrc1 : in std_logic_vector(4 downto 0);
-        addra0 : in std_logic_vector(4 downto 0);
-        addra1 : in std_logic_vector(4 downto 0);
-        addrb0 : in std_logic_vector(4 downto 0);
-        addrb1 : in std_logic_vector(4 downto 0);
-        sel_a0 : out std_logic;
-        sel_a1 : out std_logic;
-        sel_b0 : out std_logic;
-        sel_b1 : out std_logic
-
-    );
-    end component;
-
-    component reg_bram is
-    generic (
-        vendor : string := "ALTERA"
-    );
-    port (
-        clock  : in std_logic;
-        wren   : in std_logic;
-        wraddr : in std_logic_vector(4 downto 0);
-        rdaddr : in std_logic_vector(4 downto 0);
-        din    : in std_logic_vector(31 downto 0);
-        dout   : out std_logic_vector(31 downto 0)
-    );
-    end component;
-
-    component reg_block is
-    generic (
-        vendor : string := "ALTERA"
-    );
-    port (
-        clock  : in std_logic;
-        sel    : in std_logic;
-        load0  : in std_logic;
-        load1  : in std_logic;
-        addr0  : in std_logic_vector(4 downto 0);
-        addr1  : in std_logic_vector(4 downto 0);
-        rdaddr : in std_logic_vector(4 downto 0);
-        din0   : in std_logic_vector(31 downto 0);
-        din1   : in std_logic_vector(31 downto 0);
-        dout   : out std_logic_vector(31 downto 0)
-    );
-    end component;
-
-    component register_bank is
-    generic (
-        vendor : string := "ALTERA"
-    );
-    port (
-        clock   : in std_logic;
-        reset   : in std_logic;
-        load0   : in std_logic;
-        load1   : in std_logic;
-        reg_a0  : in std_logic_vector(4 downto 0);
-        reg_b0  : in std_logic_vector(4 downto 0);
-        reg_a1  : in std_logic_vector(4 downto 0);
-        reg_b1  : in std_logic_vector(4 downto 0);
-        reg_c0  : in std_logic_vector(4 downto 0);
-        reg_c1  : in std_logic_vector(4 downto 0);
-        din_c0  : in std_logic_vector(31 downto 0);
-        din_c1  : in std_logic_vector(31 downto 0);
-        dout_a0 : out std_logic_vector(31 downto 0);
-        dout_b0 : out std_logic_vector(31 downto 0);
-        dout_a1 : out std_logic_vector(31 downto 0);
-        dout_b1 : out std_logic_vector(31 downto 0)
-    );
-    end component;
-
-
-    component icache_memory is
-    port (
-        clock   : in std_logic;
-        load    : in std_logic;
-        address : in std_logic_vector(31 downto 0);
-        data_i  : in std_logic_vector(63 downto 0);
-        data_o  : out std_logic_vector(63 downto 0)
-    );
-    end component;
-
-    component verify_flags is
-    port (
-        condition : cond_flags_t;
-        z, n      : std_logic;
-        c, o      : std_logic;
-        execute   : out std_logic
-    );
-    end component;
+    type barrel_shifter_out_t is record
+        output : std_logic_vector(31 downto 0);
+    end record;
 
     component barrel_shifter is   -- barrel shifter
     port (
-        left    : in  std_logic; -- '1' for left, '0' for right
-        logical : in  std_logic; -- '1' for logical, '0' for arithmetic
-        shift   : in  std_logic_vector(4 downto 0);  -- shift count
-        input   : in  std_logic_vector (31 downto 0);
-        output  : out std_logic_vector (31 downto 0) 
+        din  : in barrel_shifter_in_t;
+        dout : out barrel_shifter_out_t
     );
     end component;
 
+    ----------------------------------------------------------
+    -- alu 
+    ----------------------------------------------------------
+    type alu_in_t is record
+        operation : alu_op_t;
+        carry_in  : std_logic;
+        operand_a : std_logic_vector(31 downto 0);
+        operand_b : std_logic_vector(31 downto 0);
+    end record;
+
+    type alu_out_t is record
+        result    : std_logic_vector(31 downto 0);
+        carry_out : std_logic;
+        cmp_flag  : std_logic;
+    end record;
+
     component alu is
     port (
-        alu_op : in alu_op_t;
-        cin    : in std_logic;
-        op_a   : in std_logic_vector(31 downto 0);
-        op_b   : in std_logic_vector(31 downto 0);
-        res    : out std_logic_vector(31 downto 0);
-        z_flag : out std_logic;
-        c_flag : out std_logic;
-        n_flag : out std_logic;
-        o_flag : out std_logic
+        din  : in alu_in_t;
+        dout : out alu_out_t
     );
     end component;
 
     ---------------------
     -- Pipeline stages --
     ---------------------
-
-    component execution_stage is
-    port (
-        clock     : in std_logic;
-        reset     : in std_logic;
-        from_pipe : in SH_EX;
-        to_pipe   : out EX_MEM
-    );
-    end component;
-
-    component instruction_fetch_stage is
-    port (
-        clock       : in std_logic;
-        reset       : in std_logic;
-        pc_load     : in std_logic;
-        imem_load   : in std_logic;
-        j_taken     : in std_logic;
-        j_value     : in std_logic_vector(31 downto 0);
-        imem_data_i : in std_logic_vector(63 downto 0);
-        imem_addr   : in std_logic_vector(31 downto 0);
-        instruction : out std_logic_vector(63 downto 0)
-    );
-    end component;
-
-    ------------------------
-    -- Vendor componentes --
-    ------------------------
-    component reg_bram_altera IS
-	PORT
-	(
-		clock		: IN STD_LOGIC  := '1';
-		data		: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
-		rdaddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
-		wraddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
-		wren		: IN STD_LOGIC  := '0';
-		q		: OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
-	);
-    end component;
-
 
 end package;

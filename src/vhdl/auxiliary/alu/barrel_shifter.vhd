@@ -7,11 +7,8 @@ use work.hivek_pkg.all;
 
 entity barrel_shifter is   -- barrel shifter
     port (
-        left    : in  std_logic; -- '1' for left, '0' for right
-        logical : in  std_logic; -- '1' for logical, '0' for arithmetic
-        shift   : in  std_logic_vector(4 downto 0);  -- shift count
-        input   : in  std_logic_vector (31 downto 0);
-        output  : out std_logic_vector (31 downto 0) 
+        din  : in barrel_shifter_in_t;
+        dout : out barrel_shifter_out_t
     );
 end barrel_shifter;
 
@@ -53,59 +50,59 @@ architecture behavior of barrel_shifter is
     signal input16s : std_logic_vector(15 downto 0);
 
 begin  -- circuits
-    L1s <= input(30 downto 0) & '0'; -- just wiring
-    L1  <= input when shift(0) = '0' else L1s;
+    L1s <= din.input(30 downto 0) & '0'; -- just wiring
+    L1  <= din.input when din.shift(0) = '0' else L1s;
 
     L2s <= L1(29 downto 0) & "00"; -- just wiring
-    L2  <= L1 when shift(1) = '0' else L2s;
+    L2  <= L1 when din.shift(1) = '0' else L2s;
 
     L4s <= L2(27 downto 0) & "0000"; -- just wiring
-    L4  <= L2 when shift(2) = '0' else L4s;
+    L4  <= L2 when din.shift(2) = '0' else L4s;
 
     L8s <= L4(23 downto 0) & "00000000"; -- just wiring
-    L8  <= L4 when shift(3) = '0' else L8s;
+    L8  <= L4 when din.shift(3) = '0' else L8s;
 
     L16s <= L8(15 downto 0) & "0000000000000000"; -- just wiring
-    L16  <= L8 when shift(4) = '0' else L16s;
+    L16  <= L8 when din.shift(4) = '0' else L16s;
 
-    R1s <= '0' & input(31 downto 1); -- just wiring
-    R1  <= input when shift(0) = '0' else R1s;
+    R1s <= '0' & din.input(31 downto 1); -- just wiring
+    R1  <= din.input when din.shift(0) = '0' else R1s;
 
     R2s <= "00" & R1(31 downto 2); -- just wiring
-    R2  <= R1 when shift(1) = '0' else R2s;
+    R2  <= R1 when din.shift(1) = '0' else R2s;
 
     R4s <= "0000" & R2(31 downto 4); -- just wiring
-    R4  <= R2 when shift(2) = '0' else R4s;
+    R4  <= R2 when din.shift(2) = '0' else R4s;
 
     R8s <= "00000000" & R4(31 downto 8); -- just wiring
-    R8  <= R4 when shift(3) = '0' else R8s;
+    R8  <= R4 when din.shift(3) = '0' else R8s;
 
     R16s <= "0000000000000000" & R8(31 downto 16); -- just wiring
-    R16  <= R8 when shift(4) = '0' else R16s;
+    R16  <= R8 when din.shift(4) = '0' else R16s;
 
-    A1s <= input(31) & input(31 downto 1); -- just wiring
-    A1  <= input when shift(0) = '0' else A1s;
+    A1s <= din.input(31) & din.input(31 downto 1); -- just wiring
+    A1  <= din.input when din.shift(0) = '0' else A1s;
 
     A2s <= input2s & A1(31 downto 2);    -- just wiring
-    A2  <= A1 when shift(1) = '0' else A2s;
+    A2  <= A1 when din.shift(1) = '0' else A2s;
 
     A4s <= input4s & A2(31 downto 4);    -- just wiring
-    A4  <= A2 when shift(2) = '0' else A4s;
+    A4  <= A2 when din.shift(2) = '0' else A4s;
 
     A8s <= input8s & A4(31 downto 8);    -- just wiring
-    A8  <= A4 when shift(3) = '0' else A8s;
+    A8  <= A4 when din.shift(3) = '0' else A8s;
 
     A16s <= input16s & A8(31 downto 16); -- just wiring
-    A16  <= A8 when shift(4) = '0' else A16s;
+    A16  <= A8 when din.shift(4) = '0' else A16s;
 
-    input2s <= input(31) & input(31);  -- just wiring
+    input2s <= din.input(31) & din.input(31);  -- just wiring
     input4s <= input2s & input2s;      -- just wiring
     input8s <= input4s & input4s;      -- just wiring
     input16s <= input8s & input8s;     -- just wiring
 
-    LR <= R16 when left = '0' else L16;
+    LR <= R16 when din.left = '0' else L16;
 
-    output <= A16 when logical = '0' else LR;
+    dout.output <= A16 when din.logical = '0' else LR;
 end architecture behavior;  -- of bshift
 
 

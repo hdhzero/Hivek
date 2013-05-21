@@ -25,7 +25,8 @@ ifeq ("$(SIMULATOR)", "modelsim")
     COM    = vcom -work $(WORK_DIR) -93 -explicit 
     SIM    = vsim -c
     COM_FLAGS =
-    SIM0_FLAGS = -do "vcd file $(TESTBENCH).vcd; vcd add /$(TESTBENCH)/*; run $(RUNTIME)ns; quit -sim; quit"
+    SIM0_FLAGS = -do "run $(RUNTIME); quit -sim; quit" -wlf $(TESTBENCH).wlf 
+#-do "vcd file $(TESTBENCH).vcd; vcd add /$(TESTBENCH)/*; run $(RUNTIME)ns; quit -sim; quit"
     SIM1_FLAGS = 
 endif
 
@@ -36,7 +37,7 @@ ifeq ("$(SIMULATOR)", "ghdl")
     SIM    = ghdl --elab-run
     COM_FLAGS =
     SIM0_FLAGS = --workdir=$(WORK_DIR)
-    SIM1_FLAGS = --stop-time=$(RUNTIME)ns --vcd=$(TESTBENCH).vcd
+    SIM1_FLAGS = --stop-time=$(RUNTIME)ns --wave=$(TESTBENCH).ghw
 endif
 
 define \n
@@ -53,8 +54,8 @@ endef
 
 # barrel shifter related stuff
 BARREL_SHIFTER_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/barrel_shifter.vhd \
-    $(BENCH_DIR)/auxiliary/barrel_shifter_tb.vhd
+    $(SRC_DIR)/vhdl/auxiliary/alu/barrel_shifter.vhd \
+    $(BENCH_DIR)/auxiliary/alu/barrel_shifter_tb.vhd
 
 BARREL_SHIFTER_TB = barrel_shifter_tb
 
@@ -110,6 +111,7 @@ clean:
 	rm -rf $(WORK_DIR)
 	rm -rf *.wlf
 	rm -rf *.vcd
+	rm -rf *.ghw
 	rm -rf transcript
 	rm -rf *.o
 	rm -rf *.cf

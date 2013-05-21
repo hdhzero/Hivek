@@ -20,11 +20,6 @@ entity icache_memory is
 end icache_memory;
 
 architecture icache_memory_arch of icache_memory is
-    type ram is array (0 to 127) of std_logic_vector(15 downto 0);
-
-    -- 2x32 16, 16, 2x16, 32, 2x32, 32, 2x16 j
-    -- 16 = 00 - 0, 32 = 01 - 4, 2x16 = 10 - 8, 2x32 = 11 - F
-
     signal addr0 : std_logic_vector(31 downto 0);
     signal addr1 : std_logic_vector(31 downto 0);
     signal addr2 : std_logic_vector(31 downto 0);
@@ -40,7 +35,7 @@ architecture icache_memory_arch of icache_memory is
     signal ONE : std_logic_vector(31 downto 0);
 
 begin
-    address_plus_one <= std_logic_vector(unsigned(address) + unsigned(ONE(31 downto 0)));
+    address_plus_one <= std_logic_vector(unsigned(address) + x"00000004");
     addr_sel <= address(2 downto 1);
 
     process (addr_sel, address, address_plus_one)
@@ -100,7 +95,7 @@ begin
     )
     port map (
         clock  => clock,
-        wren   => wren,
+        wren   => wren0,
         addr   => addr0,
         data_i => data_i(63 downto 48),
         data_o => out0
@@ -114,7 +109,7 @@ begin
     )
     port map (
         clock  => clock,
-        wren   => wren,
+        wren   => wren1,
         addr   => addr1,
         data_i => data_i(47 downto 32),
         data_o => out1
@@ -128,7 +123,7 @@ begin
     )
     port map (
         clock  => clock,
-        wren   => wren,
+        wren   => wren2,
         addr   => addr2,
         data_i => data_i(31 downto 16),
         data_o => out2
@@ -142,7 +137,7 @@ begin
     )
     port map (
         clock  => clock,
-        wren   => wren,
+        wren   => wren3,
         addr   => addr3,
         data_i => data_i(15 downto 0),
         data_o => out3

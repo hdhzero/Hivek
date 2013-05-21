@@ -7,13 +7,8 @@ use work.hivek_pack.all;
 
 entity alu is
     port (
-        operation : in alu_op_t;
-        carry_in  : in std_logic;
-        operand_a : in std_logic_vector(31 downto 0);
-        operand_b : in std_logic_vector(31 downto 0);
-        result    : out std_logic_vector(31 downto 0);
-        carry_out : out std_logic;
-        cmp_flag  : out std_logic
+        din  : alu_in_t;
+        dout : alu_out_t;
     );
 end alu;
 
