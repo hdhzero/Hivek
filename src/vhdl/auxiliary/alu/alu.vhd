@@ -18,6 +18,7 @@ architecture behavior of alu is
     signal carry : std_logic_vector(32 downto 0);
     signal opa   : std_logic_vector(31 downto 0);
     signal opb   : std_logic_vector(31 downto 0);
+    signal nob   : std_logic_vector(31 downto 0);
 begin
     opa   <= din.operand_a;
     carry <= ONE(32 downto 0) when din.carry_in = '1' else 
@@ -69,11 +70,13 @@ begin
         end case;
     end process;
 
+    nob <= not din.operand_b;
+
     process (din.operation, din.operand_b)
     begin
         case din.operation is
             when ALU_SUB =>
-                opb <= not din.operand_b;
+                opb <= std_logic_vector(unsigned(nob) + x"00000001");
             when ALU_SBC =>
                 opb <= not din.operand_b;
             when others =>

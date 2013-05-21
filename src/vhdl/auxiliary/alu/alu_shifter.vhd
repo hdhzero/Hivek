@@ -3,54 +3,51 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library work;
-use work.hivek_pack.all;
+use work.hivek_pkg.all;
 
 entity alu_shifter is
     port (
-        alu_op       : in alu_op_t;
-        shift_type   : in shift_type_t;
-        carry_in     : in std_logic;
-        operand_a    : in std_logic_vector(31 downto 0);
-        operand_b    : in std_logic_vector(31 downto 0);
-        shift_amt    : in std_logic_vector(4 downto 0);
-        alu_result   : out std_logic_vector(31 downto 0);
-        shift_result : out std_logic_vector(31 downto 0);
-        carry_out    : out std_logic;
-        cmp_flag     : out std_logic
+        din  : in alu_shifter_in_t;
+        dout : out alu_shifter_out_t
     );
 end alu_shifter;
 
 architecture behavior of alu_shifter is
-    signal left    : std_logic;
-    signal logical : std_logic;
-
     signal tmp    : unsigned(31 downto 0);
-    signal sh_tmp : std_logic_vector(31 downto 0);
+
+    signal bsh_i : barrel_shifter_in_t;
+    signal bsh_o : barrel_shifter_out_t;
+
+    signal alu_i : alu_in_t;
+    signal alu_o : alu_out_t;
 begin
-    left    <= '1' when shift_type = SH_SLL else '0';
-    logical <= '1' when shift_type /= SH_SRA else '0';
+    alu_i.operation <= din.alu_op;
+    alu_i.carry_in  <= din.carry_in;
+    alu_i.operand_a <= din.operand_a;
+    alu_i.operand_b <= din.operand_b;
+
+    dout.alu_result   <= alu_o.result;
+    dout.shift_result <= std_logic_vector(tmp);
+    dout.carry_out    <= alu_o.carry_out;
+    dout.cmp_flag     <= alu_o.cmp_flag;
 
     alu_u : alu
     port map (
-        operation => alu_op,
-        carry_in  => carr_in,
-        operand_a => operand_a,
-        operand_b => operand_b,
-        result    => alu_result,
-        carry_out => carry_out,
-        cmp_flag  => cmp_flag
+        din  => alu_i,
+        dout => alu_o
     );
 
-    tmp <= unsigned(sh_tmp) + unsigned(operand_a);
-    shift_result <= std_logic_vector(tmp);
+    tmp <= unsigned(bsh_o.output) + unsigned(din.operand_a);
+
+    bsh_i.left    <= '1' when din.shift_type = SH_SLL else '0';
+    bsh_i.logical <= '1' when din.shift_type /= SH_SRA else '0';
+    bsh_i.shift   <= din.shift_amt;
+    bsh_i.input   <= din.operand_b;
 
     barrel_shifter_u : barrel_shifter
     port map (
-        left    => left,
-        logical => logical,
-        shift   => shift_amt,
-        input   => operand_b,
-        output  => sh_tmp,
+        din  => bsh_i,
+        dout => bsh_o
     );
 
 end behavior;

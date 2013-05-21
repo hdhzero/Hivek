@@ -13,6 +13,12 @@ package hivek_pkg is
     ----------------------
     -- type definitions --
     ----------------------
+    subtype shift_type_t is std_logic_vector(1 downto 0);
+
+    constant SH_SLL : shift_type_t := "01";
+    constant SH_SRL : shift_type_t := "10";
+    constant SH_SRA : shift_type_t := "11";
+
     subtype alu_op_t is std_logic_vector(2 downto 0);
 
     constant ALU_ADD    : alu_op_t := "000";
@@ -133,6 +139,31 @@ package hivek_pkg is
     );
     end component;
 
+    ----------------------------------------------------------
+    -- alu_shifter
+    ----------------------------------------------------------
+    type alu_shifter_in_t is record
+        alu_op       : alu_op_t;
+        shift_type   : shift_type_t;
+        carry_in     : std_logic;
+        operand_a    : std_logic_vector(31 downto 0);
+        operand_b    : std_logic_vector(31 downto 0);
+        shift_amt    : std_logic_vector(4 downto 0);
+    end record;
+
+    type alu_shifter_out_t is record
+        alu_result   : std_logic_vector(31 downto 0);
+        shift_result : std_logic_vector(31 downto 0);
+        carry_out    : std_logic;
+        cmp_flag     : std_logic;
+    end record;
+
+    component alu_shifter is
+    port (
+        din  : in alu_shifter_in_t;
+        dout : out alu_shifter_out_t
+    );
+    end component;
     ---------------------
     -- Pipeline stages --
     ---------------------
