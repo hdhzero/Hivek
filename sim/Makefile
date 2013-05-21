@@ -1,6 +1,6 @@
 # project directories
 # update project_dir to the folder where your files are
-PROJECT_DIR = /home/hdhzero/projetos/Hivek
+PROJECT_DIR = /home/hdhzero/Projects/Hivek
 
 # do not modify below unless you know what you are doing
 SRC_DIR     = $(PROJECT_DIR)/src
@@ -68,6 +68,21 @@ barrel_shifter_tb:
 	$(foreach file, $(FILES), $(COM) $(file); ${\n})
 	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
 
+# alu
+ALU_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/alu/alu.vhd \
+    $(BENCH_DIR)/auxiliary/alu/alu_tb.vhd
+
+ALU_TB = alu_tb
+
+alu_tb: TESTBENCH = $(ALU_TB)
+alu_tb: RUNTIME = 500
+alu_tb: FILES = $(ALU_FILES)
+alu_tb:
+	$(MKLIB) $(WORK_DIR)
+	$(MAP) $(WORK_DIR)
+	$(foreach file, $(FILES), $(COM) $(file); ${\n})
+	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
 
 # register bank
 REGISTER_BANK_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
@@ -115,4 +130,5 @@ clean:
 	rm -rf transcript
 	rm -rf *.o
 	rm -rf *.cf
-	rm $(BARREL_SHIFTER_TB)
+	rm -rf $(BARREL_SHIFTER_TB)
+	rm -rf $(ALU_TB)

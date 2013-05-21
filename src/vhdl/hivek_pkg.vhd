@@ -15,14 +15,19 @@ package hivek_pkg is
     ----------------------
     subtype alu_op_t is std_logic_vector(2 downto 0);
 
-    constant ALU_ADD_OP : alu_op_t := "000";
-    constant ALU_SUB_OP : alu_op_t := "001";
-    constant ALU_ADC_OP : alu_op_t := "010";
-    constant ALU_SBC_OP : alu_op_t := "011";
-    constant ALU_AND_OP : alu_op_t := "100";
-    constant ALU_OR_OP  : alu_op_t := "101";
-    constant ALU_NOR_OP : alu_op_t := "110";
-    constant ALU_XOR_OP : alu_op_t := "111";
+    constant ALU_ADD    : alu_op_t := "000";
+    constant ALU_SUB    : alu_op_t := "001";
+    constant ALU_ADC    : alu_op_t := "010";
+    constant ALU_SBC    : alu_op_t := "011";
+    constant ALU_AND    : alu_op_t := "100";
+    constant ALU_OR     : alu_op_t := "101";
+    constant ALU_NOR    : alu_op_t := "110";
+    constant ALU_XOR    : alu_op_t := "111";
+    constant ALU_CMPEQ  : alu_op_t := "000";
+    constant ALU_CMPLT  : alu_op_t := "001";
+    constant ALU_CMPLTU : alu_op_t := "010";
+    constant ALU_CMPGT  : alu_op_t := "011";
+    constant ALU_CMPGTU : alu_op_t := "100";
 
     -- opcodes type I
     subtype opcodes_i_t is std_logic_vector(4 downto 0);
