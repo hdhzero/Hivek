@@ -5,36 +5,6 @@ use ieee.numeric_std.all;
 library work;
 use work.hivek_pkg.all;
 
-type id_stage_path_o is record
-    data_ra     : std_logic_vector(31 downto 0);
-    data_rb     : std_logic_vector(31 downto 0);
-    immd32      : std_logic_vector(31 downto 0);
-    reg_dst_src : std_logic;
-    reg_wren    : std_logic;
-    mem_wren    : std_logic;
-    alu_src     : std_logic;
-    alu_op      : alu_op_t;
-    sh_type     : shift_type_t;
-    sh_amt_src  : std_logic;
-end record;
-
-type id_stage_path_i is record
-    instruction : std_logic_vector(31 downto 0);
-    reg_rc      : std_logic_vector(4 downto 0);
-    data_rc     : std_logic_vector(31 downto 0);
-    wren        : std_logic;
-end record;
-
-type id_stage_i_t is record
-    op0 : id_stage_path_i; 
-    op1 : id_stage_path_i;
-end record;
-
-type id_stage_o_t is record
-    op0 : id_stage_path_o;
-    op1 : id_stage_path_o;
-end record;
-
 entity instruction_decode_stage is
     port (
         clock : in std_logic;
@@ -54,6 +24,38 @@ architecture behavior of instruction_decode_stage is
     signal reg_bank_i : register_bank_in_t;
     signal reg_bank_o : register_bank_out_t;
 begin
+    -----------------
+    -- operation 0 --
+    -----------------
+
+    -- register value
+    dout.op0.data_ra  <= reg_bank_o.op0.data_ra;
+    dout.op0.data_rb  <= reg_bank_o.op0.data_rb;
+
+    -- immd
+    dout.op0.immd32   <= idecoder_o0.immd32;
+
+    -- control
+    dout.op0.control <= idecoder_o0.control;
+
+    -----------------
+    -- operation 1 --
+    -----------------
+
+    -- register value
+    dout.op0.data_ra  <= reg_bank_o.op0.data_ra;
+    dout.op0.data_rb  <= reg_bank_o.op0.data_rb;
+
+    -- immd
+    dout.op0.immd32   <= idecoder_o0.immd32;
+
+    -- control
+    dout.op0.control <= idecoder_o0.control;
+
+    ---------------
+    -- port maps --
+    ---------------
+
     instruction_decoder_u0 : instruction_decoder
     port map (
         din  => idecoder_i0,

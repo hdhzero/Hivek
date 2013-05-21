@@ -19,7 +19,6 @@ add  rd, rs, rt
 sub  rd, rs, rt
 adc  rd, rs, rt
 sbc  rd, rs, rt
-shadd rd, rs, rt SHT immd
 
 - logical
 and rd, rs, rt
@@ -50,6 +49,9 @@ norp pd, ps, pt
 jr rd
 jalr rd
 
+- shift and add
+shadd rd, rs, rt SHT immd
+
 -------------
 -- Type II --
 -------------
@@ -57,24 +59,22 @@ sz   op     immd12       rt    rs   cond
 00 0tttt iiii iiii iiii sssss ttttt ccc
 2 + 5 + 12 + 5 + 5 + 3 = 32
 
-0 addi  rd, rs, immd
-1 adci  rd, rs, immd
-2 andi  rd, rs, immd
-3 ori   rd, rs, immd
+addi  rt, rs, immd
+adci  rt, rs, immd
+andi  rt, rs, immd
+ori   rt, rs, immd
 
-4 cmpeqi  pd, rs, immd
-5 cmplti  pd, rs, immd
-6 cmpgti  pd, rs, immd
-7 cmpltui pd, rs, immd
-8 cmpgtui pd, rs, immd
+cmpeqi  pt, rs, immd
+cmplti  pt, rs, immd
+cmpgti  pt, rs, immd
+cmpltui pt, rs, immd
+cmpgtui pt, rs, immd
 
     - memory 
-9 lw  rd, rs, immd
-A sw  rd, rs, immd
-B lb  rd, rs, immd
-C sb  rd, rs, immd
-D
-E
+lw  rt, rs, immd
+sw  rt, rs, immd
+lb  rt, rs, immd
+sb  rt, rs, immd
 
 
 --------------
@@ -102,110 +102,25 @@ sz   op    immd27
 00 11110 uuu uuuu u uuuu uuuuu uuuuu uuuuu
 00 11111 uuu uuuu u uuuu uuuuu uuuuu uuuuu
 
-control signals:
-alu_op
-shift_type
-shift_ammount
-reg_dst
-mem_wren
-reg_wren
-ula_src #choose between alu and shift
-pred_wren
-pred_sel
 
-# shift (2 + 5 bits)
-17 shadd1 rd, rs, rt
-16 shsub  rd, rs, rt
-
-22 slli rd, rs, immd # same as shadd rd, rs, r0
-23 slri rd, rs, immd # same as sradd rd, rs, r0
-24 sari rd, rs, immd # same as saaad rd, rs, r0
-
-42 gsr rd   # get status registers: flags, carry, protection etc
-43 ssr rd   # set status registers
-
-
-
-- syscall
-- atomic
-- shift with carry
-- bitwise complement and AND
-
-src rd, ra
-(rD)[0] ← MSR[C]
-(rD)[1:31] ← (rA)[0:30]
-MSR[C] ← (rA)[31]
-
-while (v[i] == 0 && i < 10) {
-    ++i;
-}
-
-
-r1 = v
-r2 = i
-loop:
-        shadd r3, r1, r2 << 4 
-        cmplti p2, r1, 10 ;;
-
-	    lw r3, r3 ;;
-
-        cmpeq p1, r3, r0 ;;
-
-        andp p1, p1, p2 ;;
-
-  (!p1) j loop
-  (p1)  addi r2, r2, 1 ;;
-
-
-
-while (*src) {
-    *dst = *src;
-    ++dst;
-    ++src;
-}
-
-r1 = src
-r2 = dst
-loop:
-        lw r5, r1 ;; 16
-
-        cmpeq p1, r5, r0 ;; 32
-
-  (!p1) sw r5, r2 32
-  (!p1) j loop ;; 32
-
-  (!p1) addi r1, r1, 1 32 bytes
-  (!p1) addi r2, r2, 1 32 bytes
-
-
-    add r1, r2, r3
-    lw r5, r1
-
-    lw r1, r1
-    add r1, r1, r2
-void double() {
-
-}
-
-00 00000 000 000 000
 00 1pccc iii iii iii
 00 01111 000 000 000
 00 01111 0 0000 0000
 00 01111 0000 00000
 
-1 add    rd, rs, rt
-2 sub    rd, rs, rt
-3 addi   rd, rd, immd5
-4 lw     rd, rs
-5 sw     rd, rs
-6 lw fp  rs, immd5
-7 sw fp  rs, immd5
-8 mov    rd, rs
-9 movi   rs, immd5
-A and    rd, rs, rt
-B or     rd, rs, rt
-C cmpeq  pd, rs, rt
-D cmplt  pd, rs, rt
-E cmpgt  pd, rs, rt
-F addhi  rd, rs, rt
-
+0 add    rd, rs, rt
+1 sub    rd, rs, rt
+2 addi   rd, rd, immd5
+3 lw     rd, rs
+4 sw     rd, rs
+5 lw sp  rs, immd5
+6 sw sp  rs, immd5
+7 mov    rd, rs
+8 movi   rs, immd5
+9 and    rd, rs, rt
+A or     rd, rs, rt
+B cmpeq  pd, rs, rt
+C cmplt  pd, rs, rt
+D cmpgt  pd, rs, rt
+E addhi  rd, rs, rt
+F subhi  rd, rs, rt

@@ -164,8 +164,108 @@ package hivek_pkg is
         dout : out alu_shifter_out_t
     );
     end component;
+
+    ----------------------------------------------------------
+    -- instruction_decoder
+    ----------------------------------------------------------
+    type instruction_decoder_in_t is record
+    end record;
+
+    type instruction_decoder_out_t is record
+        immd32  : std_logic_vector(31 downto 0);
+        control : id_control_out_t;
+    end record;
+
+    component instruction_decoder is
+    port (
+        din  : in instruction_decoder_in_t;
+        dout : out instruction_decoder_out_t
+    );
+
+    ----------------------------------------------------------
+    -- register_bank
+    ----------------------------------------------------------
+    type register_bank_path_in_t is record
+        wren   : std_logic;
+        reg_a  : std_logic_vector(4 downto 0);
+        reg_b  : std_logic_vector(4 downto 0);
+        reg_c  : std_logic_vector(4 downto 0);
+        data_c : std_logic_vector(31 downto 0);
+    end record;
+
+    type register_bank_path_out_t is record
+        data_a : std_logic_vector(31 downto 0);
+        data_b : std_logic_vector(31 downto 0);
+    end record;
+
+    type register_bank_in_t is record
+        op0 : register_bank_path_in_t;
+        op1 : register_bank_path_in_t;
+    end record;
+
+    type register_bank_out_t is record
+        op0 : register_bank_path_out_t;
+        op1 : register_bank_path_out_t;
+    end record;
+
+    component register_bank is
+    generic (
+        vendor : string := "GENERIC"
+    );
+    port (
+        clock : in std_logic;
+        reset : in std_logic;
+        din   : in register_bank_in_t;
+        dout  : out register_bank_out_t
+    );
+
     ---------------------
     -- Pipeline stages --
     ---------------------
+    type id_control_out_t is record
+        -- predicate
+        pr_reg  : std_logic_vector(1 downto 0);
+        pr_data : std_logic;
+        
+        -- operations
+        alu_op  : alu_op_t;
+        sh_type : shift_type_t;
 
+        -- write enables
+        reg_wren : std_logic;
+        mem_wren : std_logic;
+        pr_wren  : std_logic;
+
+        -- selectors
+        reg_dst_sel    : std_logic;
+        alu_sh_sel     : std_logic;
+        reg_immd_sel   : std_logic;
+        alu_sh_mem_sel : std_logic;
+        sh_amt_src_sel : std_logic;
+    end record;
+
+    type instruction_decode_path_out_t is record
+        data_ra : std_logic_vector(31 downto 0);
+        data_rb : std_logic_vector(31 downto 0);
+        immd32  : std_logic_vector(31 downto 0);
+        control : id_control_out_t;
+    end record;
+
+    type instruction_decode_stage_in_t is record
+        op0 : instruction_decode_path_in_t;
+        op1 : instruction_decode_path_in_t;
+    end record;
+
+    type instruction_decode_stage_out_t is record
+        op0 : instruction_decode_path_out_t;
+        op1 : instruction_decode_path_out_t;
+    end record;
+
+    component instruction_decode_stage is
+    port (
+        clock : in std_logic;
+        reset : in std_logic;
+        din   : in instruction_decode_stage_in_t;
+        dout  : out instruction_decode_stage_out_t
+    );
 end package;

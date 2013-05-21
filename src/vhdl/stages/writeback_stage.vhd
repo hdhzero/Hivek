@@ -14,21 +14,21 @@ end writeback_stage;
 
 architecture writeback_stage of writeback_stage is
 begin
-    reg_data0 <= alu_data0 when data_sel0 = '0' else mem_data0;
-    reg_data1 <= alu_data1 when data_sel1 = '0' else mem_data1;
+    process (din)
+    begin
+        dout.op0.reg_wren <= din.op0.reg_wren;
+        dout.op1.reg_wren <= din.op1.reg_wren;
+        
+        if din.op0.rc_sel = '0' then
+            dout.op0.reg_data <= din.op0.alu_shifter_data;
+        else
+            dout.op0.data_rc <= din.op0.mem_data;
+        end if;
 
-    reg_wren_o
+        if din.op1.rc_sel = '0' then
+            dout.op1.data_rc <= din.op1.alu_shifter_data;
+        else
+            dout.op1.data_rc <= din.op1.mem_data;
+        end if;
+    end process;
 end writeback_stage;
-
-type bank_writeback_t is record
-    reg_wren : std_logic;
-    reg_dst  : std_logic_vector(4 downto 0);
-    data_sel : std_logic;
-    alu_data : std_logic_vector(31 downto 0);
-    mem_data : std_logic_vector(31 downto 0);
-end record;
-
-type writeback_stage_in_t is record
-    bank0 : bank_writeback_t;
-    bank1 : bank_writeback_t;
-end record;
