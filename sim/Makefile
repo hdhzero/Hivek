@@ -25,7 +25,7 @@ ifeq ("$(SIMULATOR)", "modelsim")
     COM    = vcom -work $(WORK_DIR) -93 -explicit 
     SIM    = vsim -c
     COM_FLAGS =
-    SIM0_FLAGS = -do "run $(RUNTIME); quit -sim; quit" -wlf $(TESTBENCH).wlf 
+    SIM0_FLAGS = -do "add list *; run $(RUNTIME); write list counter.lst ;quit -sim; quit" -wlf $(TESTBENCH).wlf 
 #-do "vcd file $(TESTBENCH).vcd; vcd add /$(TESTBENCH)/*; run $(RUNTIME)ns; quit -sim; quit"
     SIM1_FLAGS = 
 endif
