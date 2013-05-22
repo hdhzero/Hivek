@@ -30,9 +30,29 @@ architecture icache_memory_arch of icache_memory is
     signal out2 : std_logic_vector(15 downto 0);
     signal out3 : std_logic_vector(15 downto 0);
 
+    signal wren0 : std_logic;
+    signal wren1 : std_logic;
+    signal wren2 : std_logic;
+    signal wren3 : std_logic;
+
     signal address_plus_one : std_logic_vector(31 downto 0);
     signal addr_sel         : std_logic_vector(1 downto 0);
     signal ONE : std_logic_vector(31 downto 0);
+
+    component memory_bram is
+    generic (
+        VENDOR     : string  := "GENERIC";
+        DATA_WIDTH : integer := 16;
+        ADDR_WIDTH : integer := 8 -- 2 ^ ADDR_WIDTH addresses
+    );
+    port (
+        clock  : in std_logic;
+        wren   : in std_logic;
+        addr   : in std_logic_vector(ADDR_WIDTH - 1 downto 0);
+        data_i : in std_logic_vector(DATA_WIDTH - 1 downto 0);
+        data_o : out std_logic_vector(DATA_WIDTH - 1 downto 0)
+    );
+    end component;
 
 begin
     address_plus_one <= std_logic_vector(unsigned(address) + x"00000004");

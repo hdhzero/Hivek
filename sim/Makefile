@@ -140,24 +140,39 @@ register_bank_tb:
 	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
 
 
-REG_BRAM_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/reg_bram_altera.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/reg_bram.vhd \
-    $(BENCH_DIR)/auxiliary/reg_bram_tb.vhd
+########################
+## hivek_tb
+########################
 
-REG_BRAM_TB = reg_bram_tb
+HIVEK_TOP_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/memory/memory_bram.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/memory/dual_memory_bram.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/memory/icache_memory.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/memory/dcache_memory.vhd \
+    $(SRC_DIR)/vhdl/stages/instruction_fetch_stage.vhd \
+    $(SRC_DIR)/vhdl/stages/instruction_expansion_stage.vhd \
+    $(SRC_DIR)/vhdl/stages/instruction_decode_stage.vhd \
+    $(SRC_DIR)/vhdl/stages/instruction_decode2_stage.vhd \
+    $(SRC_DIR)/vhdl/stages/execution_stage.vhd \
+    $(SRC_DIR)/vhdl/stages/execution2_stage.vhd \
+    $(SRC_DIR)/vhdl/stages/writeback_stage.vhd \
+    $(SRC_DIR)/vhdl/pipeline/pipeline.vhd \
+    $(SRC_DIR)/vhdl/hivek.vhd \
+    $(BENCH_DIR)/hivek_tb.vhd
 
-reg_bram_tb: TESTBENCH = $(REG_BRAM_TB)
-reg_bram_tb: RUNTIME   = 500
-reg_bram_tb: FILES     = $(REG_BRAM_FILES)
-reg_bram_tb:
+HIVEK_TOP_TB = hivek_tb
+
+hivek_tb: TESTBENCH = $(HIVEK_TOP_TB)
+hivek_tb: RUNTIME = 500
+hivek_tb: FILES = $(HIVEK_TOP_FILES)
+hivek_tb:
 	$(MKLIB) $(WORK_DIR)
 	$(MAP) $(WORK_DIR)
 	$(foreach file, $(FILES), $(COM) $(file); ${\n})
 	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
 
 TESTBENCHS = $(BARREL_SHIFTER_TB) $(ALU_TB) $(ALU_SHIFTER_TB) $(REGISTER_BANK_TB) \
-    $(PREDICATE_BANK_TB)
+    $(PREDICATE_BANK_TB) $(HIVEK_TOP_TB)
 
 clean:
 	rm -rf *.ini

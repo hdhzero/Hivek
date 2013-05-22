@@ -50,7 +50,7 @@ jr rd
 jalr rd
 
 - shift and add
-shadd rd, rs, rt SHT immd
+shadd rd, rs, rt SHT immd # rd = (rs SHT immd) + rt
 
 -------------
 -- Type II --

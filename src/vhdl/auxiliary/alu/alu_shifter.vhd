@@ -42,7 +42,7 @@ begin
     bsh_i.left    <= '1' when din.shift_type = SH_SLL else '0';
     bsh_i.logical <= '1' when din.shift_type /= SH_SRA else '0';
     bsh_i.shift   <= din.shift_amt;
-    bsh_i.input   <= din.operand_b;
+    bsh_i.input   <= din.operand_a;
 
     barrel_shifter_u : barrel_shifter
     port map (

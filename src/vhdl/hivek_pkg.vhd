@@ -94,11 +94,48 @@ package hivek_pkg is
     ---------------------
     -- Pipeline stages --
     ---------------------
+    ----------------------------------------------------------
+    -- instruction_fetch
+    ----------------------------------------------------------
+    type instruction_fetch_stage_in_t is record
+        TODO : std_logic;
+    end record;
+
+    type instruction_fetch_stage_out_t is record
+        TODO : std_logic;
+    end record;
+
+    component instruction_fetch_stage is
+    port (
+        clock : in std_logic;
+        reset : in std_logic;
+        din   : in instruction_fetch_stage_in_t;
+        dout  : out instruction_fetch_stage_out_t
+    );
+    end component;
+
+    ----------------------------------------------------------
+    -- instruction_expansion
+    ----------------------------------------------------------
+    type instruction_expansion_stage_in_t is record
+        TODO : std_logic;
+    end record;
+
+    type instruction_expansion_stage_out_t is record
+        TODO : std_logic;
+    end record;
+
+    component instruction_expansion_stage is
+    port (
+        din   : in instruction_expansion_stage_in_t;
+        dout  : out instruction_expansion_stage_out_t
+    );
+    end component;
+
+    ----------------------------------------------------------
+    -- instruction_decode
+    ----------------------------------------------------------
     type id_control_out_t is record
-        -- predicate
-        pr_reg  : std_logic_vector(1 downto 0);
-        pr_data : std_logic;
-        
         -- operations
         alu_op  : alu_op_t;
         sh_type : shift_type_t;
@@ -117,11 +154,14 @@ package hivek_pkg is
     end record;
 
     type instruction_decode_path_in_t is record
-        operation0 : std_logic_vector(31 downto 0);
-        operation1 : std_logic_vector(31 downto 0);
+        operation : std_logic_vector(31 downto 0);
+        wren      : std_logic;
+        reg_dst   : std_logic_vector(4 downto 0);
     end record;
 
     type instruction_decode_path_out_t is record
+        pr_reg  : std_logic_vector(1 downto 0);
+        pr_data : std_logic;
         data_ra : std_logic_vector(31 downto 0);
         data_rb : std_logic_vector(31 downto 0);
         immd32  : std_logic_vector(31 downto 0);
@@ -146,7 +186,127 @@ package hivek_pkg is
         dout  : out instruction_decode_stage_out_t
     );
     end component;
-   
+  
+    ----------------------------------------------------------
+    -- instruction_decode2
+    ----------------------------------------------------------
+    type instruction_decode2_stage_in_t is record
+--        op0 : instruction_decode_path_in_t;
+--        op1 : instruction_decode_path_in_t;
+        TODO : std_logic;
+    end record;
+
+    type instruction_decode2_stage_out_t is record
+--        op0 : instruction_decode_path_out_t;
+--        op1 : instruction_decode_path_out_t;
+        TODO : std_logic;
+    end record;
+
+    component instruction_decode2_stage is
+    port (
+        din   : in instruction_decode2_stage_in_t;
+        dout  : out instruction_decode2_stage_out_t
+    );
+    end component;
+
+    ----------------------------------------------------------
+    -- execution_stage
+    ----------------------------------------------------------
+    type execution_stage_path_in_t is record
+        pr_reg  : std_logic_vector(1 downto 0);
+        pr_data : std_logic;
+        data_ra : std_logic_vector(31 downto 0);
+        data_rb : std_logic_vector(31 downto 0);
+        immd32  : std_logic_vector(31 downto 0);
+        control : id_control_out_t;
+    end record;
+
+    type execution_stage_path_out_t is record
+        -- control : execution_control_out_t;
+        TODO : std_logic;
+    end record;
+
+    type execution_stage_in_t is record
+        op0 : execution_stage_path_in_t;
+        op1 : execution_stage_path_in_t;
+    end record;
+
+    type execution_stage_out_t is record
+        op0 : execution_stage_path_out_t;
+        op1 : execution_stage_path_out_t;
+    end record;
+
+    component execution_stage is
+    port (
+        clock : in std_logic;
+        reset : in std_logic;
+        din   : in execution_stage_in_t;
+        dout  : out execution_stage_out_t
+    );
+    end component;
+
+    ----------------------------------------------------------
+    -- execution_stage2
+    ----------------------------------------------------------
+    type execution2_stage_in_t is record
+--        op0 : execution_stage_path_in_t;
+--        op1 : execution_stage_path_in_t;
+        TODO : std_logic;
+    end record;
+
+    type execution2_stage_out_t is record
+--        op0 : execution_stage_path_out_t;
+--        op1 : execution_stage_path_out_t;
+        TODO : std_logic;
+    end record;
+
+    component execution2_stage is
+    port (
+        din   : in execution2_stage_in_t;
+        dout  : out execution2_stage_out_t
+    );
+    end component;
+
+    ----------------------------------------------------------
+    -- writeback
+    ----------------------------------------------------------
+    type writeback_stage_in_t is record
+        TODO : std_logic;
+    end record;
+
+    type writeback_stage_out_t is record
+        TODO : std_logic;
+    end record;
+
+    component writeback_stage is 
+    port (
+        din  : in writeback_stage_in_t;
+        dout : out writeback_stage_out_t
+    );
+    end component;
+
+
+    --------------
+    -- pipeline --
+    --------------
+
+    type pipeline_in_t is record
+        TODO : std_logic;
+    end record;
+
+    type pipeline_out_t is record
+        TODO : std_logic;
+    end record;
+
+    component pipeline is
+    port (
+        clock : in std_logic;
+        reset : in std_logic;
+        din   : pipeline_in_t;
+        dout  : pipeline_out_t
+    );
+    end component;
+
     -------------------------
     -- components definitions
     -------------------------
@@ -224,19 +384,25 @@ package hivek_pkg is
     ----------------------------------------------------------
     -- instruction_decoder
     ----------------------------------------------------------
-    type instruction_decoder_in_t is record
-        a : std_logic;
+    type operation_decoder_in_t is record
+        operation : std_logic_vector(31 downto 0);
     end record;
 
-    type instruction_decoder_out_t is record
+    type operation_decoder_out_t is record
+        reg_a   : std_logic_vector(4 downto 0);
+        reg_b   : std_logic_vector(4 downto 0);
+        reg_c   : std_logic_vector(4 downto 0);
+        pr_reg  : std_logic_vector(1 downto 0);
+        pr_data : std_logic;
         immd32  : std_logic_vector(31 downto 0);
+        sh_immd : std_logic_vector(4 downto 0);
         control : id_control_out_t;
     end record;
 
-    component instruction_decoder is
+    component operation_decoder is
     port (
-        din  : in instruction_decoder_in_t;
-        dout : out instruction_decoder_out_t
+        din  : in operation_decoder_in_t;
+        dout : out operation_decoder_out_t
     );
     end component;
 
@@ -366,4 +532,24 @@ package hivek_pkg is
     );
     end component;
 
+    ----------------
+    -- hivek_core --
+    ----------------
+
+    type hivek_in_t is record
+        TODO : std_logic;
+    end record;
+
+    type hivek_out_t is record
+        TODO : std_logic;
+    end record;
+
+    component hivek is
+    port (
+        clock : std_logic;
+        reset : std_logic;
+        din   : in hivek_in_t;
+        dout  : out hivek_out_t
+    );
+    end component;
 end package;
