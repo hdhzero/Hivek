@@ -102,6 +102,22 @@ alu_shifter_tb:
 	$(foreach file, $(FILES), $(COM) $(file); ${\n})
 	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
   
+# predicate_bank
+PREDICATE_BANK_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/predicate_bank/predicate_bank.vhd \
+    $(BENCH_DIR)/auxiliary/predicate_bank/predicate_bank_tb.vhd
+
+PREDICATE_BANK_TB = predicate_bank_tb
+
+predicate_bank_tb: TESTBENCH = $(PREDICATE_BANK_TB)
+predicate_bank_tb: RUNTIME = 500
+predicate_bank_tb: FILES = $(PREDICATE_BANK_FILES)
+predicate_bank_tb:
+	$(MKLIB) $(WORK_DIR)
+	$(MAP) $(WORK_DIR)
+	$(foreach file, $(FILES), $(COM) $(file); ${\n})
+	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
+
 
 # register bank
 REGISTER_BANK_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
@@ -140,7 +156,9 @@ reg_bram_tb:
 	$(foreach file, $(FILES), $(COM) $(file); ${\n})
 	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
 
-TESTBENCHS = $(BARREL_SHIFTER_TB) $(ALU_TB) $(ALU_SHIFTER_TB) $(REGISTER_BANK_TB)
+TESTBENCHS = $(BARREL_SHIFTER_TB) $(ALU_TB) $(ALU_SHIFTER_TB) $(REGISTER_BANK_TB) \
+    $(PREDICATE_BANK_TB)
+
 clean:
 	rm -rf *.ini
 	rm -rf $(WORK_DIR)

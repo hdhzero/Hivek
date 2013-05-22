@@ -329,4 +329,41 @@ package hivek_pkg is
     );
     end component;
 
+    ----------------------------------------------------------
+    -- predicate_bank
+    ----------------------------------------------------------
+    type predicate_bank_path_in_t is record
+        wren   : std_logic;
+        data   : std_logic;
+        reg_pr : std_logic_vector(1 downto 0);
+        reg_a  : std_logic_vector(1 downto 0);
+        reg_b  : std_logic_vector(1 downto 0);
+        reg_c  : std_logic_vector(1 downto 0);
+    end record;
+
+    type predicate_bank_path_out_t is record
+        data_pr : std_logic;
+        data_a  : std_logic;
+        data_b  : std_logic;
+    end record;
+
+    type predicate_bank_in_t is record
+        op0 : predicate_bank_path_in_t;
+        op1 : predicate_bank_path_in_t;
+    end record;
+
+    type predicate_bank_out_t is record
+        op0 : predicate_bank_path_out_t;
+        op1 : predicate_bank_path_out_t;
+    end record;
+
+    component predicate_bank is
+    port (
+        clock : in std_logic;
+        reset : in std_logic;
+        din   : in predicate_bank_in_t;
+        dout  : out predicate_bank_out_t
+    );
+    end component;
+
 end package;
