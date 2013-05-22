@@ -72,7 +72,7 @@ begin
 
     nob <= not din.operand_b;
 
-    process (din.operation, din.operand_b)
+    process (din.operation, din.operand_b, nob)
     begin
         case din.operation is
             when ALU_SUB =>

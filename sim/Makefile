@@ -1,6 +1,6 @@
 # project directories
 # update project_dir to the folder where your files are
-PROJECT_DIR = /home/hdhzero/Projects/Hivek
+PROJECT_DIR = /home/hdhzero/projetos/Hivek
 
 # do not modify below unless you know what you are doing
 SRC_DIR     = $(PROJECT_DIR)/src
@@ -105,13 +105,13 @@ alu_shifter_tb:
 
 # register bank
 REGISTER_BANK_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/bank_selector.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/reg_bram_altera.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/reg_bram.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/reg_block.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/register_bank.vhd \
-    $(BENCH_DIR)/auxiliary/register_bank_tb.vhd
+    $(SRC_DIR)/vhdl/auxiliary/register_bank/bank_selector.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/register_bank/reg_bram.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/register_bank/reg_block.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/register_bank/register_bank.vhd \
+    $(BENCH_DIR)/auxiliary/register_bank/register_bank_tb.vhd
 
+    #$(SRC_DIR)/vhdl/auxiliary/register_bank/reg_bram_altera.vhd 
 REGISTER_BANK_TB = register_bank_tb
 
 register_bank_tb: TESTBENCH = $(REGISTER_BANK_TB)
@@ -140,7 +140,7 @@ reg_bram_tb:
 	$(foreach file, $(FILES), $(COM) $(file); ${\n})
 	$(SIM) $(SIM0_FLAGS) $(TESTBENCH) $(SIM1_FLAGS)
 
-TESTBENCHS = $(BARREL_SHIFTER_TB) $(ALU_TB) $(ALU_SHIFTER_TB)
+TESTBENCHS = $(BARREL_SHIFTER_TB) $(ALU_TB) $(ALU_SHIFTER_TB) $(REGISTER_BANK_TB)
 clean:
 	rm -rf *.ini
 	rm -rf $(WORK_DIR)
