@@ -156,6 +156,10 @@ HIVEK_TOP_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
     $(SRC_DIR)/vhdl/auxiliary/register_bank/reg_block.vhd \
     $(SRC_DIR)/vhdl/auxiliary/register_bank/register_bank.vhd \
 	$(SRC_DIR)/vhdl/auxiliary/operation_decoder/operation_decoder.vhd \
+	$(SRC_DIR)/vhdl/auxiliary/alu/alu.vhd \
+	$(SRC_DIR)/vhdl/auxiliary/alu/barrel_shifter.vhd \
+	$(SRC_DIR)/vhdl/auxiliary/alu/alu_shifter.vhd \
+	$(SRC_DIR)/vhdl/auxiliary/predicate_bank/predicate_bank.vhd \
     $(SRC_DIR)/vhdl/stages/instruction_fetch_stage.vhd \
     $(SRC_DIR)/vhdl/stages/instruction_expansion_stage.vhd \
     $(SRC_DIR)/vhdl/stages/instruction_decode_stage.vhd \

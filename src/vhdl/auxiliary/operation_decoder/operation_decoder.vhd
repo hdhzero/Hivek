@@ -13,62 +13,8 @@ entity operation_decoder is
 end operation_decoder;
 
 architecture behavior of operation_decoder is
-    subtype operation_type_t is std_logic_vector(2 downto 0);
-    subtype operation_t is std_logic_vector(4 downto 0);
-
     signal operation_type :operation_type_t;  
     signal operation : operation_t;
-
-    constant TYPE_I   : operation_type_t := "000";
-    constant TYPE_II  : operation_type_t := "001";
-    constant TYPE_III : operation_type_t := "010";
-    constant TYPE_IV  : operation_type_t := "011";
-    constant TYPE_V   : operation_type_t := "100";
-
-    constant OP_ADD    : operation_t := "00000";
-    constant OP_SUB    : operation_t := "00001";
-    constant OP_ADC    : operation_t := "00010";
-    constant OP_SBC    : operation_t := "00011";
-
-    constant OP_AND    : operation_t := "00100";
-    constant OP_OR     : operation_t := "00101";
-    constant OP_NOR    : operation_t := "00110";
-    constant OP_XOR    : operation_t := "00111";
-
-    constant OP_SLLV   : operation_t := "01000";
-    constant OP_SLRV   : operation_t := "01001";
-    constant OP_SRAV   : operation_t := "01010";
-
-    constant OP_CMPEQ  : operation_t := "01011";
-    constant OP_CMPLT  : operation_t := "01100";
-    constant OP_CMPLTU : operation_t := "01101";
-    constant OP_CMPGT  : operation_t := "01110";
-    constant OP_CMPGTU : operation_t := "01111";
-
-    constant OP_ANDP   : operation_t := "10000";
-    constant OP_ORP    : operation_t := "10001";
-    constant OP_XORP   : operation_t := "10010";
-    constant OP_NORP   : operation_t := "10011";
-
-    constant OP_JR     : operation_t := "10100";
-    constant OP_JALR   : operation_t := "10101";
-
-    constant OP_SHADD  : operation_t := "10110";
-
-    constant OP_ADDI    : operation_t := "00000";
-    constant OP_ADCI    : operation_t := "00001";
-    constant OP_ANDI    : operation_t := "00010";
-    constant OP_ORI     : operation_t := "00011";
-    constant OP_CMPEQI  : operation_t := "00100";
-    constant OP_CMPLTI  : operation_t := "00101";
-    constant OP_CMPLTUI : operation_t := "00110";
-    constant OP_CMPGTI  : operation_t := "00111";
-    constant OP_CMPGTUI : operation_t := "01000";
-    constant OP_LW      : operation_t := "01001";
-    constant OP_LB      : operation_t := "01010";
-    constant OP_SW      : operation_t := "01011";
-    constant OP_SB      : operation_t := "01100";
-
 begin
 
     process (din, operation_type)

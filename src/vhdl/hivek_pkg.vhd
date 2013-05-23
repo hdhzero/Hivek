@@ -25,71 +25,76 @@ package hivek_pkg is
     constant ALU_SUB    : alu_op_t := "001";
     constant ALU_ADC    : alu_op_t := "010";
     constant ALU_SBC    : alu_op_t := "011";
+
     constant ALU_AND    : alu_op_t := "100";
     constant ALU_OR     : alu_op_t := "101";
     constant ALU_NOR    : alu_op_t := "110";
     constant ALU_XOR    : alu_op_t := "111";
+
     constant ALU_CMPEQ  : alu_op_t := "000";
     constant ALU_CMPLT  : alu_op_t := "001";
     constant ALU_CMPLTU : alu_op_t := "010";
     constant ALU_CMPGT  : alu_op_t := "011";
     constant ALU_CMPGTU : alu_op_t := "100";
 
-    -- opcodes type I
-    subtype opcodes_i_t is std_logic_vector(4 downto 0);
+    constant ALU_ANDP   : alu_op_t := "101";
+    constant ALU_ORP    : alu_op_t := "110";
+    constant ALU_XORP   : alu_op_t := "111";
 
-    -- arith
-    constant OP_ADD : opcodes_i_t := "00000";
-    constant OP_SUB : opcodes_i_t := "00001";
-    constant OP_ADC : opcodes_i_t := "00010";
-    constant OP_SBC : opcodes_i_t := "00011";
+    subtype operation_type_t is std_logic_vector(2 downto 0);
 
-    -- logical
-    constant OP_AND : opcodes_i_t := "00100";
-    constant OP_OR  : opcodes_i_t  := "00101";
-    constant OP_NOR : opcodes_i_t := "00110";
-    constant OP_XOR : opcodes_i_t := "00111";
+    constant TYPE_I   : operation_type_t := "000";
+    constant TYPE_II  : operation_type_t := "001";
+    constant TYPE_III : operation_type_t := "010";
+    constant TYPE_IV  : operation_type_t := "011";
+    constant TYPE_V   : operation_type_t := "100";
 
-    -- shift
-    constant OP_SLLV : opcodes_i_t := "01000";
-    constant OP_SRLV : opcodes_i_t := "01001";
-    constant OP_SRAV : opcodes_i_t := "01010";
+    subtype operation_t is std_logic_vector(4 downto 0);
 
-    -- comparison
-    constant OP_CMPEQ  : opcodes_i_t := "01011";
-    constant OP_CMPLT  : opcodes_i_t := "01100";
-    constant OP_CMPGT  : opcodes_i_t := "01101";
-    constant OP_CMPLTU : opcodes_i_t := "01110";
-    constant OP_CMPGTU : opcodes_i_t := "01111";
+    -- type I
+    constant OP_ADD    : operation_t := "00000";
+    constant OP_SUB    : operation_t := "00001";
+    constant OP_ADC    : operation_t := "00010";
+    constant OP_SBC    : operation_t := "00011";
 
-    -- branch
-    constant OP_JR   : opcodes_i_t := "10000";
-    constant OP_JALR : opcodes_i_t := "10001";
+    constant OP_AND    : operation_t := "00100";
+    constant OP_OR     : operation_t := "00101";
+    constant OP_NOR    : operation_t := "00110";
+    constant OP_XOR    : operation_t := "00111";
 
-    -- opcodes type II
-    subtype opcodes_ii_t is std_logic_vector(3 downto 0);
+    constant OP_SLLV   : operation_t := "01000";
+    constant OP_SLRV   : operation_t := "01001";
+    constant OP_SRAV   : operation_t := "01010";
 
-    -- arith
-    constant OP_ADDI : opcodes_ii_t := "0000";
-    constant OP_ADCI : opcodes_ii_t := "0001";
+    constant OP_CMPEQ  : operation_t := "01011";
+    constant OP_CMPLT  : operation_t := "01100";
+    constant OP_CMPLTU : operation_t := "01101";
+    constant OP_CMPGT  : operation_t := "01110";
+    constant OP_CMPGTU : operation_t := "01111";
 
-    -- logical
-    constant OP_ANDI : opcodes_ii_t := "0010";
-    constant OP_ORI  : opcodes_ii_t := "0011";
+    constant OP_ANDP   : operation_t := "10000";
+    constant OP_ORP    : operation_t := "10001";
+    constant OP_XORP   : operation_t := "10010";
+    constant OP_NORP   : operation_t := "10011";
 
-    -- comparison
-    constant OP_CMPEQI  : opcodes_ii_t := "0100";
-    constant OP_CMPLTI  : opcodes_ii_t := "0101";
-    constant OP_CMPGTI  : opcodes_ii_t := "0110";
-    constant OP_CMPLTUI : opcodes_ii_t := "0111";
-    constant OP_CMPGTUI : opcodes_ii_t := "1000";
+    constant OP_JR     : operation_t := "10100";
+    constant OP_JALR   : operation_t := "10101";
 
-    -- memory
-    constant OP_LW : opcodes_ii_t := "1001";
-    constant OP_LB : opcodes_ii_t := "1010";
-    constant OP_SW : opcodes_ii_t := "1011";
-    constant OP_SB : opcodes_ii_t := "1100";
+    constant OP_SHADD  : operation_t := "10110";
 
+    constant OP_ADDI    : operation_t := "00000";
+    constant OP_ADCI    : operation_t := "00001";
+    constant OP_ANDI    : operation_t := "00010";
+    constant OP_ORI     : operation_t := "00011";
+    constant OP_CMPEQI  : operation_t := "00100";
+    constant OP_CMPLTI  : operation_t := "00101";
+    constant OP_CMPLTUI : operation_t := "00110";
+    constant OP_CMPGTI  : operation_t := "00111";
+    constant OP_CMPGTUI : operation_t := "01000";
+    constant OP_LW      : operation_t := "01001";
+    constant OP_LB      : operation_t := "01010";
+    constant OP_SW      : operation_t := "01011";
+    constant OP_SB      : operation_t := "01100";
 
     ---------------------
     -- Pipeline stages --
@@ -178,6 +183,9 @@ package hivek_pkg is
     type instruction_decode_path_out_t is record
         pr_reg  : std_logic_vector(1 downto 0);
         pr_data : std_logic;
+        reg_a   : std_logic_vector(4 downto 0);
+        reg_b   : std_logic_vector(4 downto 0);
+        reg_c   : std_logic_vector(4 downto 0);
         data_a  : std_logic_vector(31 downto 0);
         data_b  : std_logic_vector(31 downto 0);
         immd32  : std_logic_vector(31 downto 0);
@@ -206,16 +214,55 @@ package hivek_pkg is
     ----------------------------------------------------------
     -- instruction_decode2
     ----------------------------------------------------------
+    type id2_control_out_t is record
+        -- operations
+        alu_op  : alu_op_t;
+        sh_type : shift_type_t;
+
+        -- write enables
+        reg_wren : std_logic;
+        mem_wren : std_logic;
+        pr_wren  : std_logic;
+
+        -- selectors
+        alu_sh_sel     : std_logic;
+        reg_immd_sel   : std_logic;
+        alu_sh_mem_sel : std_logic;
+        sh_amt_src_sel : std_logic;
+    end record;
+
+    type instruction_decode2_path_in_t is record
+        pr_reg  : std_logic_vector(1 downto 0);
+        pr_data : std_logic;
+        reg_a   : std_logic_vector(4 downto 0);
+        reg_b   : std_logic_vector(4 downto 0);
+        reg_c   : std_logic_vector(4 downto 0);
+        data_a  : std_logic_vector(31 downto 0);
+        data_b  : std_logic_vector(31 downto 0);
+        immd32  : std_logic_vector(31 downto 0);
+        control : id_control_out_t;
+    end record;
+
+    type instruction_decode2_path_out_t is record
+        pr_reg  : std_logic_vector(1 downto 0);
+        pr_data : std_logic;
+        reg_a   : std_logic_vector(4 downto 0);
+        reg_b   : std_logic_vector(4 downto 0);
+        reg_dst : std_logic_vector(4 downto 0);
+        data_a  : std_logic_vector(31 downto 0);
+        data_b  : std_logic_vector(31 downto 0);
+        immd32  : std_logic_vector(31 downto 0);
+        control : id2_control_out_t;
+    end record;
+
     type instruction_decode2_stage_in_t is record
---        op0 : instruction_decode_path_in_t;
---        op1 : instruction_decode_path_in_t;
-        TODO : std_logic;
+        op0 : instruction_decode2_path_in_t;
+        op1 : instruction_decode2_path_in_t;
     end record;
 
     type instruction_decode2_stage_out_t is record
---        op0 : instruction_decode_path_out_t;
---        op1 : instruction_decode_path_out_t;
-        TODO : std_logic;
+        op0 : instruction_decode2_path_out_t;
+        op1 : instruction_decode2_path_out_t;
     end record;
 
     component instruction_decode2_stage is
@@ -234,6 +281,7 @@ package hivek_pkg is
         data_a   : std_logic_vector(31 downto 0);
         data_b   : std_logic_vector(31 downto 0);
         immd32   : std_logic_vector(31 downto 0);
+        sh_immd  : std_logic_vector(4 downto 0);
         mem_data : std_logic_vector(31 downto 0);
         control  : id_control_out_t;
     end record;
@@ -398,7 +446,7 @@ package hivek_pkg is
     ----------------------------------------------------------
     type alu_shifter_in_t is record
         alu_op       : alu_op_t;
-        shift_type   : shift_type_t;
+        sh_type      : shift_type_t;
         carry_in     : std_logic;
         operand_a    : std_logic_vector(31 downto 0);
         operand_b    : std_logic_vector(31 downto 0);
