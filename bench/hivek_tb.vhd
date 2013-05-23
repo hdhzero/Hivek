@@ -10,6 +10,12 @@ entity hivek_tb is
 end hivek_tb;
 
 architecture behavior of hivek_tb is
+    -- constants
+    constant ADDR_WIDTH : integer := 8;
+    constant DUAL_ADDR_WIDTH : integer := 8;
+    constant DUAL_DATA_WIDTH : integer := 32;
+    constant VENDOR : string := "GENERIC";
+
     -------------
     -- signals --
     -------------
@@ -30,7 +36,23 @@ architecture behavior of hivek_tb is
     signal iaddr_file   : std_logic_vector(31 downto 0);
     signal idata_file   : std_logic_vector(63 downto 0);
 
-    signal sum : std_logic_vector(31 downto 0);
+    signal d_a_wren   : std_logic;
+    signal d_a_addr   : std_logic_vector(31 downto 0);
+    signal d_a_data_i : std_logic_vector(31 downto 0);
+    signal d_a_data_o : std_logic_vector(31 downto 0);
+
+    signal d_b_wren   : std_logic;
+    signal d_b_addr   : std_logic_vector(31 downto 0);
+    signal d_b_data_i : std_logic_vector(31 downto 0);
+    signal d_b_data_o : std_logic_vector(31 downto 0);
+
+    signal da_wren_file   : std_logic;
+    signal da_addr_file   : std_logic_vector(31 downto 0);
+    signal da_data_i_file : std_logic_vector(31 downto 0);
+
+    signal db_wren_file   : std_logic;
+    signal db_addr_file   : std_logic_vector(31 downto 0);
+    signal db_data_i_file : std_logic_vector(31 downto 0);
 
     file arquivo : text open read_mode is "prog.txt";
 
@@ -69,8 +91,27 @@ architecture behavior of hivek_tb is
     );
     end component;
 
-begin
+    component dcache_memory is
+    generic (
+        VENDOR     : string  := "GENERIC";
+        ADDR_WIDTH : integer := 8 -- 2 ^ ADDR_WIDTH addresses
+    );
+    port (
+        clock    : in std_logic;
 
+        a_wren   : in std_logic;
+        a_addr   : in std_logic_vector(31 downto 0);
+        a_data_i : in std_logic_vector(31 downto 0);
+        a_data_o : out std_logic_vector(31 downto 0);
+
+        b_wren   : in std_logic;
+        b_addr   : in std_logic_vector(31 downto 0);
+        b_data_i : in std_logic_vector(31 downto 0);
+        b_data_o : out std_logic_vector(31 downto 0)
+    );
+    end component;
+
+begin
     init_mem : process 
         variable linha : line;
         variable ss    : string(8 downto 1);
@@ -90,6 +131,14 @@ begin
         iwren_file <= '0';
         iaddr_file <= x"0FFFFFF8";
         idata_file <= x"0000000000000000";
+
+        da_wren_file   <= '0';
+        da_addr_file   <= x"0FFFFFFC";
+        da_data_i_file <= x"00000000";
+
+        db_wren_file   <= '0';
+        db_addr_file   <= x"00000000";
+        da_data_i_file <= x"00000000";
 
         while ss /= "   .data" loop
             i := 7;
@@ -116,14 +165,42 @@ begin
             iaddr_file <= std_logic_vector(unsigned(iaddr_file) + x"00000008");
             idata_file <= data;
 
-            assert iaddr_file = x"DEADBEAF"
-                report integer'image(to_integer(unsigned(iaddr_file)))
-                severity warning;
+--            assert iaddr_file = x"DEADBEAF"
+--                report integer'image(to_integer(unsigned(iaddr_file)))
+--                severity warning;
         end loop;
 
         wait until clock'event and clock = '1';
         idata_file <= data;
         iwren_file <= '0';
+
+        while not endfile(arquivo) loop
+            i := 3;
+
+            while not endfile(arquivo) and i >= 0 loop
+                readline(arquivo, linha);
+                read(linha, ss);
+
+                data(8 * (i + 1) - 1 downto 8 * i) := str_to_std(ss);
+                i := i - 1;
+            end loop;
+
+            while i >= 0 loop
+                data(8 * (i + 1) - 1 downto 8 * i) := "00000000";
+                i := i - 1;
+            end loop;
+
+            wait until clock'event and clock = '1';
+            da_wren_file <= '1';
+            da_addr_file <= std_logic_vector(unsigned(da_addr_file) + x"00000004");
+            da_data_i_file <= data(31 downto 0);
+        end loop;
+
+        wait until clock'event and clock = '1';
+        da_wren_file <= '0';
+        da_addr_file <= x"00000000";
+        da_data_i_file <= x"00000000";
+
         wait;
     end process;
 
@@ -152,7 +229,6 @@ begin
         wait;
     end process;
 
-
     hivek_u : hivek
     port map (
         clock => clock,
@@ -167,8 +243,8 @@ begin
 
     icache_memory_u : icache_memory
     generic map (
-        VENDOR => "GENERIC",
-        ADDR_WIDTH => 8
+        VENDOR => VENDOR, 
+        ADDR_WIDTH => ADDR_WIDTH
     )
     port map (
         clock   => clock,
@@ -178,12 +254,30 @@ begin
         data_o  => i_data_o
     );
 
-    --dcache_memory_u : dcache_memory
-    --port map (
-        --clock => clock,
-        --din   => dm_i,
-        --dout  => dm_o
-    --);
+    d_a_wren   <= da_wren_file;
+    d_a_addr   <= da_addr_file;
+    d_a_data_i <= da_data_i_file;
+
+    d_b_wren   <= db_wren_file;
+    d_b_addr   <= db_addr_file;
+    d_b_data_i <= db_data_i_file;
+
+    dcache_memory_u : dcache_memory
+    generic map (
+        VENDOR => VENDOR,
+        ADDR_WIDTH => DUAL_ADDR_WIDTH
+    )
+    port map (
+        clock    => clock,
+        a_wren   => d_a_wren,
+        a_addr   => d_a_addr,
+        a_data_i => d_a_data_i,
+        a_data_o => d_a_data_o,
+        b_wren   => d_b_wren,
+        b_addr   => d_b_addr,
+        b_data_i => d_b_data_i,
+        b_data_o => d_b_data_o
+    ); 
 
 end behavior;
 
