@@ -2,9 +2,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library work;
-use work.hivek_pkg.all;
-
 entity icache_memory is
     generic (
         VENDOR     : string := "GENERIC";
@@ -37,6 +34,7 @@ architecture icache_memory_arch of icache_memory is
 
     signal address_plus_one : std_logic_vector(31 downto 0);
     signal addr_sel         : std_logic_vector(1 downto 0);
+    signal addr_sel_reg     : std_logic_vector(1 downto 0);
 
     component memory_bram is
     generic (
@@ -94,9 +92,16 @@ begin
         end case;
     end process;
 
-    process (addr_sel, out0, out1, out2, out3)
+    process (clock)
     begin
-        case addr_sel is
+        if clock'event and clock = '1' then
+            addr_sel_reg <= addr_sel;
+        end if;
+    end process;
+
+    process (addr_sel_reg, out0, out1, out2, out3)
+    begin
+        case addr_sel_reg is
             when "00" =>
                 data_o <= out0 & out1 & out2 & out3;
             when "01" =>

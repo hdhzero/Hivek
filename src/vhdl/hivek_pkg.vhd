@@ -97,12 +97,22 @@ package hivek_pkg is
     ----------------------------------------------------------
     -- instruction_fetch
     ----------------------------------------------------------
+    type instruction_fetch_stage_path_in_t is record
+        jmp_addr  : std_logic_vector(31 downto 0);
+        jmp_taken : std_logic;
+    end record;
+
     type instruction_fetch_stage_in_t is record
-        TODO : std_logic;
+        pc_wren     : std_logic;
+        instruction : std_logic_vector(63 downto 0);
+        op0         : instruction_fetch_stage_path_in_t;
+        op1         : instruction_fetch_stage_path_in_t;
     end record;
 
     type instruction_fetch_stage_out_t is record
-        TODO : std_logic;
+        instruction : std_logic_vector(63 downto 0);
+        inst_size   : std_logic_vector(1 downto 0);
+        icache_addr : std_logic_vector(31 downto 0);
     end record;
 
     component instruction_fetch_stage is
@@ -537,11 +547,13 @@ package hivek_pkg is
     ----------------
 
     type hivek_in_t is record
-        TODO : std_logic;
+        instruction : std_logic_vector(63 downto 0);
+        --data_op0 and op1 for dcache
     end record;
 
     type hivek_out_t is record
-        TODO : std_logic;
+        icache_addr : std_logic_vector(31 downto 0);
+        --wren, addr and data for dcache op0 and op1
     end record;
 
     component hivek is

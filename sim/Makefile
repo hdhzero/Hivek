@@ -145,10 +145,12 @@ register_bank_tb:
 ########################
 
 HIVEK_TOP_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/memory/memory_bram.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/memory/dual_memory_bram.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/memory/icache_memory.vhd \
-    $(SRC_DIR)/vhdl/auxiliary/memory/dcache_memory.vhd \
+    $(SRC_DIR)/vhdl/memory/memory_bram.vhd \
+    $(SRC_DIR)/vhdl/memory/dual_memory_bram.vhd \
+    $(SRC_DIR)/vhdl/memory/icache_memory.vhd \
+    $(SRC_DIR)/vhdl/memory/dcache_memory.vhd \
+    $(SRC_DIR)/vhdl/memory/icache_selector.vhd \
+    $(SRC_DIR)/vhdl/memory/dcache_selector.vhd \
     $(SRC_DIR)/vhdl/stages/instruction_fetch_stage.vhd \
     $(SRC_DIR)/vhdl/stages/instruction_expansion_stage.vhd \
     $(SRC_DIR)/vhdl/stages/instruction_decode_stage.vhd \

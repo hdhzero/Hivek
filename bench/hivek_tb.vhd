@@ -26,25 +26,13 @@ architecture behavior of hivek_tb is
     signal hivek_i : hivek_in_t;
     signal hivek_o : hivek_out_t;
 
-    signal i_wren   : std_logic;
-    signal i_addr   : std_logic_vector(31 downto 0);
-    signal i_data_i : std_logic_vector(63 downto 0);
-    signal i_data_o : std_logic_vector(63 downto 0);
+    signal icache_sel : std_logic_vector(1 downto 0);
+    signal dcache_sel : std_logic_vector(1 downto 0);
 
-    signal i_data_i_sel : std_logic;
-    signal iwren_file   : std_logic;
-    signal iaddr_file   : std_logic_vector(31 downto 0);
-    signal idata_file   : std_logic_vector(63 downto 0);
-
-    signal d_a_wren   : std_logic;
-    signal d_a_addr   : std_logic_vector(31 downto 0);
-    signal d_a_data_i : std_logic_vector(31 downto 0);
-    signal d_a_data_o : std_logic_vector(31 downto 0);
-
-    signal d_b_wren   : std_logic;
-    signal d_b_addr   : std_logic_vector(31 downto 0);
-    signal d_b_data_i : std_logic_vector(31 downto 0);
-    signal d_b_data_o : std_logic_vector(31 downto 0);
+    signal mem_ready  : std_logic;
+    signal iwren_file : std_logic;
+    signal iaddr_file : std_logic_vector(31 downto 0);
+    signal idata_file : std_logic_vector(63 downto 0);
 
     signal da_wren_file   : std_logic;
     signal da_addr_file   : std_logic_vector(31 downto 0);
@@ -77,37 +65,85 @@ architecture behavior of hivek_tb is
     ----------------
     -- components --
     ----------------
-    component icache_memory is
+    component icache_selector is
     generic (
         VENDOR     : string := "GENERIC";
         ADDR_WIDTH : integer := 8
     );
     port (
-        clock   : in std_logic;
-        wren    : in std_logic;
-        address : in std_logic_vector(31 downto 0);
-        data_i  : in std_logic_vector(63 downto 0);
-        data_o  : out std_logic_vector(63 downto 0)
+        clock  : in std_logic;
+        sel    : in std_logic_vector(1 downto 0);
+
+        wren_0 : in std_logic;
+        addr_0 : in std_logic_vector(31 downto 0);
+        din_0  : in std_logic_vector(63 downto 0);
+        dout_0 : out std_logic_vector(63 downto 0);
+
+        wren_1 : in std_logic;
+        addr_1 : in std_logic_vector(31 downto 0);
+        din_1  : in std_logic_vector(63 downto 0);
+        dout_1 : out std_logic_vector(63 downto 0);
+
+        wren_2 : in std_logic;
+        addr_2 : in std_logic_vector(31 downto 0);
+        din_2  : in std_logic_vector(63 downto 0);
+        dout_2 : out std_logic_vector(63 downto 0);
+
+        wren_3 : in std_logic;
+        addr_3 : in std_logic_vector(31 downto 0);
+        din_3  : in std_logic_vector(63 downto 0);
+        dout_3 : out std_logic_vector(63 downto 0)
     );
     end component;
 
-    component dcache_memory is
+    component dcache_selector is
     generic (
         VENDOR     : string  := "GENERIC";
         ADDR_WIDTH : integer := 8 -- 2 ^ ADDR_WIDTH addresses
     );
     port (
         clock    : in std_logic;
+        sel      : in std_logic_vector(1 downto 0);
 
-        a_wren   : in std_logic;
-        a_addr   : in std_logic_vector(31 downto 0);
-        a_data_i : in std_logic_vector(31 downto 0);
-        a_data_o : out std_logic_vector(31 downto 0);
+        a_wren_0   : in std_logic;
+        a_addr_0   : in std_logic_vector(31 downto 0);
+        a_data_i_0 : in std_logic_vector(31 downto 0);
+        a_data_o_0 : out std_logic_vector(31 downto 0);
 
-        b_wren   : in std_logic;
-        b_addr   : in std_logic_vector(31 downto 0);
-        b_data_i : in std_logic_vector(31 downto 0);
-        b_data_o : out std_logic_vector(31 downto 0)
+        b_wren_0   : in std_logic;
+        b_addr_0   : in std_logic_vector(31 downto 0);
+        b_data_i_0 : in std_logic_vector(31 downto 0);
+        b_data_o_0 : out std_logic_vector(31 downto 0);
+
+        a_wren_1   : in std_logic;
+        a_addr_1   : in std_logic_vector(31 downto 0);
+        a_data_i_1 : in std_logic_vector(31 downto 0);
+        a_data_o_1 : out std_logic_vector(31 downto 0);
+
+        b_wren_1   : in std_logic;
+        b_addr_1   : in std_logic_vector(31 downto 0);
+        b_data_i_1 : in std_logic_vector(31 downto 0);
+        b_data_o_1 : out std_logic_vector(31 downto 0);
+
+        a_wren_2   : in std_logic;
+        a_addr_2   : in std_logic_vector(31 downto 0);
+        a_data_i_2 : in std_logic_vector(31 downto 0);
+        a_data_o_2 : out std_logic_vector(31 downto 0);
+
+        b_wren_2   : in std_logic;
+        b_addr_2   : in std_logic_vector(31 downto 0);
+        b_data_i_2 : in std_logic_vector(31 downto 0);
+        b_data_o_2 : out std_logic_vector(31 downto 0);
+
+        a_wren_3   : in std_logic;
+        a_addr_3   : in std_logic_vector(31 downto 0);
+        a_data_i_3 : in std_logic_vector(31 downto 0);
+        a_data_o_3 : out std_logic_vector(31 downto 0);
+
+        b_wren_3   : in std_logic;
+        b_addr_3   : in std_logic_vector(31 downto 0);
+        b_data_i_3 : in std_logic_vector(31 downto 0);
+        b_data_o_3 : out std_logic_vector(31 downto 0)
     );
     end component;
 
@@ -128,6 +164,7 @@ begin
             severity ERROR; -- warning failure
 
         wait until clock'event and clock = '1';
+        mem_ready  <= '0';
         iwren_file <= '0';
         iaddr_file <= x"0FFFFFF8";
         idata_file <= x"0000000000000000";
@@ -197,6 +234,7 @@ begin
         end loop;
 
         wait until clock'event and clock = '1';
+        mem_ready <= '1';
         da_wren_file <= '0';
         da_addr_file <= x"00000000";
         da_data_i_file <= x"00000000";
@@ -215,15 +253,19 @@ begin
     process
     begin
         reset <= '1';
+        icache_sel <= "01";
+        dcache_sel <= "01";
         wait until clock'event and clock = '1';
-        wait until clock'event and clock = '1';
-        wait until clock'event and clock = '1';
+
         reset <= '0';
+        wait until mem_ready'event and mem_ready = '1';
 
         reset <= '1';
+        icache_sel <= "00";
+        dcache_sel <= "00";
         wait until clock'event and clock = '1';
         wait until clock'event and clock = '1';
-        wait until clock'event and clock = '1';
+
         reset <= '0';
 
         wait;
@@ -237,46 +279,84 @@ begin
         dout  => hivek_o
     );
 
-    i_wren   <= iwren_file;
-    i_addr   <= iaddr_file; --when i_data_i_sel = '0' else
-    i_data_i <= idata_file; 
-
-    icache_memory_u : icache_memory
+    icache_selector_u : icache_selector
     generic map (
         VENDOR => VENDOR, 
         ADDR_WIDTH => ADDR_WIDTH
     )
     port map (
         clock   => clock,
-        wren    => i_wren,
-        address => i_addr,
-        data_i  => i_data_i,
-        data_o  => i_data_o
+        sel     => icache_sel,
+
+        wren_0  => '0',
+        addr_0  => hivek_o.icache_addr,
+        din_0   => (others => '0'),
+        dout_0  => hivek_i.instruction,
+
+        wren_1  => iwren_file,
+        addr_1  => iaddr_file,
+        din_1   => idata_file,
+        dout_1  => open,
+
+        wren_2  => '0',
+        addr_2  => (others => '0'),
+        din_2   => (others => '0'),
+        dout_2  => open,
+
+        wren_3  => '0',
+        addr_3  => (others => '0'),
+        din_3   => (others => '0'),
+        dout_3  => open
     );
 
-    d_a_wren   <= da_wren_file;
-    d_a_addr   <= da_addr_file;
-    d_a_data_i <= da_data_i_file;
-
-    d_b_wren   <= db_wren_file;
-    d_b_addr   <= db_addr_file;
-    d_b_data_i <= db_data_i_file;
-
-    dcache_memory_u : dcache_memory
+    dcache_selector_u : dcache_selector
     generic map (
         VENDOR => VENDOR,
         ADDR_WIDTH => DUAL_ADDR_WIDTH
     )
     port map (
         clock    => clock,
-        a_wren   => d_a_wren,
-        a_addr   => d_a_addr,
-        a_data_i => d_a_data_i,
-        a_data_o => d_a_data_o,
-        b_wren   => d_b_wren,
-        b_addr   => d_b_addr,
-        b_data_i => d_b_data_i,
-        b_data_o => d_b_data_o
+        sel      => dcache_sel,
+
+        a_wren_0   => '0',
+        a_addr_0   => (others => '0'),
+        a_data_i_0 => (others => '0'),
+        a_data_o_0 => open,
+
+        b_wren_0   => '0',
+        b_addr_0   => (others => '0'),
+        b_data_i_0 => (others => '0'),
+        b_data_o_0 => open,
+
+        a_wren_1   => da_wren_file,
+        a_addr_1   => da_addr_file,
+        a_data_i_1 => da_data_i_file,
+        a_data_o_1 => open,
+
+        b_wren_1   => '0', 
+        b_addr_1   => (others => '0'),
+        b_data_i_1 => (others => '0'),
+        b_data_o_1 => open,
+
+        a_wren_2   => '0',
+        a_addr_2   => (others => '0'),
+        a_data_i_2 => (others => '0'),
+        a_data_o_2 => open,
+
+        b_wren_2   => '0',
+        b_addr_2   => (others => '0'),
+        b_data_i_2 => (others => '0'),
+        b_data_o_2 => open,
+
+        a_wren_3   => '0',
+        a_addr_3   => (others => '0'),
+        a_data_i_3 => (others => '0'),
+        a_data_o_3 => open,
+
+        b_wren_3   => '0',
+        b_addr_3   => (others => '0'),
+        b_data_i_3 => (others => '0'),
+        b_data_o_3 => open
     ); 
 
 end behavior;

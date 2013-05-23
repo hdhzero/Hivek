@@ -14,24 +14,6 @@ entity hivek is
     );
 end hivek;
 
---type hivek_in_t is record
-    --instruction : std_logic_vector(63 downto 0);
-    --data_op0    : std_logic_vector(31 downto 0);
-    --data_op1    : std_logic_vector(31 downto 0);
---end record;
-
---type hivek_out_t is record
-    --i_addr   : std_logic_vector(31 downto 0);
-
-    --wren_op0 : std_logic;
-    --addr_op0 : std_logic_vector(31 downto 0);
-    --data_op0 : std_logic_vector(31 downto 0);
-
-    --wren_op1 : std_logic;
-    --addr_op1 : std_logic_vector(31 downto 0);
-    --data_op1 : std_logic_vector(31 downto 0);
---end record;
-
 architecture behavior of hivek is
     signal pipe_i : pipeline_in_t;
     signal pipe_o : pipeline_out_t;
@@ -64,6 +46,15 @@ begin
         din   => pipe_i,
         dout  => pipe_o
     );
+
+    dout.icache_addr <= if_o.icache_addr;
+    if_i.instruction <= din.instruction;
+    -- TODO
+    if_i.op0.jmp_addr <= x"00000000";
+    if_i.op0.jmp_taken <= '0';
+    if_i.op1.jmp_addr <= x"00000000";
+    if_i.op1.jmp_taken <= '0';
+
 
     instruction_fetch_stage_u : instruction_fetch_stage
     port map (
