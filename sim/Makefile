@@ -151,6 +151,11 @@ HIVEK_TOP_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
     $(SRC_DIR)/vhdl/memory/dcache_memory.vhd \
     $(SRC_DIR)/vhdl/memory/icache_selector.vhd \
     $(SRC_DIR)/vhdl/memory/dcache_selector.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/register_bank/bank_selector.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/register_bank/reg_bram.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/register_bank/reg_block.vhd \
+    $(SRC_DIR)/vhdl/auxiliary/register_bank/register_bank.vhd \
+	$(SRC_DIR)/vhdl/auxiliary/operation_decoder/operation_decoder.vhd \
     $(SRC_DIR)/vhdl/stages/instruction_fetch_stage.vhd \
     $(SRC_DIR)/vhdl/stages/instruction_expansion_stage.vhd \
     $(SRC_DIR)/vhdl/stages/instruction_decode_stage.vhd \

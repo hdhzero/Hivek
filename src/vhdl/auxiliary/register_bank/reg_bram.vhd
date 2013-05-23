@@ -19,7 +19,7 @@ entity reg_bram is
     );
 end reg_bram;
 
-architecture reg_bram of reg_bram is
+architecture behavior of reg_bram is
     type bram is array (31 downto 0) of std_logic_vector(31 downto 0);
     signal ram : bram;
 
@@ -90,5 +90,5 @@ begin
             end if;
         end process;
     end generate;
-end reg_bram;
+end behavior;
 

@@ -47,14 +47,42 @@ begin
         dout  => pipe_o
     );
 
-    dout.icache_addr <= if_o.icache_addr;
-    if_i.instruction <= din.instruction;
-    -- TODO
-    if_i.op0.jmp_addr <= x"00000000";
-    if_i.op0.jmp_taken <= '0';
-    if_i.op1.jmp_addr <= x"00000000";
-    if_i.op1.jmp_taken <= '0';
+    dout.icache_addr <= pipe_i.if_o.icache_addr;
 
+    dout.op0.dcache_wren <= pipe_i.exec_o.op0.mem_wren;
+    dout.op0.dcache_addr <= pipe_i.exec_o.op0.mem_addr;
+    dout.op0.dcache_data <= pipe_i.exec_o.op0.mem_data;
+
+    dout.op1.dcache_wren <= pipe_i.exec_o.op1.mem_wren;
+    dout.op1.dcache_addr <= pipe_i.exec_o.op1.mem_addr;
+    dout.op1.dcache_data <= pipe_i.exec_o.op1.mem_data;
+
+    pipe_o.exec_i.op0.mem_data <= din.op0.dcache_data;
+    pipe_o.exec_i.op1.mem_data <= din.op1.dcache_data;
+
+    pipe_o.if_i.instruction <= din.instruction;
+    -- TODO
+    pipe_o.if_i.op0.jmp_addr <= x"00000000";
+    pipe_o.if_i.op0.jmp_taken <= '0';
+    pipe_o.if_i.op1.jmp_addr <= x"00000000";
+    pipe_o.if_i.op1.jmp_taken <= '0';
+
+
+    if_i    <= pipe_o.if_i;
+    iexp_i  <= pipe_o.iexp_i;
+    id_i    <= pipe_o.id_i;
+    id2_i   <= pipe_o.id2_i;
+    exec_i  <= pipe_o.exec_i;
+    exec2_i <= pipe_o.exec2_i;
+    wb_i    <= pipe_o.wb_i;
+
+    pipe_i.if_o    <= if_o;
+    pipe_i.iexp_o  <= iexp_o;
+    pipe_i.id_o    <= id_o;
+    pipe_i.id2_o   <= id2_o;
+    pipe_i.exec_o  <= exec_o;
+    pipe_i.exec2_o <= exec2_o;
+    pipe_i.wb_o    <= wb_o;
 
     instruction_fetch_stage_u : instruction_fetch_stage
     port map (
