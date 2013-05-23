@@ -14,4 +14,6 @@ end instruction_expansion_stage;
 
 architecture behavior of instruction_expansion_stage is
 begin
+    dout.op0.operation <= din.instruction(63 downto 32);
+    dout.op1.operation <= din.instruction(31 downto 0);
 end behavior;
