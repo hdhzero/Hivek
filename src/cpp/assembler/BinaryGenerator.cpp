@@ -14,9 +14,9 @@ namespace HivekAssembler {
     }
 
     void BinaryGenerator::generate_binary() {
-        file << ".text\n";
+        file << "   .text\n";
         generate_instructions();
-        file << ".data\n";
+        file << "   .data\n";
         generate_data();
     }
 
