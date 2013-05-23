@@ -66,6 +66,7 @@ begin
     pipe_o.if_i.op0.jmp_taken <= '0';
     pipe_o.if_i.op1.jmp_addr <= x"00000000";
     pipe_o.if_i.op1.jmp_taken <= '0';
+    pipe_o.if_i.pc_wren <= '1';
 
 
     if_i    <= pipe_o.if_i;

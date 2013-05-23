@@ -1,5 +1,6 @@
 start:
     addi $sp, $zero, 400
+    addi $zero, $zero, 0
 ;;
     addi $a0, $zero, 17
 ;;
