@@ -10,17 +10,34 @@ entity hivek_tb is
 end hivek_tb;
 
 architecture behavior of hivek_tb is
+    -------------
+    -- signals --
+    -------------
+
     signal clock : std_logic;
     signal reset : std_logic;
 
     signal hivek_i : hivek_in_t;
     signal hivek_o : hivek_out_t;
 
-    signal idata_file : std_logic_vector(63 downto 0);
+    signal i_wren   : std_logic;
+    signal i_addr   : std_logic_vector(31 downto 0);
+    signal i_data_i : std_logic_vector(63 downto 0);
+    signal i_data_o : std_logic_vector(63 downto 0);
+
+    signal i_data_i_sel : std_logic;
+    signal iwren_file   : std_logic;
+    signal iaddr_file   : std_logic_vector(31 downto 0);
+    signal idata_file   : std_logic_vector(63 downto 0);
+
+    signal sum : std_logic_vector(31 downto 0);
 
     file arquivo : text open read_mode is "prog.txt";
---    file saida   : text open write_mode is "saida.txt";
 
+
+    ---------------
+    -- functions --
+    ---------------
     function str_to_std(s : string(8 downto 1)) return std_logic_vector is
         variable vetor : std_logic_vector(7 downto 0);
     begin
@@ -34,16 +51,32 @@ architecture behavior of hivek_tb is
 
         return vetor;
     end function str_to_std;
+
+    ----------------
+    -- components --
+    ----------------
+    component icache_memory is
+    generic (
+        VENDOR     : string := "GENERIC";
+        ADDR_WIDTH : integer := 8
+    );
+    port (
+        clock   : in std_logic;
+        wren    : in std_logic;
+        address : in std_logic_vector(31 downto 0);
+        data_i  : in std_logic_vector(63 downto 0);
+        data_o  : out std_logic_vector(63 downto 0)
+    );
+    end component;
+
 begin
 
     init_mem : process 
         variable linha : line;
         variable ss    : string(8 downto 1);
         variable data  : std_logic_vector(63 downto 0);
-        variable flag  : integer := 0;
         variable i     : integer := 0;
     begin
-        flag := 0;
         i := 0;
 
         readline(arquivo, linha);
@@ -53,10 +86,15 @@ begin
             report "fault program. There is no .text header"
             severity ERROR; -- warning failure
 
-        while ss /= ".data" loop
+        wait until clock'event and clock = '1';
+        iwren_file <= '0';
+        iaddr_file <= x"0FFFFFF8";
+        idata_file <= x"0000000000000000";
+
+        while ss /= "   .data" loop
             i := 7;
 
-            while not endfile(arquivo) loop
+            while not endfile(arquivo) and i >= 0 loop
                 readline(arquivo, linha);
                 read(linha, ss);
 
@@ -64,10 +102,8 @@ begin
                     exit;
                 end if;
 
-                if i >= 0 then
-                    data(8 * (i + 1) - 1 downto 8 * i) := str_to_std(ss);
-                    i := i - 1;
-                end if;
+                data(8 * (i + 1) - 1 downto 8 * i) := str_to_std(ss);
+                i := i - 1;
             end loop;
 
             while i >= 0 loop
@@ -76,9 +112,18 @@ begin
             end loop;
 
             wait until clock'event and clock = '1';
+            iwren_file <= '1';
+            iaddr_file <= std_logic_vector(unsigned(iaddr_file) + x"00000008");
             idata_file <= data;
+
+            assert iaddr_file = x"DEADBEAF"
+                report integer'image(to_integer(unsigned(iaddr_file)))
+                severity warning;
         end loop;
 
+        wait until clock'event and clock = '1';
+        idata_file <= data;
+        iwren_file <= '0';
         wait;
     end process;
 
@@ -116,12 +161,22 @@ begin
         dout  => hivek_o
     );
 
-    --icache_memory_u : icache_memory
-    --port map (
-        --clock => clock
-        --din   => im_i,
-        --dout  => im_o
-    --);
+    i_wren   <= iwren_file;
+    i_addr   <= iaddr_file; --when i_data_i_sel = '0' else
+    i_data_i <= idata_file; 
+
+    icache_memory_u : icache_memory
+    generic map (
+        VENDOR => "GENERIC",
+        ADDR_WIDTH => 8
+    )
+    port map (
+        clock   => clock,
+        wren    => i_wren,
+        address => i_addr,
+        data_i  => i_data_i,
+        data_o  => i_data_o
+    );
 
     --dcache_memory_u : dcache_memory
     --port map (

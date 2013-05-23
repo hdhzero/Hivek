@@ -21,7 +21,7 @@ entity memory_bram is
 end memory_bram;
 
 architecture behavior of memory_bram is
-    constant NW : integer := 2 ** ADDR_WIDTH; -- number of words
+    constant NW : integer := 2 ** ADDR_WIDTH - 1; -- number of words
     type bram_t is array (NW downto 0) of std_logic_vector(DATA_WIDTH - 1 downto 0);
 
     signal bram : bram_t;

@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 library work;
 use work.hivek_pkg.all;
 
-entity icache_memory is
+entity dcache_memory is
     generic (
         VENDOR     : string := "GENERIC";
         ADDR_WIDTH : integer := 8
@@ -17,9 +17,9 @@ entity icache_memory is
         data_i  : in std_logic_vector(63 downto 0);
         data_o  : out std_logic_vector(63 downto 0)
     );
-end icache_memory;
+end dcache_memory;
 
-architecture icache_memory_arch of icache_memory is
+architecture dcache_memory_arch of dcache_memory is
     signal addr0 : std_logic_vector(31 downto 0);
     signal addr1 : std_logic_vector(31 downto 0);
     signal addr2 : std_logic_vector(31 downto 0);
@@ -163,4 +163,4 @@ begin
         data_o => out3
     );
 
-end icache_memory_arch;
+end dcache_memory_arch;
