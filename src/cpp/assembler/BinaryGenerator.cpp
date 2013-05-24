@@ -260,8 +260,8 @@ namespace HivekAssembler {
                 break;
 
             case TYPE_II:
-                rs   = op.destination << 3;
-                rt   = op.operand1 << 8;
+                rs   = op.operand1 << 3;
+                rt   = op.destination << 8;
                 immd = (op.operand2 << 13) & 0x01FFE000; 
                 instruction |= opcode | immd | rt | rs | cond;
                 break;

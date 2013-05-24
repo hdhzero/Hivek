@@ -33,13 +33,13 @@ begin
         if din.op0.control.reg_dst_sel = '0' then
             dout.op0.reg_dst <= din.op0.reg_c;
         else
-            dout.op0.reg_dst <= din.op0.reg_a;
+            dout.op0.reg_dst <= din.op0.reg_b;
         end if;
 
         if din.op1.control.reg_dst_sel = '0' then
             dout.op1.reg_dst <= din.op1.reg_c;
         else
-            dout.op1.reg_dst <= din.op1.reg_a;
+            dout.op1.reg_dst <= din.op1.reg_b;
         end if;
 
         -- data

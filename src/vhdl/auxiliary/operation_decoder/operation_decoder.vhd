@@ -60,10 +60,10 @@ begin
         dout.sh_immd <= din.operation(22 downto 18);
 
         -- sign extension
-        if din.operation(23) = '1' then
-            dout.immd32 <= ONES(19 downto 0) & din.operation(23 downto 12);
+        if din.operation(24) = '1' then
+            dout.immd32 <= ONES(19 downto 0) & din.operation(24 downto 13);
         else
-            dout.immd32 <= ZERO(19 downto 0) & din.operation(23 downto 12);
+            dout.immd32 <= ZERO(19 downto 0) & din.operation(24 downto 13);
         end if;
 
         --------------

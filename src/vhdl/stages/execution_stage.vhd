@@ -45,17 +45,25 @@ begin
             alu_sh_i1.shift_amt <= din.op1.data_b(4 downto 0);
         end if;
 
+        -- operand a
+        alu_sh_i0.operand_a <= din.op0.data_a;
+        alu_sh_i1.operand_a <= din.op0.data_a;
+
+        -- TODO
+        alu_sh_i0.carry_in <= '0';
+        alu_sh_i1.carry_in <= '0';
+
         -- reg immd select
         if din.op0.control.reg_immd_sel = '0' then
-            alu_sh_i0.operand_a <= din.op0.data_a;
+            alu_sh_i0.operand_b <= din.op0.data_b;
         else
-            alu_sh_i0.operand_a <= din.op0.immd32;
+            alu_sh_i0.operand_b <= din.op0.immd32;
         end if;
 
         if din.op1.control.reg_immd_sel = '0' then
-            alu_sh_i1.operand_a <= din.op1.data_a;
+            alu_sh_i1.operand_b <= din.op1.data_b;
         else
-            alu_sh_i1.operand_a <= din.op1.immd32;
+            alu_sh_i1.operand_b <= din.op1.immd32;
         end if;
 
         -- wrens 0
@@ -79,6 +87,23 @@ begin
             dout.op1.control.mem_wren <= '0';
             pb_i.op1.wren <= '0';
         end if;
+
+        -- selectors
+        dout.op0.control.alu_sh_sel <= din.op0.control.alu_sh_sel;
+        dout.op1.control.alu_sh_sel <= din.op1.control.alu_sh_sel;
+
+        dout.op0.control.alu_sh_mem_sel <= din.op0.control.alu_sh_mem_sel;
+        dout.op1.control.alu_sh_mem_sel <= din.op1.control.alu_sh_mem_sel;
+
+        -- data
+        dout.op0.alu_data <= alu_sh_o0.alu_result;
+        dout.op1.alu_data <= alu_sh_o1.alu_result;
+
+        dout.op0.sh_data <= alu_sh_o0.shift_result;
+        dout.op1.sh_data <= alu_sh_o1.shift_result;
+
+        dout.op0.reg_dst <= din.op0.reg_dst;
+        dout.op1.reg_dst <= din.op1.reg_dst;
 
     end process;
 

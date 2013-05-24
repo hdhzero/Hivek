@@ -22,7 +22,6 @@ begin
         if reset = '1' then
 
         elsif clock'event and clock = '1' then
-
             -- if exp
       --      if din.if_iexp_wren = '1' then
                 dout.iexp_i.instruction <= din.if_o.instruction;
@@ -92,11 +91,56 @@ begin
             dout.exec_i.op0.sh_immd <= din.id2_o.op0.sh_immd;
             dout.exec_i.op1.sh_immd <= din.id2_o.op1.sh_immd;
 
+            dout.exec_i.op0.reg_dst <= din.id2_o.op0.reg_dst;
+            dout.exec_i.op1.reg_dst <= din.id2_o.op1.reg_dst;
+
             --dout.exec_i.op0.mem_data <= din.id2_o.op0.mem_data;
             --dout.exec_i.op1.mem_data <= din.id2_o.op1.mem_data;
 
             dout.exec_i.op0.control <= din.id2_o.op0.control;
             dout.exec_i.op1.control <= din.id2_o.op1.control;
+
+            -- exec exec2
+            dout.exec2_i.op0.alu_data <= din.exec_o.op0.alu_data;
+            dout.exec2_i.op1.alu_data <= din.exec_o.op1.alu_data;
+
+            dout.exec2_i.op0.sh_data <= din.exec_o.op0.sh_data;
+            dout.exec2_i.op1.sh_data <= din.exec_o.op1.sh_data;
+
+            dout.exec2_i.op0.reg_dst <= din.exec_o.op0.reg_dst;
+            dout.exec2_i.op1.reg_dst <= din.exec_o.op1.reg_dst;
+
+            dout.exec2_i.op0.control.reg_wren <= din.exec_o.op0.control.reg_wren;
+            dout.exec2_i.op1.control.reg_wren <= din.exec_o.op1.control.reg_wren;
+
+            dout.exec2_i.op0.control.alu_sh_sel <= din.exec_o.op0.control.alu_sh_sel;
+            dout.exec2_i.op1.control.alu_sh_sel <= din.exec_o.op1.control.alu_sh_sel;
+
+            dout.exec2_i.op0.control.alu_sh_mem_sel <= din.exec_o.op0.control.alu_sh_mem_sel;
+            dout.exec2_i.op1.control.alu_sh_mem_sel <= din.exec_o.op1.control.alu_sh_mem_sel;
+
+            -- exec2 wb
+            dout.wb_i.op0.control.alu_sh_mem_sel <= din.exec2_o.op0.control.alu_sh_mem_sel;
+            dout.wb_i.op1.control.alu_sh_mem_sel <= din.exec2_o.op1.control.alu_sh_mem_sel;
+
+            dout.wb_i.op0.control.reg_wren <= din.exec2_o.op0.control.reg_wren;
+            dout.wb_i.op1.control.reg_wren <= din.exec2_o.op1.control.reg_wren;
+
+            dout.wb_i.op0.reg_dst <= din.exec2_o.op0.reg_dst;
+            dout.wb_i.op1.reg_dst <= din.exec2_o.op1.reg_dst;
+
+            dout.wb_i.op0.alu_sh_data <= din.exec2_o.op0.alu_sh_data;
+            dout.wb_i.op1.alu_sh_data <= din.exec2_o.op1.alu_sh_data;
+
+            -- wb id
+            dout.id_i.op0.reg_wren <= din.wb_o.op0.control.reg_wren;
+            dout.id_i.op1.reg_wren <= din.wb_o.op1.control.reg_wren;
+
+            dout.id_i.op0.reg_dst <= din.wb_o.op0.reg_dst;
+            dout.id_i.op1.reg_dst <= din.wb_o.op1.reg_dst;
+
+            dout.id_i.op0.data_dst <= din.wb_o.op0.data_dst;
+            dout.id_i.op1.data_dst <= din.wb_o.op1.data_dst;
         end if;
     end process;
 end behavior;

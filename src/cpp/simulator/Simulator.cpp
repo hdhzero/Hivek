@@ -264,62 +264,62 @@ namespace HivekSimulator {
 
         /* immediates */
             case ADDI:
-                regs[rs] = regs[rt] + sign_ext(immd12, 12);
+                regs[rt] = regs[rs] + sign_ext(immd12, 12);
                 break;
 
             case ADCI:
-                regs[rs] = regs[rt] + sign_ext(immd12, 12);
+                regs[rt] = regs[rs] + sign_ext(immd12, 12);
                 break;
 
             case ANDI:
-                regs[rs] = regs[rt] & sign_ext(immd12, 12);
+                regs[rt] = regs[rs] & sign_ext(immd12, 12);
                 break;
 
             case ORI:
-                regs[rs] = regs[rt] | sign_ext(immd12, 12);
+                regs[rt] = regs[rs] | sign_ext(immd12, 12);
                 break;
 
             case CMPEQI:
-                pr_regs[rs] = cmpeq(regs[rt], sign_ext(immd12, 12));
-                pr_regs[rs] = pr_regs[rs] || rs == 0;
+                pr_regs[rt] = cmpeq(regs[rs], sign_ext(immd12, 12));
+                pr_regs[rt] = pr_regs[rt] || rt == 0;
                 break;
 
             case CMPLTI:
-                pr_regs[rs] = cmplt(regs[rt], sign_ext(immd12, 12));
-                pr_regs[rs] = pr_regs[rs] || rs == 0;
+                pr_regs[rt] = cmplt(regs[rs], sign_ext(immd12, 12));
+                pr_regs[rt] = pr_regs[rt] || rt == 0;
                 break;
 
             case CMPGTI:
-                pr_regs[rs] = cmpgt(regs[rt], sign_ext(immd12, 12));
-                pr_regs[rs] = pr_regs[rs] || rs == 0;
+                pr_regs[rt] = cmpgt(regs[rs], sign_ext(immd12, 12));
+                pr_regs[rt] = pr_regs[rt] || rt == 0;
                 break;
 
             case CMPLTUI:
-                pr_regs[rs] = cmpltu(regs[rt], sign_ext(immd12, 12));
-                pr_regs[rs] = pr_regs[rs] || rs == 0;
+                pr_regs[rt] = cmpltu(regs[rs], sign_ext(immd12, 12));
+                pr_regs[rt] = pr_regs[rt] || rt == 0;
                 break;
 
             case CMPGTUI:
-                pr_regs[rs] = cmpgtu(regs[rt], sign_ext(immd12, 12));
-                pr_regs[rs] = pr_regs[rs] || rs == 0;
+                pr_regs[rt] = cmpgtu(regs[rs], sign_ext(immd12, 12));
+                pr_regs[rt] = pr_regs[rt] || rt == 0;
                 break;
 
             case LW:
-                regs[rs] = read_dmem(regs[rt] + sign_ext(immd12, 12), 32);
+                regs[rt] = read_dmem(regs[rs] + sign_ext(immd12, 12), 32);
                 break;
 
              case LB:
-                regs[rs] = read_dmem(regs[rt] + sign_ext(immd12, 12), 8);
+                regs[rt] = read_dmem(regs[rs] + sign_ext(immd12, 12), 8);
                 break;
 
             case SW: 
-                write_dmem(regs[rs], regs[rt] + sign_ext(immd12, 12), 32);
+                write_dmem(regs[rt], regs[rs] + sign_ext(immd12, 12), 32);
                 break;
 
              case SB:
-                write_dmem(regs[rs], regs[rt] + sign_ext(immd12, 12), 8);
+                write_dmem(regs[rt], regs[rs] + sign_ext(immd12, 12), 8);
                 break;
-          
+         
             // conditional jumps
             case JC:
             case JCN:

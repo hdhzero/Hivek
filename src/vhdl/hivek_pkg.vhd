@@ -241,6 +241,7 @@ package hivek_pkg is
         data_a  : std_logic_vector(31 downto 0);
         data_b  : std_logic_vector(31 downto 0);
         immd32  : std_logic_vector(31 downto 0);
+        sh_immd : std_logic_vector(4 downto 0);
         control : id_control_out_t;
     end record;
 
@@ -281,7 +282,6 @@ package hivek_pkg is
         -- write enables
         reg_wren : std_logic;
         mem_wren : std_logic;
-        pr_wren  : std_logic;
 
         -- selectors
         alu_sh_sel     : std_logic;
@@ -291,6 +291,9 @@ package hivek_pkg is
     type execution_stage_path_in_t is record
         pr_reg   : std_logic_vector(1 downto 0);
         pr_data  : std_logic;
+        reg_a   : std_logic_vector(4 downto 0);
+        reg_b   : std_logic_vector(4 downto 0);
+        reg_dst : std_logic_vector(4 downto 0);
         data_a   : std_logic_vector(31 downto 0);
         data_b   : std_logic_vector(31 downto 0);
         immd32   : std_logic_vector(31 downto 0);
@@ -301,6 +304,9 @@ package hivek_pkg is
 
     type execution_stage_path_out_t is record
         control  : execution_control_out_t;
+        alu_data : std_logic_vector(31 downto 0);
+        sh_data  : std_logic_vector(31 downto 0);
+        reg_dst  : std_logic_vector(4 downto 0);
         mem_wren : std_logic;
         mem_addr : std_logic_vector(31 downto 0);
         mem_data : std_logic_vector(31 downto 0);
@@ -328,16 +334,37 @@ package hivek_pkg is
     ----------------------------------------------------------
     -- execution_stage2
     ----------------------------------------------------------
+    type execution2_control_out_t is record
+        -- write enables
+        reg_wren : std_logic;
+
+        -- selectors
+        alu_sh_mem_sel : std_logic;
+    end record;
+
+    type execution2_stage_path_in_t is record
+        alu_data : std_logic_vector(31 downto 0);
+        sh_data  : std_logic_vector(31 downto 0);
+        mem_data : std_logic_vector(31 downto 0);
+        reg_dst  : std_logic_vector(4 downto 0);
+        control  : execution_control_out_t;
+    end record;
+
+    type execution2_stage_path_out_t is record
+        control     : execution2_control_out_t;
+        alu_sh_data : std_logic_vector(31 downto 0);
+        reg_dst     : std_logic_vector(4 downto 0);
+        mem_data    : std_logic_vector(31 downto 0);
+    end record;
+
     type execution2_stage_in_t is record
---        op0 : execution_stage_path_in_t;
---        op1 : execution_stage_path_in_t;
-        TODO : std_logic;
+        op0 : execution2_stage_path_in_t;
+        op1 : execution2_stage_path_in_t;
     end record;
 
     type execution2_stage_out_t is record
---        op0 : execution_stage_path_out_t;
---        op1 : execution_stage_path_out_t;
-        TODO : std_logic;
+        op0 : execution2_stage_path_out_t;
+        op1 : execution2_stage_path_out_t;
     end record;
 
     component execution2_stage is
@@ -350,12 +377,32 @@ package hivek_pkg is
     ----------------------------------------------------------
     -- writeback
     ----------------------------------------------------------
+    type writeback_control_out_t is record
+        -- write enables
+        reg_wren : std_logic;
+    end record;
+
+    type writeback_stage_path_in_t is record
+        alu_sh_data : std_logic_vector(31 downto 0);
+        mem_data    : std_logic_vector(31 downto 0);
+        reg_dst     : std_logic_vector(4 downto 0);
+        control     : execution2_control_out_t;
+    end record;
+
+    type writeback_stage_path_out_t is record
+        control  : writeback_control_out_t;
+        data_dst : std_logic_vector(31 downto 0);
+        reg_dst  : std_logic_vector(4 downto 0);
+    end record;
+
     type writeback_stage_in_t is record
-        TODO : std_logic;
+        op0 : writeback_stage_path_in_t;
+        op1 : writeback_stage_path_in_t;
     end record;
 
     type writeback_stage_out_t is record
-        TODO : std_logic;
+        op0 : writeback_stage_path_out_t;
+        op1 : writeback_stage_path_out_t;
     end record;
 
     component writeback_stage is 
