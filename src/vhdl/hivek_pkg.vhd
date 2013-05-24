@@ -189,6 +189,7 @@ package hivek_pkg is
         data_a  : std_logic_vector(31 downto 0);
         data_b  : std_logic_vector(31 downto 0);
         immd32  : std_logic_vector(31 downto 0);
+        sh_immd : std_logic_vector(4 downto 0);
         control : id_control_out_t;
     end record;
 
@@ -252,6 +253,7 @@ package hivek_pkg is
         data_a  : std_logic_vector(31 downto 0);
         data_b  : std_logic_vector(31 downto 0);
         immd32  : std_logic_vector(31 downto 0);
+        sh_immd : std_logic_vector(4 downto 0);
         control : id2_control_out_t;
     end record;
 
@@ -275,6 +277,17 @@ package hivek_pkg is
     ----------------------------------------------------------
     -- execution_stage
     ----------------------------------------------------------
+    type execution_control_out_t is record
+        -- write enables
+        reg_wren : std_logic;
+        mem_wren : std_logic;
+        pr_wren  : std_logic;
+
+        -- selectors
+        alu_sh_sel     : std_logic;
+        alu_sh_mem_sel : std_logic;
+    end record;
+
     type execution_stage_path_in_t is record
         pr_reg   : std_logic_vector(1 downto 0);
         pr_data  : std_logic;
@@ -283,12 +296,11 @@ package hivek_pkg is
         immd32   : std_logic_vector(31 downto 0);
         sh_immd  : std_logic_vector(4 downto 0);
         mem_data : std_logic_vector(31 downto 0);
-        control  : id_control_out_t;
+        control  : id2_control_out_t;
     end record;
 
     type execution_stage_path_out_t is record
-        -- control : execution_control_out_t;
-        TODO : std_logic;
+        control  : execution_control_out_t;
         mem_wren : std_logic;
         mem_addr : std_logic_vector(31 downto 0);
         mem_data : std_logic_vector(31 downto 0);

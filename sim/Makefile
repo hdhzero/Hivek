@@ -194,4 +194,5 @@ clean:
 	rm -rf transcript
 	rm -rf *.o
 	rm -rf *.cf
+	rm -rf *.lst
 	rm -rf $(TESTBENCHS)

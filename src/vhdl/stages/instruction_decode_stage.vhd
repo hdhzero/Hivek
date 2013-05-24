@@ -36,6 +36,27 @@ begin
     dout.op0.immd32 <= odecoder_o0.immd32;
     dout.op1.immd32 <= odecoder_o1.immd32;
 
+    -- sh_immd
+    dout.op0.sh_immd <= odecoder_o0.sh_immd;
+    dout.op1.sh_immd <= odecoder_o1.sh_immd;
+
+    -- predicate
+    dout.op0.pr_reg <= odecoder_o0.pr_reg;
+    dout.op1.pr_reg <= odecoder_o1.pr_reg;
+
+    dout.op0.pr_data <= odecoder_o0.pr_data;
+    dout.op1.pr_data <= odecoder_o1.pr_data;
+
+    -- regs addr
+    dout.op0.reg_a <= odecoder_o0.reg_a;
+    dout.op0.reg_b <= odecoder_o0.reg_b;
+    dout.op0.reg_c <= odecoder_o0.reg_c;
+
+    dout.op1.reg_a <= odecoder_o1.reg_a;
+    dout.op1.reg_b <= odecoder_o1.reg_b;
+    dout.op1.reg_c <= odecoder_o1.reg_c;
+
+
     -- control
     dout.op0.control <= odecoder_o0.control;
     dout.op1.control <= odecoder_o1.control;

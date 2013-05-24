@@ -72,6 +72,31 @@ begin
 
             dout.id2_i.op0.control <= din.id_o.op0.control;
             dout.id2_i.op1.control <= din.id_o.op1.control;
+
+            -- id2 exec
+            dout.exec_i.op0.pr_reg <= din.id2_o.op0.pr_reg;
+            dout.exec_i.op1.pr_reg <= din.id2_o.op1.pr_reg;
+
+            dout.exec_i.op0.pr_data <= din.id2_o.op0.pr_data;
+            dout.exec_i.op1.pr_data <= din.id2_o.op1.pr_data;
+
+            dout.exec_i.op0.data_a  <= din.id2_o.op0.data_a;
+            dout.exec_i.op1.data_a <= din.id2_o.op1.data_a;
+
+            dout.exec_i.op0.data_b <= din.id2_o.op0.data_b;
+            dout.exec_i.op1.data_b <= din.id2_o.op1.data_b;
+
+            dout.exec_i.op0.immd32 <= din.id2_o.op0.immd32;
+            dout.exec_i.op1.immd32 <= din.id2_o.op1.immd32;
+
+            dout.exec_i.op0.sh_immd <= din.id2_o.op0.sh_immd;
+            dout.exec_i.op1.sh_immd <= din.id2_o.op1.sh_immd;
+
+            --dout.exec_i.op0.mem_data <= din.id2_o.op0.mem_data;
+            --dout.exec_i.op1.mem_data <= din.id2_o.op1.mem_data;
+
+            dout.exec_i.op0.control <= din.id2_o.op0.control;
+            dout.exec_i.op1.control <= din.id2_o.op1.control;
         end if;
     end process;
 end behavior;
