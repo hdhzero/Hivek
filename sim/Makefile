@@ -195,4 +195,7 @@ clean:
 	rm -rf *.o
 	rm -rf *.cf
 	rm -rf *.lst
+	rm -rf ../src/cpp/assembler/hivek-assembler
+	rm -rf ../src/cpp/simulator/hivek-simulator
+	rm -rf ../src/cpp/simulator/prog.txt
 	rm -rf $(TESTBENCHS)

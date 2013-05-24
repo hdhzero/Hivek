@@ -47,7 +47,7 @@ begin
 
         -- operand a
         alu_sh_i0.operand_a <= din.op0.data_a;
-        alu_sh_i1.operand_a <= din.op0.data_a;
+        alu_sh_i1.operand_a <= din.op1.data_a;
 
         -- TODO
         alu_sh_i0.carry_in <= '0';
