@@ -259,6 +259,10 @@ begin
 
         reset <= '0';
         wait until mem_ready'event and mem_ready = '1';
+        wait until clock'event and clock = '1';
+        wait until clock'event and clock = '1';
+        wait until clock'event and clock = '1';
+        wait until clock'event and clock = '1';
 
         reset <= '1';
         icache_sel <= "00";

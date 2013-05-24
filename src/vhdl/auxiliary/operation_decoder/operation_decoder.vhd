@@ -98,7 +98,7 @@ begin
                         dout.control.reg_wren <= '1';
                 end case;
             when others =>
-                dout.control.reg_wren <= '1';
+                dout.control.reg_wren <= '0';
         end case;
 
         -- mem wren

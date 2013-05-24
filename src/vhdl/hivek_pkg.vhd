@@ -10,6 +10,9 @@ package hivek_pkg is
     constant ONES : std_logic_vector(63 downto 0) := x"FFFFFFFFFFFFFFFF";
     constant ONE  : std_logic_vector(63 downto 0) := x"0000000000000001";
 
+    -- no operation
+    constant NOP : std_logic_vector(31 downto 0) := x"00000000";
+
     ----------------------
     -- type definitions --
     ----------------------

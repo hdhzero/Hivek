@@ -39,13 +39,6 @@ architecture behavior of hivek is
     signal wb_i : writeback_stage_in_t;
     signal wb_o : writeback_stage_out_t;
 begin
-    pipeline_u : pipeline
-    port map (
-        clock => clock,
-        reset => reset,
-        din   => pipe_i,
-        dout  => pipe_o
-    );
 
     dout.icache_addr <= pipe_i.if_o.icache_addr;
 
@@ -84,6 +77,15 @@ begin
     pipe_i.exec_o  <= exec_o;
     pipe_i.exec2_o <= exec2_o;
     pipe_i.wb_o    <= wb_o;
+
+
+    pipeline_u : pipeline
+    port map (
+        clock => clock,
+        reset => reset,
+        din   => pipe_i,
+        dout  => pipe_o
+    );
 
     instruction_fetch_stage_u : instruction_fetch_stage
     port map (

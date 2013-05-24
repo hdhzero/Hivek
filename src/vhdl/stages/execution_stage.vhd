@@ -24,7 +24,7 @@ architecture behavior of execution_stage is
     signal pb_i : predicate_bank_in_t;
     signal pb_o : predicate_bank_out_t;
 begin
-    process (din, pb_o)
+    process (din, pb_o, alu_sh_o0, alu_sh_o1)
     begin
         alu_sh_i0.alu_op <= din.op0.control.alu_op;
         alu_sh_i1.alu_op <= din.op1.control.alu_op;

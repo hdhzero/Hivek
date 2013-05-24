@@ -17,33 +17,56 @@ end pipeline;
 
 architecture behavior of pipeline is
 begin
-    process (clock)
+    process (clock, din)
     begin
-        if reset = '1' then
 
+        --------------
+        -- forwards --
+        --------------
+
+        -- wb id
+        dout.id_i.op0.reg_wren <= din.wb_o.op0.control.reg_wren;
+        dout.id_i.op1.reg_wren <= din.wb_o.op1.control.reg_wren;
+
+        dout.id_i.op0.reg_dst <= din.wb_o.op0.reg_dst;
+        dout.id_i.op1.reg_dst <= din.wb_o.op1.reg_dst;
+
+        dout.id_i.op0.data_dst <= din.wb_o.op0.data_dst;
+        dout.id_i.op1.data_dst <= din.wb_o.op1.data_dst;
+
+        -- id id2
+        dout.id2_i.op0.data_a <= din.id_o.op0.data_a;
+        dout.id2_i.op1.data_a <= din.id_o.op1.data_a;
+
+        dout.id2_i.op0.data_b <= din.id_o.op0.data_b;
+        dout.id2_i.op1.data_b <= din.id_o.op1.data_b;
+
+        
+        if reset = '1' then
+            dout.iexp_i.instruction <= ZERO;
         elsif clock'event and clock = '1' then
             -- if exp
-      --      if din.if_iexp_wren = '1' then
-                dout.iexp_i.instruction <= din.if_o.instruction;
-        --    end if;
+            dout.iexp_i.instruction <= din.if_o.instruction;
+        end if;
 
-
+        if reset = '1' then
+            dout.id_i.op0.operation <= NOP;
+            dout.id_i.op1.operation <= NOP;
+        elsif clock'event and clock = '1' then
             -- exp id
-    --        if din.iexp_id_wren = '1' then
-                dout.id_i.op0.operation <= din.iexp_o.op0.operation;
-                dout.id_i.op1.operation <= din.iexp_o.op1.operation;
-                -- TODO
-                -- from wb_o.reg_wren
-                dout.id_i.op0.reg_wren <= '0';
+            dout.id_i.op0.operation <= din.iexp_o.op0.operation;
+            dout.id_i.op1.operation <= din.iexp_o.op1.operation;
+        end if;
 
-                -- from wb_o.reg_dst;
-                dout.id_i.op0.reg_dst <= "00000";
+        if reset = '1' then
+            dout.id2_i.op0.control.reg_wren <= '0';
+            dout.id2_i.op0.control.mem_wren <= '0';
+            dout.id2_i.op0.control.pr_wren  <= '0';
 
-                -- from wb_o.data_dst, where
-                -- data_dst is mux from alu_sh and mem
-                dout.id_i.op0.data_dst <= (others => '0');
-     --       end if;
-
+            dout.id2_i.op1.control.reg_wren <= '0';
+            dout.id2_i.op1.control.mem_wren <= '0';
+            dout.id2_i.op1.control.pr_wren  <= '0';
+        elsif clock'event and clock = '1' then
             -- id id2
             dout.id2_i.op0.pr_reg <= din.id_o.op0.pr_reg;
             dout.id2_i.op1.pr_reg <= din.id_o.op1.pr_reg;
@@ -60,18 +83,22 @@ begin
             dout.id2_i.op0.reg_c <= din.id_o.op0.reg_c;
             dout.id2_i.op1.reg_c <= din.id_o.op1.reg_c;
 
-            dout.id2_i.op0.data_a <= din.id_o.op0.data_a;
-            dout.id2_i.op1.data_a <= din.id_o.op1.data_a;
-
-            dout.id2_i.op0.data_b <= din.id_o.op0.data_b;
-            dout.id2_i.op1.data_b <= din.id_o.op1.data_b;
-
             dout.id2_i.op0.immd32 <= din.id_o.op0.immd32;
             dout.id2_i.op1.immd32 <= din.id_o.op1.immd32;
 
             dout.id2_i.op0.control <= din.id_o.op0.control;
             dout.id2_i.op1.control <= din.id_o.op1.control;
+        end if;
 
+        if reset = '1' then
+            dout.exec_i.op0.control.reg_wren <= '0';
+            dout.exec_i.op0.control.mem_wren <= '0';
+            dout.exec_i.op0.control.pr_wren  <= '0';
+
+            dout.exec_i.op1.control.reg_wren <= '0';
+            dout.exec_i.op1.control.mem_wren <= '0';
+            dout.exec_i.op1.control.pr_wren  <= '0';
+        elsif clock'event and clock = '1' then
             -- id2 exec
             dout.exec_i.op0.pr_reg <= din.id2_o.op0.pr_reg;
             dout.exec_i.op1.pr_reg <= din.id2_o.op1.pr_reg;
@@ -100,6 +127,12 @@ begin
             dout.exec_i.op0.control <= din.id2_o.op0.control;
             dout.exec_i.op1.control <= din.id2_o.op1.control;
 
+        end if;
+
+        if reset = '1' then
+            dout.exec2_i.op0.control.reg_wren <= '0';
+            dout.exec2_i.op1.control.reg_wren <= '0';
+       elsif clock'event and clock = '1' then
             -- exec exec2
             dout.exec2_i.op0.alu_data <= din.exec_o.op0.alu_data;
             dout.exec2_i.op1.alu_data <= din.exec_o.op1.alu_data;
@@ -119,6 +152,12 @@ begin
             dout.exec2_i.op0.control.alu_sh_mem_sel <= din.exec_o.op0.control.alu_sh_mem_sel;
             dout.exec2_i.op1.control.alu_sh_mem_sel <= din.exec_o.op1.control.alu_sh_mem_sel;
 
+        end if;
+
+        if reset = '1' then
+            dout.wb_i.op0.control.reg_wren <= '0';
+            dout.wb_i.op1.control.reg_wren <= '0';
+        elsif clock'event and clock = '1' then
             -- exec2 wb
             dout.wb_i.op0.control.alu_sh_mem_sel <= din.exec2_o.op0.control.alu_sh_mem_sel;
             dout.wb_i.op1.control.alu_sh_mem_sel <= din.exec2_o.op1.control.alu_sh_mem_sel;
@@ -131,16 +170,7 @@ begin
 
             dout.wb_i.op0.alu_sh_data <= din.exec2_o.op0.alu_sh_data;
             dout.wb_i.op1.alu_sh_data <= din.exec2_o.op1.alu_sh_data;
-
-            -- wb id
-            dout.id_i.op0.reg_wren <= din.wb_o.op0.control.reg_wren;
-            dout.id_i.op1.reg_wren <= din.wb_o.op1.control.reg_wren;
-
-            dout.id_i.op0.reg_dst <= din.wb_o.op0.reg_dst;
-            dout.id_i.op1.reg_dst <= din.wb_o.op1.reg_dst;
-
-            dout.id_i.op0.data_dst <= din.wb_o.op0.data_dst;
-            dout.id_i.op1.data_dst <= din.wb_o.op1.data_dst;
         end if;
+
     end process;
 end behavior;
