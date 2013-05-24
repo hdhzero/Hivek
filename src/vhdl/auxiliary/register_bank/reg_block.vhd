@@ -31,8 +31,9 @@ architecture reg_block of reg_block is
 begin
     dout <= zero0 when sel = '0' else zero1;
 
-    zero0 <= dout0 when rdaddr /= "00000" else ZERO(31 downto 0);
-    zero1 <= dout1 when rdaddr /= "00000" else ZERO(31 downto 0);
+    zero0 <= dout0; --when rdaddr /= "00000" else ZERO(31 downto 0);
+    zero1 <= dout1; --when rdaddr /= "00000" else ZERO(31 downto 0);
+
 
     reg_bram0 : reg_bram
     port map (

@@ -50,9 +50,14 @@ begin
     process (wraddr_r, rdaddr_r, dout_v1, dout_v0, wren_r)
     begin
         if wraddr_r = rdaddr_r and wren_r = '1' then
+        --if wren_r = '1' then
             dout <= dout_v1;
         else
-            dout <= dout_v0;
+            if rdaddr_r /= "00000" then
+                dout <= dout_v0;
+            else
+                dout <= ZERO(31 downto 0);
+            end if;
         end if;
     end process;
 

@@ -27,6 +27,7 @@ begin
     bank_selector_u : bank_selector
     port map (
         clock  => clock,
+        reset  => reset,
         load0  => din.op0.wren,
         load1  => din.op1.wren,
         addrc0 => din.op0.reg_c,

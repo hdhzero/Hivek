@@ -560,6 +560,7 @@ package hivek_pkg is
     component bank_selector is
     port (
         clock  : in std_logic;
+        reset  : in std_logic;
         load0  : in std_logic;
         load1  : in std_logic;
         addrc0 : in std_logic_vector(4 downto 0);

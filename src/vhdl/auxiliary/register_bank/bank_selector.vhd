@@ -8,6 +8,7 @@ use work.hivek_pkg.all;
 entity bank_selector is
     port (
         clock  : in std_logic;
+        reset  : in std_logic;
         load0  : in std_logic;
         load1  : in std_logic;
         addrc0 : in std_logic_vector(4 downto 0);
@@ -20,7 +21,6 @@ entity bank_selector is
         sel_a1 : out std_logic;
         sel_b0 : out std_logic;
         sel_b1 : out std_logic
-
     );
 end bank_selector;
 
@@ -40,7 +40,9 @@ begin
 
     process (clock, load0, load1, addrc0, addrc1)
     begin
-        if clock'event and clock = '1' then
+        if reset = '1' then
+            selectors <= x"00000000";
+        elsif clock'event and clock = '1' then
             addra0_r <= addra0;
             addra1_r <= addra1;
             addrb0_r <= addrb0;
