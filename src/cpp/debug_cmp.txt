@@ -1,0 +1,65 @@
+start:
+    (!p0) addi $r0, $r0, 0
+    (!p0) addi $r0, $r0, 0
+;;    
+    addi $r1, $r0, 1
+    (!p0) addi $r0, $r0, 0
+;;
+    addi $r2, $r0, 2
+    (!p0) addi $r0, $r0, 0
+;;
+    addi $r3, $r0, 3
+    (!p0) addi $r0, $r0, 0
+;;
+    addi $r4, $r0, 4
+    (!p0) addi $r0, $r0, 0
+;;
+    addi $r5, $r0, 5
+    (!p0) addi $r0, $r0, 0
+;;
+    addi $r7, $r0, 7
+    (!p0) addi $r0, $r0, 0
+;;
+    add $r1, $r1, $r1
+    (!p0) add $r0, $r0, $r0
+;;
+    add $r2, $r2, $r2
+    (!p0) add $r0, $r0, $r0
+;;
+    add $r3, $r3, $r3
+    (!p0) add $r0, $r0, $r0
+;;
+    add $r4, $r4, $r4
+    (!p0) add $r0, $r0, $r0
+;;
+    add $r5, $r5, $r5
+    (!p0) add $r0, $r0, $r0
+;;
+    add $r7, $r7, $r7
+    (!p0) add $r0, $r0, $r0
+;;
+    cmpeq $p1, $r1, $r1
+    addi $r0, $r0, 0
+;;
+    cmpeq $p2, $r2, $r1
+    addi $r0, $r0, 0
+;;
+    addi $r0, $r0, 0
+    addi $r0, $r0, 0
+;;
+    addi $r0, $r0, 0
+    addi $r0, $r0, 0
+;;
+    addi $r0, $r0, 0
+    addi $r0, $r0, 0
+;;
+    (p2) addi $r1, $r0, 100
+    addi $r0, $r0, 0
+;;
+    (p1) addi $r2, $r0, 200
+    addi $r0, $r0, 0
+;;
+    addi $r30, $r0, 0
+    (!p0) addi $r0, $r0, 0
+;;
+

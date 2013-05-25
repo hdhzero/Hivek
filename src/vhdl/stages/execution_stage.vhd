@@ -105,6 +105,17 @@ begin
         dout.op0.reg_dst <= din.op0.reg_dst;
         dout.op1.reg_dst <= din.op1.reg_dst;
 
+        pb_i.op0.reg_a  <= din.op0.reg_a(1 downto 0);
+        pb_i.op0.reg_b  <= din.op0.reg_a(1 downto 0);
+        pb_i.op0.reg_c  <= din.op0.reg_dst(1 downto 0);
+        pb_i.op0.reg_pr <= din.op0.pr_reg;
+        pb_i.op0.data   <= alu_sh_o0.cmp_flag;
+
+        pb_i.op1.reg_a  <= din.op1.reg_a(1 downto 0);
+        pb_i.op1.reg_b  <= din.op1.reg_a(1 downto 0);
+        pb_i.op1.reg_c  <= din.op1.reg_dst(1 downto 0);
+        pb_i.op1.reg_pr <= din.op1.pr_reg;
+        pb_i.op1.data   <= alu_sh_o1.cmp_flag;
     end process;
 
     alu_shifter_u0 : alu_shifter
