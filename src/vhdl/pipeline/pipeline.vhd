@@ -28,7 +28,21 @@ begin
         dout.icache_addr <= din.if_o.icache_addr;
 
         -- dcache
+        dout.dcache_wren_0 <= din.exec_o.op0.control.mem_wren;
+        dout.dcache_wren_1 <= din.exec_o.op1.control.mem_wren;
+
+        dout.dcache_addr_0 <= din.exec_o.op0.mem_addr;
+        dout.dcache_addr_1 <= din.exec_o.op1.mem_addr;
+
+        dout.dcache_data_0 <= din.exec_o.op0.mem_data_wr;
+        dout.dcache_data_1 <= din.exec_o.op1.mem_data_wr;
+
+        dout.exec_i.op0.mem_data <= din.dcache_data_0;
+        dout.exec_i.op1.mem_data <= din.dcache_data_1;
         
+        dout.exec2_i.op0.mem_data <= din.exec_o.op0.mem_data_rd;
+        dout.exec2_i.op1.mem_data <= din.exec_o.op1.mem_data_rd;
+
         --TODO
         dout.if_i.instruction <= din.icache_data;
         dout.if_i.op0.jmp_addr <= x"00000000";
@@ -143,12 +157,11 @@ begin
             dout.exec_i.op0.reg_b <= din.id2_o.op0.reg_b;
             dout.exec_i.op1.reg_b <= din.id2_o.op1.reg_b;
 
-            --dout.exec_i.op0.mem_data <= din.id2_o.op0.mem_data;
-            --dout.exec_i.op1.mem_data <= din.id2_o.op1.mem_data;
+            dout.exec_i.op0.mem_data <= din.dcache_data_0;
+            dout.exec_i.op1.mem_data <= din.dcache_data_1;
 
             dout.exec_i.op0.control <= din.id2_o.op0.control;
             dout.exec_i.op1.control <= din.id2_o.op1.control;
-
         end if;
 
         if reset = '1' then
@@ -161,6 +174,7 @@ begin
 
             dout.exec2_i.op0.sh_data <= din.exec_o.op0.sh_data;
             dout.exec2_i.op1.sh_data <= din.exec_o.op1.sh_data;
+    
 
             dout.exec2_i.op0.reg_dst <= din.exec_o.op0.reg_dst;
             dout.exec2_i.op1.reg_dst <= din.exec_o.op1.reg_dst;
@@ -192,6 +206,9 @@ begin
 
             dout.wb_i.op0.alu_sh_data <= din.exec2_o.op0.alu_sh_data;
             dout.wb_i.op1.alu_sh_data <= din.exec2_o.op1.alu_sh_data;
+
+            dout.wb_i.op0.mem_data <= din.exec2_o.op0.mem_data;
+            dout.wb_i.op1.mem_data <= din.exec2_o.op1.mem_data;
         end if;
 
     end process;

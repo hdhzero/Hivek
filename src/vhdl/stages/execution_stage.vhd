@@ -15,6 +15,8 @@ entity execution_stage is
 end execution_stage;
 
 architecture behavior of execution_stage is
+    signal carry_r   : std_logic_vector(1 downto 0);
+
     signal alu_sh_i0 : alu_shifter_in_t;
     signal alu_sh_i1 : alu_shifter_in_t;
 
@@ -23,7 +25,21 @@ architecture behavior of execution_stage is
 
     signal pb_i : predicate_bank_in_t;
     signal pb_o : predicate_bank_out_t;
+
+    signal mem_addr_0 : unsigned(31 downto 0);
+    signal mem_addr_1 : unsigned(31 downto 0);
 begin
+    process (clock)
+    begin
+        if clock'event and clock = '1' then
+            carry_r(0) <= alu_sh_o0.carry_out;
+            carry_r(1) <= alu_sh_o1.carry_out;
+        end if;
+    end process;
+
+    mem_addr_0 <= unsigned(din.op0.data_a) + unsigned(din.op0.immd32);
+    mem_addr_1 <= unsigned(din.op1.data_a) + unsigned(din.op1.immd32);
+
     process (din, pb_o, alu_sh_o0, alu_sh_o1)
     begin
         alu_sh_i0.alu_op <= din.op0.control.alu_op;
@@ -55,10 +71,8 @@ begin
         alu_sh_i1.pr_data_a <= pb_o.op0.data_a;
         alu_sh_i1.pr_data_b <= pb_o.op1.data_b;
 
-
-        -- TODO
-        alu_sh_i0.carry_in <= '0';
-        alu_sh_i1.carry_in <= '0';
+        alu_sh_i0.carry_in <= carry_r(0);
+        alu_sh_i1.carry_in <= carry_r(1);
 
         -- reg immd select
         if din.op0.control.reg_immd_sel = '0' then
@@ -123,6 +137,15 @@ begin
         pb_i.op1.reg_c  <= din.op1.reg_dst(1 downto 0);
         pb_i.op1.reg_pr <= din.op1.pr_reg;
         pb_i.op1.data   <= alu_sh_o1.cmp_flag;
+
+        dout.op0.mem_data_wr <= din.op0.data_b;
+        dout.op0.mem_addr    <= std_logic_vector(mem_addr_0);
+
+        dout.op1.mem_data_wr <= din.op1.data_b;
+        dout.op1.mem_addr    <= std_logic_vector(mem_addr_1);
+
+        dout.op0.mem_data_rd <= din.op0.mem_data;
+        dout.op1.mem_data_rd <= din.op1.mem_data;
     end process;
 
     alu_shifter_u0 : alu_shifter

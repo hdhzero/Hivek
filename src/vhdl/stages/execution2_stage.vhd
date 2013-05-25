@@ -40,5 +40,8 @@ begin
         dout.op0.control.reg_wren <= din.op0.control.reg_wren;
         dout.op1.control.reg_wren <= din.op1.control.reg_wren;
 
+        -- data
+        dout.op0.mem_data <= din.op0.mem_data;
+        dout.op1.mem_data <= din.op1.mem_data;
     end process;
 end behavior;

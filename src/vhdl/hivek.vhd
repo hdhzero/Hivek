@@ -53,6 +53,9 @@ begin
     dout.op0.dcache_wren <= pipe_o.dcache_wren_0;
     dout.op1.dcache_wren <= pipe_o.dcache_wren_1;
 
+    pipe_i.dcache_data_0 <= din.op0.dcache_data;
+    pipe_i.dcache_data_1 <= din.op1.dcache_data;
+
 
     if_i    <= pipe_o.if_i;
     iexp_i  <= pipe_o.iexp_i;

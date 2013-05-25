@@ -294,9 +294,9 @@ package hivek_pkg is
     type execution_stage_path_in_t is record
         pr_reg   : std_logic_vector(1 downto 0);
         pr_data  : std_logic;
-        reg_a   : std_logic_vector(4 downto 0);
-        reg_b   : std_logic_vector(4 downto 0);
-        reg_dst : std_logic_vector(4 downto 0);
+        reg_a    : std_logic_vector(4 downto 0);
+        reg_b    : std_logic_vector(4 downto 0);
+        reg_dst  : std_logic_vector(4 downto 0);
         data_a   : std_logic_vector(31 downto 0);
         data_b   : std_logic_vector(31 downto 0);
         immd32   : std_logic_vector(31 downto 0);
@@ -306,13 +306,14 @@ package hivek_pkg is
     end record;
 
     type execution_stage_path_out_t is record
-        control  : execution_control_out_t;
-        alu_data : std_logic_vector(31 downto 0);
-        sh_data  : std_logic_vector(31 downto 0);
-        reg_dst  : std_logic_vector(4 downto 0);
-        mem_wren : std_logic;
-        mem_addr : std_logic_vector(31 downto 0);
-        mem_data : std_logic_vector(31 downto 0);
+        control     : execution_control_out_t;
+        alu_data    : std_logic_vector(31 downto 0);
+        sh_data     : std_logic_vector(31 downto 0);
+        reg_dst     : std_logic_vector(4 downto 0);
+        mem_wren    : std_logic;
+        mem_addr    : std_logic_vector(31 downto 0);
+        mem_data_wr : std_logic_vector(31 downto 0);
+        mem_data_rd : std_logic_vector(31 downto 0);
     end record;
 
     type execution_stage_in_t is record
