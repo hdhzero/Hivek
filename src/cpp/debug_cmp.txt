@@ -41,7 +41,7 @@ start:
     cmpeq $p1, $r1, $r1
     addi $r0, $r0, 0
 ;;
-    cmpeq $p2, $r2, $r1
+    cmpeqi $p2, $r2, 4
     addi $r0, $r0, 0
 ;;
     addi $r0, $r0, 0
@@ -53,10 +53,16 @@ start:
     addi $r0, $r0, 0
     addi $r0, $r0, 0
 ;;
-    (p2) addi $r1, $r0, 100
+    (p2) sub $r1, $r1, $r1
     addi $r0, $r0, 0
 ;;
-    (p1) addi $r2, $r0, 200
+    (p1) sub $r2, $r2, $r2
+    addi $r0, $r0, 0
+;;
+    andp $p3, $p1, $p2
+    addi $r0, $r0, 0
+;;
+    (p3) addi $r1, $r0, 7
     addi $r0, $r0, 0
 ;;
     addi $r30, $r0, 0

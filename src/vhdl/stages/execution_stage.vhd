@@ -49,6 +49,13 @@ begin
         alu_sh_i0.operand_a <= din.op0.data_a;
         alu_sh_i1.operand_a <= din.op1.data_a;
 
+        alu_sh_i0.pr_data_a <= pb_o.op0.data_a;
+        alu_sh_i0.pr_data_b <= pb_o.op0.data_b;
+
+        alu_sh_i1.pr_data_a <= pb_o.op0.data_a;
+        alu_sh_i1.pr_data_b <= pb_o.op1.data_b;
+
+
         -- TODO
         alu_sh_i0.carry_in <= '0';
         alu_sh_i1.carry_in <= '0';

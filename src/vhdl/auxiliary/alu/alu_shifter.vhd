@@ -25,6 +25,8 @@ begin
     alu_i.carry_in  <= din.carry_in;
     alu_i.operand_a <= din.operand_a;
     alu_i.operand_b <= din.operand_b;
+    alu_i.pr_data_a <= din.pr_data_a;
+    alu_i.pr_data_b <= din.pr_data_b;
 
     dout.alu_result   <= alu_o.result;
     dout.shift_result <= std_logic_vector(tmp);

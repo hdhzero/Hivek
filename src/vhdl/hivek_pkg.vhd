@@ -488,6 +488,8 @@ package hivek_pkg is
         carry_in  : std_logic;
         operand_a : std_logic_vector(31 downto 0);
         operand_b : std_logic_vector(31 downto 0);
+        pr_data_a : std_logic;
+        pr_data_b : std_logic;
     end record;
 
     type alu_out_t is record
@@ -512,6 +514,8 @@ package hivek_pkg is
         carry_in     : std_logic;
         operand_a    : std_logic_vector(31 downto 0);
         operand_b    : std_logic_vector(31 downto 0);
+        pr_data_a : std_logic;
+        pr_data_b : std_logic;
         shift_amt    : std_logic_vector(4 downto 0);
     end record;
 

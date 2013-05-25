@@ -65,6 +65,15 @@ begin
                     dout.cmp_flag <= '0';
                 end if;
 
+            when ALU_ANDP =>
+                dout.cmp_flag <= din.pr_data_a and din.pr_data_b;
+
+            when ALU_ORP =>
+                dout.cmp_flag <= din.pr_data_a or din.pr_data_b;
+
+            when ALU_XORP =>
+                dout.cmp_flag <= din.pr_data_a xor din.pr_data_b;
+
             when others =>
                 dout.cmp_flag <= '0';
         end case;

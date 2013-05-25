@@ -121,6 +121,12 @@ begin
             dout.exec_i.op0.reg_dst <= din.id2_o.op0.reg_dst;
             dout.exec_i.op1.reg_dst <= din.id2_o.op1.reg_dst;
 
+            dout.exec_i.op0.reg_a <= din.id2_o.op0.reg_a;
+            dout.exec_i.op1.reg_a <= din.id2_o.op1.reg_a;
+
+            dout.exec_i.op0.reg_b <= din.id2_o.op0.reg_b;
+            dout.exec_i.op1.reg_b <= din.id2_o.op1.reg_b;
+
             --dout.exec_i.op0.mem_data <= din.id2_o.op0.mem_data;
             --dout.exec_i.op1.mem_data <= din.id2_o.op1.mem_data;
 
