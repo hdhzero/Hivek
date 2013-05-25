@@ -38,7 +38,7 @@ begin
     sel_b0 <= selectors(to_integer(unsigned(addrb0_r)));
     sel_b1 <= selectors(to_integer(unsigned(addrb1_r)));
 
-    process (clock, load0, load1, addrc0, addrc1)
+    process (clock, reset, load0, load1, addrc0, addrc1)
     begin
         if reset = '1' then
             selectors <= x"00000000";
