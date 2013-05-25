@@ -41,7 +41,7 @@ start:
     cmpeq $p1, $r1, $r1
     addi $r0, $r0, 0
 ;;
-    cmpeqi $p2, $r2, 4
+    cmpeqi $p2, $r2, 0
     addi $r0, $r0, 0
 ;;
     addi $r0, $r0, 0

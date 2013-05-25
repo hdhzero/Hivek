@@ -17,12 +17,28 @@ end pipeline;
 
 architecture behavior of pipeline is
 begin
-    process (clock, din)
+    process (clock, reset, din)
     begin
 
         --------------
         -- forwards --
         --------------
+
+        -- icache
+        dout.icache_addr <= din.if_o.icache_addr;
+
+        -- dcache
+        
+        --TODO
+        dout.if_i.instruction <= din.icache_data;
+        dout.if_i.op0.jmp_addr <= x"00000000";
+        dout.if_i.op1.jmp_addr <= x"00000000";
+
+        dout.if_i.op0.jmp_taken <= '0';
+        dout.if_i.op1.jmp_taken <= '0';
+
+        dout.if_i.pc_wren <= '1';
+        --end TODO
 
         -- wb id
         dout.id_i.op0.reg_wren <= din.wb_o.op0.control.reg_wren;

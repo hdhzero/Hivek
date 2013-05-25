@@ -39,27 +39,19 @@ architecture behavior of hivek is
     signal wb_i : writeback_stage_in_t;
     signal wb_o : writeback_stage_out_t;
 begin
+    -- icache
+    dout.icache_addr <= pipe_o.icache_addr;
+    pipe_i.icache_data <= din.icache_data;
 
-    dout.icache_addr <= pipe_i.if_o.icache_addr;
+    -- dcache
+    dout.op0.dcache_data <= pipe_o.dcache_data_0; 
+    dout.op1.dcache_data <= pipe_o.dcache_data_1; 
 
-    dout.op0.dcache_wren <= pipe_i.exec_o.op0.mem_wren;
-    dout.op0.dcache_addr <= pipe_i.exec_o.op0.mem_addr;
-    dout.op0.dcache_data <= pipe_i.exec_o.op0.mem_data;
+    dout.op0.dcache_addr <= pipe_o.dcache_addr_0;
+    dout.op1.dcache_addr <= pipe_o.dcache_addr_1;
 
-    dout.op1.dcache_wren <= pipe_i.exec_o.op1.mem_wren;
-    dout.op1.dcache_addr <= pipe_i.exec_o.op1.mem_addr;
-    dout.op1.dcache_data <= pipe_i.exec_o.op1.mem_data;
-
-    pipe_o.exec_i.op0.mem_data <= din.op0.dcache_data;
-    pipe_o.exec_i.op1.mem_data <= din.op1.dcache_data;
-
-    pipe_o.if_i.instruction <= din.instruction;
-    -- TODO
-    pipe_o.if_i.op0.jmp_addr <= x"00000000";
-    pipe_o.if_i.op0.jmp_taken <= '0';
-    pipe_o.if_i.op1.jmp_addr <= x"00000000";
-    pipe_o.if_i.op1.jmp_taken <= '0';
-    pipe_o.if_i.pc_wren <= '1';
+    dout.op0.dcache_wren <= pipe_o.dcache_wren_0;
+    dout.op1.dcache_wren <= pipe_o.dcache_wren_1;
 
 
     if_i    <= pipe_o.if_i;

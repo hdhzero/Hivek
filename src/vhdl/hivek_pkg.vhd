@@ -427,6 +427,10 @@ package hivek_pkg is
         exec_exec2_wren : std_logic;
         exec2_wb_wren   : std_logic;
 
+        icache_data   : std_logic_vector(63 downto 0);
+        dcache_data_0 : std_logic_vector(31 downto 0);
+        dcache_data_1 : std_logic_vector(31 downto 0);
+
         if_o    : instruction_fetch_stage_out_t;
         iexp_o  : instruction_expansion_stage_out_t;
         id_o    : instruction_decode_stage_out_t;
@@ -437,6 +441,17 @@ package hivek_pkg is
     end record;
 
     type pipeline_out_t is record
+        icache_addr   : std_logic_vector(31 downto 0);
+
+        dcache_wren_0 : std_logic;
+        dcache_wren_1 : std_logic;
+
+        dcache_addr_0 : std_logic_vector(31 downto 0);
+        dcache_addr_1 : std_logic_vector(31 downto 0);
+
+        dcache_data_0 : std_logic_vector(31 downto 0);
+        dcache_data_1 : std_logic_vector(31 downto 0);
+
         if_i    : instruction_fetch_stage_in_t;
         iexp_i  : instruction_expansion_stage_in_t;
         id_i    : instruction_decode_stage_in_t;
@@ -699,7 +714,7 @@ package hivek_pkg is
     end record;
 
     type hivek_in_t is record
-        instruction : std_logic_vector(63 downto 0);
+        icache_data : std_logic_vector(63 downto 0);
         op0 : hivek_path_in_t;
         op1 : hivek_path_in_t;
     end record;

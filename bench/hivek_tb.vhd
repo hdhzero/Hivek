@@ -295,7 +295,7 @@ begin
         wren_0  => '0',
         addr_0  => hivek_o.icache_addr,
         din_0   => (others => '0'),
-        dout_0  => hivek_i.instruction,
+        dout_0  => hivek_i.icache_data,
 
         wren_1  => iwren_file,
         addr_1  => iaddr_file,
@@ -322,15 +322,15 @@ begin
         clock    => clock,
         sel      => dcache_sel,
 
-        a_wren_0   => '0',
-        a_addr_0   => (others => '0'),
-        a_data_i_0 => (others => '0'),
-        a_data_o_0 => open,
+        a_wren_0   => hivek_o.op0.dcache_wren,
+        a_addr_0   => hivek_o.op0.dcache_addr,
+        a_data_i_0 => hivek_o.op0.dcache_data,
+        a_data_o_0 => hivek_i.op0.dcache_data,
 
-        b_wren_0   => '0',
-        b_addr_0   => (others => '0'),
-        b_data_i_0 => (others => '0'),
-        b_data_o_0 => open,
+        b_wren_0   => hivek_o.op1.dcache_wren,
+        b_addr_0   => hivek_o.op1.dcache_addr,
+        b_data_i_0 => hivek_o.op1.dcache_data,
+        b_data_o_0 => hivek_i.op1.dcache_data,
 
         a_wren_1   => da_wren_file,
         a_addr_1   => da_addr_file,
