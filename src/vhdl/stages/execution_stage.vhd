@@ -40,7 +40,7 @@ begin
     mem_addr_0 <= unsigned(din.op0.data_a) + unsigned(din.op0.immd32);
     mem_addr_1 <= unsigned(din.op1.data_a) + unsigned(din.op1.immd32);
 
-    process (din, pb_o, alu_sh_o0, alu_sh_o1)
+    process (din, pb_o, alu_sh_o0, alu_sh_o1, carry_r, mem_addr_0, mem_addr_1)
     begin
         alu_sh_i0.alu_op <= din.op0.control.alu_op;
         alu_sh_i1.alu_op <= din.op1.control.alu_op;

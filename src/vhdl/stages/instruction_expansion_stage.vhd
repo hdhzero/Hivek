@@ -31,7 +31,7 @@ begin
                 dout.op1.operation <= NOP;
             when "01" =>
                 dout.op0.operation <= din.instruction(63 downto 32);
-                dout.op0.operation <= NOP;
+                dout.op1.operation <= NOP;
             when "10" =>
                 dout.op0.operation <= iexpr_o0.operation;
                 dout.op1.operation <= iexpr_o1.operation;
