@@ -30,7 +30,7 @@ architecture behavior of instruction_fetch_stage is
 begin
     dout.icache_addr <= pc;
     dout.instruction <= din.instruction;
-    dout.inst_size   <= inst_size;
+    dout.inst_size   <= inst_size_reg;
 
     add2 <= std_logic_vector(unsigned(pc) + x"00000002"); -- 16 bits
     add4 <= std_logic_vector(unsigned(pc) + x"00000004"); -- 2x16 or 32

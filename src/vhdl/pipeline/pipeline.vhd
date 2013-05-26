@@ -77,6 +77,7 @@ begin
         elsif clock'event and clock = '1' then
             -- if exp
             dout.iexp_i.instruction <= din.if_o.instruction;
+            dout.iexp_i.inst_size   <= din.if_o.inst_size;
         end if;
 
         if reset = '1' then

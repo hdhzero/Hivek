@@ -99,6 +99,25 @@ package hivek_pkg is
     constant OP_SW      : operation_t := "01011";
     constant OP_SB      : operation_t := "01100";
 
+    subtype operation16_t is std_logic_vector(3 downto 0);
+
+    constant OP_ADD_16   : operation16_t := "0000";
+    constant OP_SUB_16   : operation16_t := "0001";
+    constant OP_AND_16   : operation16_t := "0010";
+    constant OP_OR_16    : operation16_t := "0011";
+    constant OP_CMPEQ_16 : operation16_t := "0100";
+    constant OP_CMPLT_16 : operation16_t := "0101";
+    constant OP_CMPGT_16 : operation16_t := "0110";
+    constant OP_ADDHI_16 : operation16_t := "0111";
+    constant OP_SUBHI_16 : operation16_t := "1000";
+    constant OP_ADDI_16  : operation16_t := "1001";
+    constant OP_MOVI     : operation16_t := "1010";
+    constant OP_LW_SP_16 : operation16_t := "1011";
+    constant OP_SW_SP_16 : operation16_t := "1100";
+    constant OP_LW_16    : operation16_t := "1101";
+    constant OP_SW_16    : operation16_t := "1110";
+    constant OP_MOV_16   : operation16_t := "1111";
+
     ---------------------
     -- Pipeline stages --
     ---------------------
@@ -140,6 +159,7 @@ package hivek_pkg is
     end record;
 
     type instruction_expansion_stage_in_t is record
+        inst_size   : std_logic_vector(1 downto 0);
         instruction : std_logic_vector(63 downto 0);
     end record;
 
@@ -546,6 +566,25 @@ package hivek_pkg is
     port (
         din  : in alu_shifter_in_t;
         dout : out alu_shifter_out_t
+    );
+    end component;
+
+    ----------------------------------------------------------
+    -- instruction_expander
+    ----------------------------------------------------------
+
+    type operation_expander_in_t is record
+        operation : std_logic_vector(15 downto 0);
+    end record;
+
+    type operation_expander_out_t is record
+        operation : std_logic_vector(31 downto 0);
+    end record;
+
+    component operation_expander is
+    port (
+        din  : in operation_expander_in_t;
+        dout : out operation_expander_out_t
     );
     end component;
 

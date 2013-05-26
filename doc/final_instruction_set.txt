@@ -105,22 +105,23 @@ sz   op    immd27
 
 00 1pccc iii iii iii
 00 01111 000 000 000
-00 01111 0 0000 0000
 00 01111 0000 00000
 
 0 add    rd, rs, rt
 1 sub    rd, rs, rt
-2 addi   rd, rd, immd5
-3 lw     rd, rs
-4 sw     rd, rs
-5 lw sp  rs, immd5
-6 sw sp  rs, immd5
-7 mov    rd, rs
-8 movi   rs, immd5
-9 and    rd, rs, rt
-A or     rd, rs, rt
-B cmpeq  pd, rs, rt
-C cmplt  pd, rs, rt
-D cmpgt  pd, rs, rt
-E addhi  rd, rs, rt
-F subhi  rd, rs, rt
+2 and    rd, rs, rt
+3 or     rd, rs, rt
+4 cmpeq  pd, rs, rt
+5 cmplt  pd, rs, rt
+6 cmpgt  pd, rs, rt
+7 addhi  rd, rs, rt
+8 subhi  rd, rs, rt
+9 addi   rd, immd5
+A movi   rs, immd5
+B lw sp  rs, immd5
+C sw sp  rs, immd5
+D lw     rd, rs
+E sw     rd, rs
+F mov    rd, rs
+
+
