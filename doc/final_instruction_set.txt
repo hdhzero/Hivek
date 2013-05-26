@@ -124,4 +124,28 @@ D lw     rd, rs
 E sw     rd, rs
 F mov    rd, rs
 
+int pc;
+void next_pc() {
+    if alu_sz_sel = '1' then
+        inst_size = '11';
+    else
+        inst_size = instruction(63-62);
+    end if
 
+    sequential_inc = pc + mux248;
+    j_tk = restore or j_tk or jr_tk
+
+    if j_tk = '0' then
+        pc = sequential_inc;
+    else
+        if restore = '1' then
+            pc = restore_addr;
+        else
+            if jr_tk = '1' then
+                pc = jr_addr;
+            else
+                pc = j_addr;
+            end if;
+        end if;
+    end if;
+}
