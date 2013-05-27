@@ -45,11 +45,18 @@ begin
 
         --TODO
         dout.if_i.instruction <= din.icache_data;
-        dout.if_i.op0.jmp_addr <= x"00000000";
-        dout.if_i.op1.jmp_addr <= x"00000000";
 
-        dout.if_i.op0.jmp_taken <= '0';
-        dout.if_i.op1.jmp_taken <= '0';
+        dout.if_i.op0.j_addr <= din.iexp_o.op0.j_addr;
+        dout.if_i.op1.j_addr <= din.iexp_o.op1.j_addr;
+
+        dout.if_i.op0.j_take <= din.iexp_o.op0.j_take;
+        dout.if_i.op1.j_take <= din.iexp_o.op1.j_take;
+
+        dout.if_i.op0.jr_take <= '0';
+        dout.if_i.op1.jr_take <= '0';
+
+        dout.if_i.op0.restore <= '0';
+        dout.if_i.op1.restore <= '0';
 
         dout.if_i.pc_wren <= '1';
         --end TODO

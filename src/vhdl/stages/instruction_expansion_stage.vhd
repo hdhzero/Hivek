@@ -21,27 +21,63 @@ architecture behavior of instruction_expansion_stage is
 
 begin
     process (din, iexpr_o0, iexpr_o1)
+        variable operation0 : std_logic_vector(31 downto 0);
+        variable operation1 : std_logic_vector(31 downto 0);
+        variable j_addr_0   : std_logic_vector(21 downto 0);
+        variable j_addr_1   : std_logic_vector(21 downto 0);
     begin
         iexpr_i0.operation <= din.instruction(63 downto 48);
         iexpr_i1.operation <= din.instruction(47 downto 32);
 
         case din.inst_size is
             when "00" =>
-                dout.op0.operation <= iexpr_o0.operation;
-                dout.op1.operation <= NOP;
+                operation0 := iexpr_o0.operation;
+                operation1 := NOP;
             when "01" =>
-                dout.op0.operation <= din.instruction(63 downto 32);
-                dout.op1.operation <= NOP;
+                operation0 := din.instruction(63 downto 32);
+                operation1 := NOP;
             when "10" =>
-                dout.op0.operation <= iexpr_o0.operation;
-                dout.op1.operation <= iexpr_o1.operation;
+                operation0 := iexpr_o0.operation;
+                operation1 := iexpr_o1.operation;
             when "11" =>
-                dout.op0.operation <= din.instruction(63 downto 32);
-                dout.op1.operation <= din.instruction(31 downto 0);
+                operation0 := din.instruction(63 downto 32);
+                operation1 := din.instruction(31 downto 0);
             when others =>
-                dout.op0.operation <= NOP;
-                dout.op1.operation <= NOP;
+                operation0 := NOP;
+                operation1 := NOP;
         end case;
+
+        dout.op0.operation <= operation0;
+        dout.op1.operation <= operation1;
+
+        j_addr_0 := operation0(24 downto 3);
+        j_addr_1 := operation1(24 downto 3);
+
+        if operation0(29 downto 27) = "110" and operation0(25) = '1' then
+            dout.op0.j_take <= '1';
+        else
+            dout.op0.j_take <= '0';
+        end if;
+
+        if operation1(29 downto 27) = "110" and operation1(25) = '1' then
+            dout.op1.j_take <= '1';
+        else
+            dout.op1.j_take <= '0';
+        end if;
+
+        -- sign extension
+        if j_addr_0(21) = '1' then
+            dout.op0.j_addr <= ONES(31 downto 22) & j_addr_0;
+        else
+            dout.op0.j_addr <= ZERO(31 downto 22) & j_addr_0;
+        end if;
+
+        if j_addr_1(21) = '1' then
+            dout.op1.j_addr <= ONES(31 downto 22) & j_addr_1;
+        else
+            dout.op1.j_addr <= ZERO(31 downto 22) & j_addr_1;
+        end if;
+
     end process;
 
     operation_expander_u0 : operation_expander

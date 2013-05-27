@@ -125,8 +125,12 @@ package hivek_pkg is
     -- instruction_fetch
     ----------------------------------------------------------
     type instruction_fetch_stage_path_in_t is record
-        jmp_addr  : std_logic_vector(31 downto 0);
-        jmp_taken : std_logic;
+        restore      : std_logic;
+        jr_take      : std_logic;
+        j_take       : std_logic;
+        restore_addr : std_logic_vector(31 downto 0);
+        jr_addr      : std_logic_vector(31 downto 0);
+        j_addr       : std_logic_vector(31 downto 0);
     end record;
 
     type instruction_fetch_stage_in_t is record
@@ -154,13 +158,21 @@ package hivek_pkg is
     ----------------------------------------------------------
     -- instruction_expansion
     ----------------------------------------------------------
+    type instruction_expansion_stage_path_in_t is record
+        pc : std_logic_vector(31 downto 0);
+    end record;
+
     type instruction_expansion_stage_path_out_t is record
         operation : std_logic_vector(31 downto 0);
+        j_take    : std_logic;
+        j_addr    : std_logic_vector(31 downto 0);
     end record;
 
     type instruction_expansion_stage_in_t is record
         inst_size   : std_logic_vector(1 downto 0);
         instruction : std_logic_vector(63 downto 0);
+        op0 : instruction_expansion_stage_path_in_t;
+        op1 : instruction_expansion_stage_path_in_t;
     end record;
 
     type instruction_expansion_stage_out_t is record

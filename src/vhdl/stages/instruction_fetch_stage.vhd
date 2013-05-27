@@ -18,6 +18,7 @@ architecture behavior of instruction_fetch_stage is
     signal pc     : std_logic_vector(31 downto 0);
     signal new_pc : std_logic_vector(31 downto 0);
 
+
     signal sequential_inc : std_logic_vector(31 downto 0);
 
     signal add2 : std_logic_vector(31 downto 0);
@@ -36,7 +37,45 @@ begin
     add4 <= std_logic_vector(unsigned(pc) + x"00000004"); -- 2x16 or 32
     add8 <= std_logic_vector(unsigned(pc) + x"00000008"); -- 2x32
 
-    new_pc <= sequential_inc;
+
+    process (din, sequential_inc)
+        variable restore : std_logic;
+        variable jr_take : std_logic;
+        variable j_take  : std_logic;
+        variable new_pc_sel : std_logic;
+    begin
+        restore := din.op0.restore or din.op1.restore;
+        jr_take := din.op0.jr_take or din.op1.jr_take;
+        j_take  := din.op0.j_take or din.op1.j_take;
+
+        new_pc_sel := restore or jr_take or j_take;
+
+        if new_pc_sel = '0' then
+            new_pc <= sequential_inc;
+        else
+            if restore = '1' then
+                if din.op0.restore = '1' then
+                    new_pc <= din.op0.restore_addr;
+                else
+                    new_pc <= din.op1.restore_addr;
+                end if;
+            else
+                if jr_take = '1' then
+                    if din.op0.jr_take = '1' then
+                        new_pc <= din.op0.jr_addr;
+                    else
+                        new_pc <= din.op1.jr_addr;
+                    end if;
+                else
+                    if din.op0.j_take = '1' then
+                        new_pc <= din.op0.j_addr;
+                    else
+                        new_pc <= din.op1.j_addr;
+                    end if;
+                end if;
+            end if;
+        end if;
+    end process;
 
     process (clock, reset)
     begin
