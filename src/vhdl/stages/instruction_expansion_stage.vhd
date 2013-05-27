@@ -21,10 +21,15 @@ architecture behavior of instruction_expansion_stage is
 
 begin
     process (din, iexpr_o0, iexpr_o1)
+        variable current_pc : unsigned(31 downto 0);
         variable operation0 : std_logic_vector(31 downto 0);
         variable operation1 : std_logic_vector(31 downto 0);
-        variable j_addr_0   : std_logic_vector(21 downto 0);
-        variable j_addr_1   : std_logic_vector(21 downto 0);
+        variable jc_addr_0  : std_logic_vector(21 downto 0);
+        variable jc_addr_1  : std_logic_vector(21 downto 0);
+        variable ju_addr_0  : std_logic_vector(26 downto 0);
+        variable ju_addr_1  : std_logic_vector(26 downto 0);
+        variable addr_0     : unsigned(31 downto 0);
+        variable addr_1     : unsigned(31 downto 0);
     begin
         iexpr_i0.operation <= din.instruction(63 downto 48);
         iexpr_i1.operation <= din.instruction(47 downto 32);
@@ -46,14 +51,21 @@ begin
                 operation0 := NOP;
                 operation1 := NOP;
         end case;
+        
+        current_pc := unsigned(din.current_pc);
+
+        jc_addr_0 := operation0(24 downto 3);
+        jc_addr_1 := operation1(24 downto 3);
+        ju_addr_0 := operation0(26 downto 0);
+        ju_addr_1 := operation1(26 downto 0);
 
         dout.op0.operation <= operation0;
         dout.op1.operation <= operation1;
 
-        j_addr_0 := operation0(24 downto 3);
-        j_addr_1 := operation1(24 downto 3);
-
+        -- j take
         if operation0(29 downto 27) = "110" and operation0(25) = '1' then
+            dout.op0.j_take <= '1';
+        elsif operation0(29 downto 28) = "10" then
             dout.op0.j_take <= '1';
         else
             dout.op0.j_take <= '0';
@@ -61,23 +73,43 @@ begin
 
         if operation1(29 downto 27) = "110" and operation1(25) = '1' then
             dout.op1.j_take <= '1';
+        elsif operation1(29 downto 28) = "10" then
+            dout.op1.j_take <= '1';
         else
             dout.op1.j_take <= '0';
         end if;
 
         -- sign extension
-        if j_addr_0(21) = '1' then
-            dout.op0.j_addr <= ONES(31 downto 22) & j_addr_0;
+        if operation0(29 downto 28) = "10" then
+            if ju_addr_0(26) = '1' then
+                addr_0 := unsigned(ONES(31 downto 27) & ju_addr_0);
+            else
+                addr_0 := unsigned(ZERO(31 downto 27) & ju_addr_0);
+            end if;
         else
-            dout.op0.j_addr <= ZERO(31 downto 22) & j_addr_0;
+            if jc_addr_0(21) = '1' then
+                addr_0 := unsigned(ONES(31 downto 22) & jc_addr_0);
+            else
+                addr_0 := unsigned(ZERO(31 downto 22) & jc_addr_0);
+            end if;
         end if;
 
-        if j_addr_1(21) = '1' then
-            dout.op1.j_addr <= ONES(31 downto 22) & j_addr_1;
+        if operation1(29 downto 28) = "10" then
+            if ju_addr_1(26) = '1' then
+                addr_1 := unsigned(ONES(31 downto 27) & ju_addr_1);
+            else
+                addr_1 := unsigned(ZERO(31 downto 27) & ju_addr_1);
+            end if;
         else
-            dout.op1.j_addr <= ZERO(31 downto 22) & j_addr_1;
+            if jc_addr_1(21) = '1' then
+                addr_1 := unsigned(ONES(31 downto 22) & jc_addr_1);
+            else
+                addr_1 := unsigned(ZERO(31 downto 22) & jc_addr_1);
+            end if;
         end if;
 
+        dout.op0.j_addr <= std_logic_vector(current_pc + addr_0);
+        dout.op1.j_addr <= std_logic_vector(current_pc + addr_1);
     end process;
 
     operation_expander_u0 : operation_expander

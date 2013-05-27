@@ -78,13 +78,15 @@ begin
         dout.id2_i.op0.data_b <= din.id_o.op0.data_b;
         dout.id2_i.op1.data_b <= din.id_o.op1.data_b;
 
-        
-        if reset = '1' then
-            dout.iexp_i.instruction <= ZERO;
-        elsif clock'event and clock = '1' then
+        -- TODO: add state 
+        if clock'event and clock = '1' then
             -- if exp
-            dout.iexp_i.instruction <= din.if_o.instruction;
-            dout.iexp_i.inst_size   <= din.if_o.inst_size;
+            if reset = '1' then
+                dout.iexp_i.instruction <= ZERO;
+            else
+                dout.iexp_i.instruction <= din.if_o.instruction;
+                dout.iexp_i.inst_size   <= din.if_o.inst_size;
+            end if;
         end if;
 
         if reset = '1' then
