@@ -99,6 +99,11 @@ package hivek_pkg is
     constant OP_SW      : operation_t := "01011";
     constant OP_SB      : operation_t := "01100";
 
+    constant OP_JC  : operation_t := "00000";
+
+    constant OP_J   : operation_t := "00000";
+    constant OP_JAL : operation_t := "00001";
+    
     subtype operation16_t is std_logic_vector(3 downto 0);
 
     constant OP_ADD_16   : operation16_t := "0000";
@@ -129,21 +134,27 @@ package hivek_pkg is
         jr_take      : std_logic;
         j_take       : std_logic;
         restore_addr : std_logic_vector(31 downto 0);
+        restore_sz   : std_logic_vector(1 downto 0);
         jr_addr      : std_logic_vector(31 downto 0);
         j_addr       : std_logic_vector(31 downto 0);
     end record;
 
     type instruction_fetch_stage_in_t is record
-        pc_wren     : std_logic;
-        instruction : std_logic_vector(63 downto 0);
-        op0         : instruction_fetch_stage_path_in_t;
-        op1         : instruction_fetch_stage_path_in_t;
+        pc_wren        : std_logic;
+        inst_sz_sel    : std_logic;
+        restore_sz_sel : std_logic;
+        instruction    : std_logic_vector(63 downto 0);
+        op0            : instruction_fetch_stage_path_in_t;
+        op1            : instruction_fetch_stage_path_in_t;
     end record;
 
     type instruction_fetch_stage_out_t is record
         instruction : std_logic_vector(63 downto 0);
         inst_size   : std_logic_vector(1 downto 0);
         icache_addr : std_logic_vector(31 downto 0);
+        current_pc  : std_logic_vector(31 downto 0);
+        next_pc     : std_logic_vector(31 downto 0);
+        restore_sz  : std_logic_vector(1 downto 0);
     end record;
 
     component instruction_fetch_stage is
@@ -158,22 +169,20 @@ package hivek_pkg is
     ----------------------------------------------------------
     -- instruction_expansion
     ----------------------------------------------------------
---    type instruction_expansion_stage_path_in_t is record
-  --      current_pc : std_logic_vector(31 downto 0);
---    end record;
-
     type instruction_expansion_stage_path_out_t is record
-        operation : std_logic_vector(31 downto 0);
-        j_take    : std_logic;
-        j_addr    : std_logic_vector(31 downto 0);
+        operation    : std_logic_vector(31 downto 0);
+        j_take       : std_logic;
+        j_addr       : std_logic_vector(31 downto 0);
+        restore_addr : std_logic_vector(31 downto 0);
+        restore_sz   : std_logic_vector(1 downto 0);
     end record;
 
     type instruction_expansion_stage_in_t is record
         inst_size   : std_logic_vector(1 downto 0);
         instruction : std_logic_vector(63 downto 0);
         current_pc  : std_logic_vector(31 downto 0);
---        op0 : instruction_expansion_stage_path_in_t;
---        op1 : instruction_expansion_stage_path_in_t;
+        next_pc     : std_logic_vector(31 downto 0);
+        restore_sz  : std_logic_vector(1 downto 0);
     end record;
 
     type instruction_expansion_stage_out_t is record
@@ -200,6 +209,8 @@ package hivek_pkg is
         reg_wren : std_logic;
         mem_wren : std_logic;
         pr_wren  : std_logic;
+        j_take   : std_logic;
+        jr_take  : std_logic;
 
         -- selectors
         reg_dst_sel    : std_logic;
@@ -210,23 +221,29 @@ package hivek_pkg is
     end record;
 
     type instruction_decode_path_in_t is record
-        operation : std_logic_vector(31 downto 0);
-        reg_wren  : std_logic;
-        reg_dst   : std_logic_vector(4 downto 0);
-        data_dst  : std_logic_vector(31 downto 0);
+        operation    : std_logic_vector(31 downto 0);
+        reg_wren     : std_logic;
+        reg_dst      : std_logic_vector(4 downto 0);
+        data_dst     : std_logic_vector(31 downto 0);
+        restore_addr : std_logic_vector(31 downto 0);
+        restore_sz   : std_logic_vector(1 downto 0);
+        j_take       : std_logic;
     end record;
 
     type instruction_decode_path_out_t is record
-        pr_reg  : std_logic_vector(1 downto 0);
-        pr_data : std_logic;
-        reg_a   : std_logic_vector(4 downto 0);
-        reg_b   : std_logic_vector(4 downto 0);
-        reg_c   : std_logic_vector(4 downto 0);
-        data_a  : std_logic_vector(31 downto 0);
-        data_b  : std_logic_vector(31 downto 0);
-        immd32  : std_logic_vector(31 downto 0);
-        sh_immd : std_logic_vector(4 downto 0);
-        control : id_control_out_t;
+        pr_reg       : std_logic_vector(1 downto 0);
+        pr_data      : std_logic;
+        reg_a        : std_logic_vector(4 downto 0);
+        reg_b        : std_logic_vector(4 downto 0);
+        reg_c        : std_logic_vector(4 downto 0);
+        data_a       : std_logic_vector(31 downto 0);
+        data_b       : std_logic_vector(31 downto 0);
+        immd32       : std_logic_vector(31 downto 0);
+        sh_immd      : std_logic_vector(4 downto 0);
+        restore_addr : std_logic_vector(31 downto 0);
+        restore_sz   : std_logic_vector(1 downto 0);
+        j_take       : std_logic;
+        control      : id_control_out_t;
     end record;
 
     type instruction_decode_stage_in_t is record
@@ -260,6 +277,8 @@ package hivek_pkg is
         reg_wren : std_logic;
         mem_wren : std_logic;
         pr_wren  : std_logic;
+        j_take   : std_logic;
+        jr_take  : std_logic;
 
         -- selectors
         alu_sh_sel     : std_logic;
@@ -269,29 +288,35 @@ package hivek_pkg is
     end record;
 
     type instruction_decode2_path_in_t is record
-        pr_reg  : std_logic_vector(1 downto 0);
-        pr_data : std_logic;
-        reg_a   : std_logic_vector(4 downto 0);
-        reg_b   : std_logic_vector(4 downto 0);
-        reg_c   : std_logic_vector(4 downto 0);
-        data_a  : std_logic_vector(31 downto 0);
-        data_b  : std_logic_vector(31 downto 0);
-        immd32  : std_logic_vector(31 downto 0);
-        sh_immd : std_logic_vector(4 downto 0);
-        control : id_control_out_t;
+        pr_reg       : std_logic_vector(1 downto 0);
+        pr_data      : std_logic;
+        reg_a        : std_logic_vector(4 downto 0);
+        reg_b        : std_logic_vector(4 downto 0);
+        reg_c        : std_logic_vector(4 downto 0);
+        data_a       : std_logic_vector(31 downto 0);
+        data_b       : std_logic_vector(31 downto 0);
+        immd32       : std_logic_vector(31 downto 0);
+        sh_immd      : std_logic_vector(4 downto 0);
+        restore_addr : std_logic_vector(31 downto 0);
+        restore_sz   : std_logic_vector(1 downto 0);
+        j_take       : std_logic;
+        control      : id_control_out_t;
     end record;
 
     type instruction_decode2_path_out_t is record
-        pr_reg  : std_logic_vector(1 downto 0);
-        pr_data : std_logic;
-        reg_a   : std_logic_vector(4 downto 0);
-        reg_b   : std_logic_vector(4 downto 0);
-        reg_dst : std_logic_vector(4 downto 0);
-        data_a  : std_logic_vector(31 downto 0);
-        data_b  : std_logic_vector(31 downto 0);
-        immd32  : std_logic_vector(31 downto 0);
-        sh_immd : std_logic_vector(4 downto 0);
-        control : id2_control_out_t;
+        pr_reg       : std_logic_vector(1 downto 0);
+        pr_data      : std_logic;
+        reg_a        : std_logic_vector(4 downto 0);
+        reg_b        : std_logic_vector(4 downto 0);
+        reg_dst      : std_logic_vector(4 downto 0);
+        data_a       : std_logic_vector(31 downto 0);
+        data_b       : std_logic_vector(31 downto 0);
+        immd32       : std_logic_vector(31 downto 0);
+        sh_immd      : std_logic_vector(4 downto 0);
+        restore_addr : std_logic_vector(31 downto 0);
+        restore_sz   : std_logic_vector(1 downto 0);
+        j_take       : std_logic;
+        control      : id2_control_out_t;
     end record;
 
     type instruction_decode2_stage_in_t is record
@@ -325,28 +350,36 @@ package hivek_pkg is
     end record;
 
     type execution_stage_path_in_t is record
-        pr_reg   : std_logic_vector(1 downto 0);
-        pr_data  : std_logic;
-        reg_a    : std_logic_vector(4 downto 0);
-        reg_b    : std_logic_vector(4 downto 0);
-        reg_dst  : std_logic_vector(4 downto 0);
-        data_a   : std_logic_vector(31 downto 0);
-        data_b   : std_logic_vector(31 downto 0);
-        immd32   : std_logic_vector(31 downto 0);
-        sh_immd  : std_logic_vector(4 downto 0);
-        mem_data : std_logic_vector(31 downto 0);
-        control  : id2_control_out_t;
+        pr_reg       : std_logic_vector(1 downto 0);
+        pr_data      : std_logic;
+        reg_a        : std_logic_vector(4 downto 0);
+        reg_b        : std_logic_vector(4 downto 0);
+        reg_dst      : std_logic_vector(4 downto 0);
+        data_a       : std_logic_vector(31 downto 0);
+        data_b       : std_logic_vector(31 downto 0);
+        immd32       : std_logic_vector(31 downto 0);
+        sh_immd      : std_logic_vector(4 downto 0);
+        mem_data     : std_logic_vector(31 downto 0);
+        restore_addr : std_logic_vector(31 downto 0);
+        restore_sz   : std_logic_vector(1 downto 0);
+        j_take       : std_logic;
+        control      : id2_control_out_t;
     end record;
 
     type execution_stage_path_out_t is record
-        control     : execution_control_out_t;
-        alu_data    : std_logic_vector(31 downto 0);
-        sh_data     : std_logic_vector(31 downto 0);
-        reg_dst     : std_logic_vector(4 downto 0);
-        mem_wren    : std_logic;
-        mem_addr    : std_logic_vector(31 downto 0);
-        mem_data_wr : std_logic_vector(31 downto 0);
-        mem_data_rd : std_logic_vector(31 downto 0);
+        control      : execution_control_out_t;
+        alu_data     : std_logic_vector(31 downto 0);
+        sh_data      : std_logic_vector(31 downto 0);
+        reg_dst      : std_logic_vector(4 downto 0);
+        mem_wren     : std_logic;
+        mem_addr     : std_logic_vector(31 downto 0);
+        mem_data_wr  : std_logic_vector(31 downto 0);
+        mem_data_rd  : std_logic_vector(31 downto 0);
+        restore      : std_logic;
+        restore_sz   : std_logic_vector(1 downto 0);
+        restore_addr : std_logic_vector(31 downto 0);
+        jr_take      : std_logic;
+        jr_addr      : std_logic_vector(31 downto 0);
     end record;
 
     type execution_stage_in_t is record

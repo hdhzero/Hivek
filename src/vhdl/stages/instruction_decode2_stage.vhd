@@ -69,10 +69,14 @@ begin
         dout.op0.control.reg_wren <= din.op0.control.reg_wren;
         dout.op0.control.mem_wren <= din.op0.control.mem_wren;
         dout.op0.control.pr_wren  <= din.op0.control.pr_wren;
+        dout.op0.control.j_take   <= din.op0.control.j_take;
+        dout.op0.control.jr_take  <= din.op0.control.jr_take;
 
         dout.op1.control.reg_wren <= din.op1.control.reg_wren;
         dout.op1.control.mem_wren <= din.op1.control.mem_wren;
         dout.op1.control.pr_wren  <= din.op1.control.pr_wren;
+        dout.op1.control.j_take   <= din.op0.control.j_take;
+        dout.op1.control.jr_take  <= din.op0.control.jr_take;
 
         -- alu_sh_sel
         dout.op0.control.alu_sh_sel <= din.op0.control.alu_sh_sel;

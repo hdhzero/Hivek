@@ -133,6 +133,22 @@ begin
             dout.control.pr_wren <= '0';
         end if;
 
+        -- j_take
+        if op_type = TYPE_III and op = OP_JC then
+            dout.control.j_take <= '1';
+        elsif op_type = TYPE_IV and (op = OP_J or op = OP_JAL) then
+            dout.control.j_take <= '1';
+        else
+            dout.control.j_take <= '0';
+        end if;
+
+        -- jr_take
+        if op_type = TYPE_I and (op = OP_JR or op = OP_JALR) then
+            dout.control.jr_take <= '1';
+        else
+            dout.control.jr_take <= '0';
+        end if;
+           
         ---------------
         -- selectors --
         ---------------

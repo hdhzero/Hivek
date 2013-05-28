@@ -253,7 +253,7 @@ namespace HivekSimulator {
 
             case JR:
                 new_sz = 3;
-                pc = regs[rd];
+                pc = regs[rs];
                 break;
 
             case JALR:

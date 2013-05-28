@@ -62,23 +62,6 @@ begin
         dout.op0.operation <= operation0;
         dout.op1.operation <= operation1;
 
-        -- j take
-        if operation0(29 downto 27) = "110" and operation0(25) = '1' then
-            dout.op0.j_take <= '1';
-        elsif operation0(29 downto 28) = "10" then
-            dout.op0.j_take <= '1';
-        else
-            dout.op0.j_take <= '0';
-        end if;
-
-        if operation1(29 downto 27) = "110" and operation1(25) = '1' then
-            dout.op1.j_take <= '1';
-        elsif operation1(29 downto 28) = "10" then
-            dout.op1.j_take <= '1';
-        else
-            dout.op1.j_take <= '0';
-        end if;
-
         -- sign extension
         if operation0(29 downto 28) = "10" then
             if ju_addr_0(26) = '1' then
@@ -106,6 +89,47 @@ begin
             else
                 addr_1 := unsigned(ZERO(31 downto 22) & jc_addr_1);
             end if;
+        end if;
+
+        -- j take
+        if operation0(29 downto 27) = "110" then
+            if operation0(25) = '1' then
+                dout.op0.j_take       <= '1';
+                dout.op0.restore_sz   <= din.restore_sz;
+                dout.op0.restore_addr <= din.next_pc;
+            else
+                dout.op0.j_take       <= '0';
+                dout.op0.restore_sz   <= "11";
+                dout.op0.restore_addr <= std_logic_vector(current_pc + addr_0);
+            end if;
+        elsif operation0(29 downto 28) = "10" then
+            dout.op0.j_take       <= '1';
+            dout.op0.restore_sz   <= "11";
+            dout.op0.restore_addr <= std_logic_vector(current_pc + addr_0);
+        else
+            dout.op0.j_take       <= '0';
+            dout.op0.restore_sz   <= "11";
+            dout.op0.restore_addr <= std_logic_vector(current_pc + addr_0);
+        end if;
+
+        if operation1(29 downto 27) = "110" then 
+            if operation1(25) = '1' then
+                dout.op1.j_take       <= '1';
+                dout.op1.restore_sz   <= din.restore_sz;
+                dout.op1.restore_addr <= din.next_pc;
+            else
+                dout.op1.j_take       <= '0';
+                dout.op1.restore_sz   <= "11";
+                dout.op1.restore_addr <= std_logic_vector(current_pc + addr_1);
+            end if;
+        elsif operation1(29 downto 28) = "10" then
+            dout.op1.j_take       <= '1';
+            dout.op1.restore_sz   <= "11";
+            dout.op1.restore_addr <= std_logic_vector(current_pc + addr_1);
+        else
+            dout.op1.j_take       <= '0';
+            dout.op1.restore_sz   <= "11";
+            dout.op1.restore_addr <= std_logic_vector(current_pc + addr_1);
         end if;
 
         dout.op0.j_addr <= std_logic_vector(current_pc + addr_0);
