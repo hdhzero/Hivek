@@ -56,6 +56,14 @@ begin
     dout.op1.reg_b <= odecoder_o1.reg_b;
     dout.op1.reg_c <= odecoder_o1.reg_c;
 
+    -- jump
+    dout.op0.restore_addr <= din.op0.restore_addr;
+    dout.op0.restore_sz   <= din.op0.restore_sz;
+    dout.op0.j_take       <= din.op0.j_take;
+
+    dout.op1.restore_addr <= din.op1.restore_addr;
+    dout.op1.restore_sz   <= din.op1.restore_sz;
+    dout.op1.j_take       <= din.op1.j_take;
 
     -- control
     dout.op0.control <= odecoder_o0.control;

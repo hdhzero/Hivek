@@ -52,7 +52,7 @@ begin
                 operation1 := NOP;
         end case;
         
-        current_pc := unsigned(din.current_pc);
+        current_pc := unsigned(din.next_pc);
 
         jc_addr_0 := operation0(24 downto 3);
         jc_addr_1 := operation1(24 downto 3);
@@ -62,32 +62,42 @@ begin
         dout.op0.operation <= operation0;
         dout.op1.operation <= operation1;
 
+        assert operation1 /= x"38000004" 
+            report "ish..." & integer'image(to_integer(unsigned(operation1))) &
+                " sz: " & integer'image(to_integer(unsigned(din.inst_size)))
+            severity ERROR;
+
+        assert din.instruction(31 downto 0) /= x"38000004"
+            report "ish2"
+            severity ERROR;
+
+
         -- sign extension
         if operation0(29 downto 28) = "10" then
             if ju_addr_0(26) = '1' then
-                addr_0 := unsigned(ONES(31 downto 27) & ju_addr_0);
+                addr_0 := unsigned(ONES(31 downto 28) & ju_addr_0 & '0');
             else
-                addr_0 := unsigned(ZERO(31 downto 27) & ju_addr_0);
+                addr_0 := unsigned(ZERO(31 downto 28) & ju_addr_0 & '0');
             end if;
         else
             if jc_addr_0(21) = '1' then
-                addr_0 := unsigned(ONES(31 downto 22) & jc_addr_0);
+                addr_0 := unsigned(ONES(31 downto 23) & jc_addr_0 & '0');
             else
-                addr_0 := unsigned(ZERO(31 downto 22) & jc_addr_0);
+                addr_0 := unsigned(ZERO(31 downto 23) & jc_addr_0 & '0');
             end if;
         end if;
 
         if operation1(29 downto 28) = "10" then
             if ju_addr_1(26) = '1' then
-                addr_1 := unsigned(ONES(31 downto 27) & ju_addr_1);
+                addr_1 := unsigned(ONES(31 downto 28) & ju_addr_1 & '0');
             else
-                addr_1 := unsigned(ZERO(31 downto 27) & ju_addr_1);
+                addr_1 := unsigned(ZERO(31 downto 28) & ju_addr_1 & '0');
             end if;
         else
             if jc_addr_1(21) = '1' then
-                addr_1 := unsigned(ONES(31 downto 22) & jc_addr_1);
+                addr_1 := unsigned(ONES(31 downto 23) & jc_addr_1 & '0');
             else
-                addr_1 := unsigned(ZERO(31 downto 22) & jc_addr_1);
+                addr_1 := unsigned(ZERO(31 downto 23) & jc_addr_1 & '0');
             end if;
         end if;
 

@@ -54,8 +54,13 @@ begin
         dout.reg_b <= din.operation(12 downto 8);
         dout.reg_c <= din.operation(17 downto 13);
 
-        dout.pr_reg  <= din.operation(1 downto 0);
-        dout.pr_data <= din.operation(2);
+        if op_type = TYPE_IV then
+            dout.pr_reg  <= "00";
+            dout.pr_data <= '1';
+        else
+            dout.pr_reg  <= din.operation(1 downto 0);
+            dout.pr_data <= din.operation(2);
+        end if;
 
         dout.sh_immd <= din.operation(22 downto 18);
 

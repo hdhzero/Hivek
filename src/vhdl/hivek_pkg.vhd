@@ -371,8 +371,7 @@ package hivek_pkg is
         alu_data     : std_logic_vector(31 downto 0);
         sh_data      : std_logic_vector(31 downto 0);
         reg_dst      : std_logic_vector(4 downto 0);
-        mem_wren     : std_logic;
-        mem_addr     : std_logic_vector(31 downto 0);
+        mem_addr     : std_logic_vector(31 downto 0); -- mem_wren
         mem_data_wr  : std_logic_vector(31 downto 0);
         mem_data_rd  : std_logic_vector(31 downto 0);
         restore      : std_logic;
@@ -487,13 +486,6 @@ package hivek_pkg is
     --------------
 
     type pipeline_in_t is record
-        if_iexp_wren    : std_logic;
-        iexp_id_wren    : std_logic;
-        id_id2_wren     : std_logic;
-        id2_exec_wren   : std_logic;
-        exec_exec2_wren : std_logic;
-        exec2_wb_wren   : std_logic;
-
         icache_data   : std_logic_vector(63 downto 0);
         dcache_data_0 : std_logic_vector(31 downto 0);
         dcache_data_1 : std_logic_vector(31 downto 0);

@@ -16,7 +16,7 @@ entity pipeline is
 end pipeline;
 
 architecture behavior of pipeline is
-    type pipeline_state_t is (init, running, jump_0);
+    type pipeline_state_t is (init, init2, running, jump_0, jump_1);
 
     signal current_state : pipeline_state_t;
     signal next_state    : pipeline_state_t;
@@ -43,10 +43,11 @@ begin
         variable exec2_wb_wren   : std_logic;
         variable inst_sz_sel     : std_logic;
         variable restore_sz_sel  : std_logic;
+        variable pc_wren         : std_logic;
     begin
         -- machine state
         restore := din.exec_o.op0.restore or din.exec_o.op1.restore;
-        jump    := din.iexp_o.op0.j_take or din.iexp_o.op1.j_take;
+        jump    := din.iexp_o.op0.j_take  or din.iexp_o.op1.j_take;
         jr_jump := din.exec_o.op0.jr_take or din.exec_o.op1.jr_take;
 
         case current_state is
@@ -57,9 +58,23 @@ begin
                 id2_exec_wren   := '0';
                 exec_exec2_wren := '0';
                 exec2_wb_wren   := '0';
+                inst_sz_sel     := '0';
+                restore_sz_sel  := '0';
+                pc_wren         := '0';
+                next_state      <= init2;
+
+            when init2 =>
+                if_iexp_wren    := '0';
+                iexp_id_wren    := '0';
+                id_id2_wren     := '0';
+                id2_exec_wren   := '0';
+                exec_exec2_wren := '0';
+                exec2_wb_wren   := '0';
                 inst_sz_sel     := '1';
                 restore_sz_sel  := '0';
+                pc_wren         := '1';
                 next_state      <= running;
+
             when running =>
                 if restore = '1' then
                     if_iexp_wren    := '0';
@@ -70,6 +85,7 @@ begin
                     exec2_wb_wren   := '1';
                     inst_sz_sel     := '0';
                     restore_sz_sel  := '1';
+                    pc_wren         := '0';
                     next_state      <= running;
                 elsif jr_jump = '1' then
                     if_iexp_wren    := '0';
@@ -80,6 +96,7 @@ begin
                     exec2_wb_wren   := '1';
                     inst_sz_sel     := '1';
                     restore_sz_sel  := '0';
+                    pc_wren         := '0';
                     next_state      <= running;
                 elsif jump = '1' then
                     if_iexp_wren    := '0';
@@ -90,7 +107,8 @@ begin
                     exec2_wb_wren   := '1';
                     inst_sz_sel     := '1';
                     restore_sz_sel  := '0';
-                    next_state      <= running;
+                    pc_wren         := '1';
+                    next_state      <= jump_0;
                 else
                     if_iexp_wren    := '1';
                     iexp_id_wren    := '1';
@@ -100,8 +118,34 @@ begin
                     exec2_wb_wren   := '1';
                     inst_sz_sel     := '0';
                     restore_sz_sel  := '0';
+                    pc_wren         := '1';
                     next_state      <= running;
                 end if;
+
+            when jump_0 =>
+                    if_iexp_wren    := '0';
+                    iexp_id_wren    := '1';
+                    id_id2_wren     := '1';
+                    id2_exec_wren   := '1';
+                    exec_exec2_wren := '1';
+                    exec2_wb_wren   := '1';
+                    inst_sz_sel     := '1';
+                    restore_sz_sel  := '0';
+                    pc_wren         := '1';
+                    next_state      <= jump_1;
+
+            when jump_1 =>
+                    if_iexp_wren    := '1';
+                    iexp_id_wren    := '1';
+                    id_id2_wren     := '1';
+                    id2_exec_wren   := '1';
+                    exec_exec2_wren := '1';
+                    exec2_wb_wren   := '1';
+                    inst_sz_sel     := '0';
+                    restore_sz_sel  := '0';
+                    pc_wren         := '1';
+                    next_state      <= running;
+
             when others =>
                 if_iexp_wren    := '0';
                 iexp_id_wren    := '0';
@@ -111,6 +155,7 @@ begin
                 exec2_wb_wren   := '0';
                 inst_sz_sel     := '0';
                 restore_sz_sel  := '0';
+                pc_wren         := '0';
                 next_state      <= init;
         end case;
 
@@ -163,10 +208,7 @@ begin
 
         dout.if_i.inst_sz_sel    <= inst_sz_sel;
         dout.if_i.restore_sz_sel <= restore_sz_sel;
-        --TODO
-        dout.if_i.pc_wren <= '1';
-        dout.if_i.inst_sz_sel <= '0';
-        --end TODO
+        dout.if_i.pc_wren <= pc_wren;
 
         -- wb id
         dout.id_i.op0.reg_wren <= din.wb_o.op0.control.reg_wren;
@@ -192,11 +234,15 @@ begin
             if reset = '1' then
                 dout.iexp_i.instruction <= ZERO;
             else
-                dout.iexp_i.instruction <= din.if_o.instruction;
-                dout.iexp_i.inst_size   <= din.if_o.inst_size;
-                dout.iexp_i.current_pc  <= din.if_o.current_pc;
-                dout.iexp_i.next_pc     <= din.if_o.next_pc;
-                dout.iexp_i.restore_sz  <= din.if_o.restore_sz;
+                if if_iexp_wren = '1' then
+                    dout.iexp_i.instruction <= din.if_o.instruction;
+                    dout.iexp_i.inst_size   <= din.if_o.inst_size;
+                    dout.iexp_i.current_pc  <= din.if_o.current_pc;
+                    dout.iexp_i.next_pc     <= din.if_o.next_pc;
+                    dout.iexp_i.restore_sz  <= din.if_o.restore_sz;
+                else
+                    dout.iexp_i.instruction <= ZERO;
+                end if;
             end if;
         end if;
 
@@ -307,79 +353,118 @@ begin
             dout.exec_i.op0.control.reg_wren <= '0';
             dout.exec_i.op0.control.mem_wren <= '0';
             dout.exec_i.op0.control.pr_wren  <= '0';
+            dout.exec_i.op0.control.j_take   <= '0';
+            dout.exec_i.op0.control.jr_take  <= '0';
 
             dout.exec_i.op1.control.reg_wren <= '0';
             dout.exec_i.op1.control.mem_wren <= '0';
             dout.exec_i.op1.control.pr_wren  <= '0';
+            dout.exec_i.op1.control.j_take   <= '0';
+            dout.exec_i.op1.control.jr_take  <= '0';
+
+            dout.exec_i.op0.pr_reg <= "00";
+            dout.exec_i.op1.pr_reg <= "00";
+
+            dout.exec_i.op0.pr_data <= '0';
+            dout.exec_i.op1.pr_data <= '0';
+
+            dout.exec_i.op0.j_take <= '0';
+            dout.exec_i.op1.j_take <= '0';
+
         elsif clock'event and clock = '1' then
             -- id2 exec
-            dout.exec_i.op0.pr_reg <= din.id2_o.op0.pr_reg;
-            dout.exec_i.op1.pr_reg <= din.id2_o.op1.pr_reg;
+            if id2_exec_wren = '1' then
+                dout.exec_i.op0.pr_reg <= din.id2_o.op0.pr_reg;
+                dout.exec_i.op1.pr_reg <= din.id2_o.op1.pr_reg;
 
-            dout.exec_i.op0.pr_data <= din.id2_o.op0.pr_data;
-            dout.exec_i.op1.pr_data <= din.id2_o.op1.pr_data;
+                dout.exec_i.op0.pr_data <= din.id2_o.op0.pr_data;
+                dout.exec_i.op1.pr_data <= din.id2_o.op1.pr_data;
 
-            dout.exec_i.op0.data_a  <= din.id2_o.op0.data_a;
-            dout.exec_i.op1.data_a <= din.id2_o.op1.data_a;
+                dout.exec_i.op0.data_a  <= din.id2_o.op0.data_a;
+                dout.exec_i.op1.data_a <= din.id2_o.op1.data_a;
 
-            dout.exec_i.op0.data_b <= din.id2_o.op0.data_b;
-            dout.exec_i.op1.data_b <= din.id2_o.op1.data_b;
+                dout.exec_i.op0.data_b <= din.id2_o.op0.data_b;
+                dout.exec_i.op1.data_b <= din.id2_o.op1.data_b;
 
-            dout.exec_i.op0.immd32 <= din.id2_o.op0.immd32;
-            dout.exec_i.op1.immd32 <= din.id2_o.op1.immd32;
+                dout.exec_i.op0.immd32 <= din.id2_o.op0.immd32;
+                dout.exec_i.op1.immd32 <= din.id2_o.op1.immd32;
 
-            dout.exec_i.op0.sh_immd <= din.id2_o.op0.sh_immd;
-            dout.exec_i.op1.sh_immd <= din.id2_o.op1.sh_immd;
+                dout.exec_i.op0.sh_immd <= din.id2_o.op0.sh_immd;
+                dout.exec_i.op1.sh_immd <= din.id2_o.op1.sh_immd;
 
-            dout.exec_i.op0.reg_dst <= din.id2_o.op0.reg_dst;
-            dout.exec_i.op1.reg_dst <= din.id2_o.op1.reg_dst;
+                dout.exec_i.op0.reg_dst <= din.id2_o.op0.reg_dst;
+                dout.exec_i.op1.reg_dst <= din.id2_o.op1.reg_dst;
 
-            dout.exec_i.op0.reg_a <= din.id2_o.op0.reg_a;
-            dout.exec_i.op1.reg_a <= din.id2_o.op1.reg_a;
+                dout.exec_i.op0.reg_a <= din.id2_o.op0.reg_a;
+                dout.exec_i.op1.reg_a <= din.id2_o.op1.reg_a;
 
-            dout.exec_i.op0.reg_b <= din.id2_o.op0.reg_b;
-            dout.exec_i.op1.reg_b <= din.id2_o.op1.reg_b;
+                dout.exec_i.op0.reg_b <= din.id2_o.op0.reg_b;
+                dout.exec_i.op1.reg_b <= din.id2_o.op1.reg_b;
 
-            dout.exec_i.op0.mem_data <= din.dcache_data_0;
-            dout.exec_i.op1.mem_data <= din.dcache_data_1;
+                dout.exec_i.op0.mem_data <= din.dcache_data_0;
+                dout.exec_i.op1.mem_data <= din.dcache_data_1;
 
-            dout.exec_i.op0.control <= din.id2_o.op0.control;
-            dout.exec_i.op1.control <= din.id2_o.op1.control;
+                dout.exec_i.op0.control <= din.id2_o.op0.control;
+                dout.exec_i.op1.control <= din.id2_o.op1.control;
 
-            dout.exec_i.op0.restore_addr <= din.id2_o.op0.restore_addr;
-            dout.exec_i.op0.restore_sz   <= din.id2_o.op0.restore_sz;
-            dout.exec_i.op0.j_take       <= din.id2_o.op0.j_take;
+                dout.exec_i.op0.restore_addr <= din.id2_o.op0.restore_addr;
+                dout.exec_i.op0.restore_sz   <= din.id2_o.op0.restore_sz;
+                dout.exec_i.op0.j_take       <= din.id2_o.op0.j_take;
 
-            dout.exec_i.op1.restore_addr <= din.id2_o.op1.restore_addr;
-            dout.exec_i.op1.restore_sz   <= din.id2_o.op1.restore_sz;
-            dout.exec_i.op1.j_take       <= din.id2_o.op1.j_take;
+                dout.exec_i.op1.restore_addr <= din.id2_o.op1.restore_addr;
+                dout.exec_i.op1.restore_sz   <= din.id2_o.op1.restore_sz;
+                dout.exec_i.op1.j_take       <= din.id2_o.op1.j_take;
+            else
+                dout.exec_i.op0.control.reg_wren <= '0';
+                dout.exec_i.op0.control.mem_wren <= '0';
+                dout.exec_i.op0.control.pr_wren  <= '0';
+                dout.exec_i.op0.control.j_take   <= '0';
+                dout.exec_i.op0.control.jr_take  <= '0';
 
+                dout.exec_i.op1.control.reg_wren <= '0';
+                dout.exec_i.op1.control.mem_wren <= '0';
+                dout.exec_i.op1.control.pr_wren  <= '0';
+                dout.exec_i.op1.control.j_take   <= '0';
+                dout.exec_i.op1.control.jr_take  <= '0';
+
+                dout.exec_i.op0.pr_reg <= "00";
+                dout.exec_i.op1.pr_reg <= "00";
+
+                dout.exec_i.op0.pr_data <= '0';
+                dout.exec_i.op1.pr_data <= '0';
+
+                dout.exec_i.op0.j_take <= '0';
+                dout.exec_i.op1.j_take <= '0';
+            end if;
         end if;
 
         if reset = '1' then
             dout.exec2_i.op0.control.reg_wren <= '0';
             dout.exec2_i.op1.control.reg_wren <= '0';
-       elsif clock'event and clock = '1' then
+        elsif clock'event and clock = '1' then
             -- exec exec2
-            dout.exec2_i.op0.alu_data <= din.exec_o.op0.alu_data;
-            dout.exec2_i.op1.alu_data <= din.exec_o.op1.alu_data;
+            if exec_exec2_wren = '1' then
+                dout.exec2_i.op0.alu_data <= din.exec_o.op0.alu_data;
+                dout.exec2_i.op1.alu_data <= din.exec_o.op1.alu_data;
 
-            dout.exec2_i.op0.sh_data <= din.exec_o.op0.sh_data;
-            dout.exec2_i.op1.sh_data <= din.exec_o.op1.sh_data;
-    
+                dout.exec2_i.op0.sh_data <= din.exec_o.op0.sh_data;
+                dout.exec2_i.op1.sh_data <= din.exec_o.op1.sh_data;
 
-            dout.exec2_i.op0.reg_dst <= din.exec_o.op0.reg_dst;
-            dout.exec2_i.op1.reg_dst <= din.exec_o.op1.reg_dst;
+                dout.exec2_i.op0.reg_dst <= din.exec_o.op0.reg_dst;
+                dout.exec2_i.op1.reg_dst <= din.exec_o.op1.reg_dst;
 
-            dout.exec2_i.op0.control.reg_wren <= din.exec_o.op0.control.reg_wren;
-            dout.exec2_i.op1.control.reg_wren <= din.exec_o.op1.control.reg_wren;
+                dout.exec2_i.op0.control.reg_wren <= din.exec_o.op0.control.reg_wren;
+                dout.exec2_i.op1.control.reg_wren <= din.exec_o.op1.control.reg_wren;
 
-            dout.exec2_i.op0.control.alu_sh_sel <= din.exec_o.op0.control.alu_sh_sel;
-            dout.exec2_i.op1.control.alu_sh_sel <= din.exec_o.op1.control.alu_sh_sel;
+                dout.exec2_i.op0.control.alu_sh_sel <= din.exec_o.op0.control.alu_sh_sel;
+                dout.exec2_i.op1.control.alu_sh_sel <= din.exec_o.op1.control.alu_sh_sel;
 
-            dout.exec2_i.op0.control.alu_sh_mem_sel <= din.exec_o.op0.control.alu_sh_mem_sel;
-            dout.exec2_i.op1.control.alu_sh_mem_sel <= din.exec_o.op1.control.alu_sh_mem_sel;
-
+                dout.exec2_i.op0.control.alu_sh_mem_sel <= din.exec_o.op0.control.alu_sh_mem_sel;
+                dout.exec2_i.op1.control.alu_sh_mem_sel <= din.exec_o.op1.control.alu_sh_mem_sel;
+            else
+                dout.exec2_i.op0.control.reg_wren <= '0';
+                dout.exec2_i.op1.control.reg_wren <= '0';
+            end if;
         end if;
 
         if reset = '1' then
@@ -387,20 +472,25 @@ begin
             dout.wb_i.op1.control.reg_wren <= '0';
         elsif clock'event and clock = '1' then
             -- exec2 wb
-            dout.wb_i.op0.control.alu_sh_mem_sel <= din.exec2_o.op0.control.alu_sh_mem_sel;
-            dout.wb_i.op1.control.alu_sh_mem_sel <= din.exec2_o.op1.control.alu_sh_mem_sel;
+            if exec2_wb_wren = '1' then
+                dout.wb_i.op0.control.alu_sh_mem_sel <= din.exec2_o.op0.control.alu_sh_mem_sel;
+                dout.wb_i.op1.control.alu_sh_mem_sel <= din.exec2_o.op1.control.alu_sh_mem_sel;
 
-            dout.wb_i.op0.control.reg_wren <= din.exec2_o.op0.control.reg_wren;
-            dout.wb_i.op1.control.reg_wren <= din.exec2_o.op1.control.reg_wren;
+                dout.wb_i.op0.control.reg_wren <= din.exec2_o.op0.control.reg_wren;
+                dout.wb_i.op1.control.reg_wren <= din.exec2_o.op1.control.reg_wren;
 
-            dout.wb_i.op0.reg_dst <= din.exec2_o.op0.reg_dst;
-            dout.wb_i.op1.reg_dst <= din.exec2_o.op1.reg_dst;
+                dout.wb_i.op0.reg_dst <= din.exec2_o.op0.reg_dst;
+                dout.wb_i.op1.reg_dst <= din.exec2_o.op1.reg_dst;
 
-            dout.wb_i.op0.alu_sh_data <= din.exec2_o.op0.alu_sh_data;
-            dout.wb_i.op1.alu_sh_data <= din.exec2_o.op1.alu_sh_data;
+                dout.wb_i.op0.alu_sh_data <= din.exec2_o.op0.alu_sh_data;
+                dout.wb_i.op1.alu_sh_data <= din.exec2_o.op1.alu_sh_data;
 
-            dout.wb_i.op0.mem_data <= din.exec2_o.op0.mem_data;
-            dout.wb_i.op1.mem_data <= din.exec2_o.op1.mem_data;
+                dout.wb_i.op0.mem_data <= din.exec2_o.op0.mem_data;
+                dout.wb_i.op1.mem_data <= din.exec2_o.op1.mem_data;
+            else
+                dout.wb_i.op0.control.reg_wren <= '0';
+                dout.wb_i.op1.control.reg_wren <= '0';
+            end if;
         end if;
     end process;
 end behavior;

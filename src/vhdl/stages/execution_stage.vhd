@@ -91,8 +91,8 @@ begin
         if pb_o.op0.data_pr = din.op0.pr_data then
             dout.op0.control.reg_wren <= din.op0.control.reg_wren;
             dout.op0.control.mem_wren <= din.op0.control.mem_wren;
-            dout.op0.jr_take <= din.op0.control.jr_take;
-            pb_i.op0.wren <= din.op0.control.pr_wren;
+            dout.op0.jr_take          <= din.op0.control.jr_take;
+            pb_i.op0.wren             <= din.op0.control.pr_wren;
 
             if din.op0.control.j_take = '1' then
                 if din.op0.j_take = '1' then
@@ -101,13 +101,13 @@ begin
                     dout.op0.restore <= '1';
                 end if;
             else
-                dout.op1.restore <= '0';
+                dout.op0.restore <= '0';
             end if;
         else
             dout.op0.control.reg_wren <= '0';
             dout.op0.control.mem_wren <= '0';
-            dout.op0.jr_take <= '0';
-            pb_i.op0.wren <= '0';
+            dout.op0.jr_take          <= '0';
+            pb_i.op0.wren             <= '0';
 
             if din.op0.control.j_take = '1' then
                 if din.op0.j_take = '1' then
@@ -124,9 +124,8 @@ begin
         if pb_o.op1.data_pr = din.op1.pr_data then
             dout.op1.control.reg_wren <= din.op1.control.reg_wren;
             dout.op1.control.mem_wren <= din.op1.control.mem_wren;
-            dout.op1.jr_take <= din.op1.control.jr_take;
-    
-            pb_i.op1.wren <= din.op1.control.pr_wren;
+            dout.op1.jr_take          <= din.op1.control.jr_take;
+            pb_i.op1.wren             <= din.op1.control.pr_wren;
 
             if din.op1.control.j_take = '1' then
                 if din.op1.j_take = '1' then
@@ -137,12 +136,11 @@ begin
             else
                 dout.op1.restore <= '0';
             end if;
-
         else
             dout.op1.control.reg_wren <= '0';
             dout.op1.control.mem_wren <= '0';
-            dout.op1.jr_take <= '0';
-            pb_i.op1.wren <= '0';
+            dout.op1.jr_take          <= '0';
+            pb_i.op1.wren             <= '0';
 
             if din.op1.control.j_take = '1' then
                 if din.op1.j_take = '1' then
@@ -155,6 +153,7 @@ begin
             end if;
         end if;
 
+        
         -- selectors
         dout.op0.control.alu_sh_sel <= din.op0.control.alu_sh_sel;
         dout.op1.control.alu_sh_sel <= din.op1.control.alu_sh_sel;

@@ -324,6 +324,8 @@ namespace HivekSimulator {
             case JC:
             case JCN:
                 new_sz = 3;
+                std::cout << "pc: " << pc << ", immd" << sign_ext(immd22 << 1, 22)
+                    << ", +: " << pc + sign_ext(immd22 << 1, 22) << std::endl;
                 pc += sign_ext(immd22 << 1, 22);
                 break;
 

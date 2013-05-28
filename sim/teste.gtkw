@@ -1,0 +1,55 @@
+[*]
+[*] GTKWave Analyzer v3.3.40 (w)1999-2012 BSI
+[*] Tue May 28 15:51:17 2013
+[*]
+[dumpfile] "/home/hdhzero/projetos/Hivek/sim/hivek_tb.ghw"
+[dumpfile_mtime] "Tue May 28 15:44:05 2013"
+[dumpfile_size] 430633
+[savefile] "/home/hdhzero/projetos/Hivek/sim/teste.gtkw"
+[timestart] 0
+[size] 1260 662
+[pos] -1 -1
+*-28.181459 257000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.hivek_tb.
+[treeopen] top.hivek_tb.hivek_u.
+[treeopen] top.hivek_tb.hivek_u.execution_stage_u.din.op1.
+[treeopen] top.hivek_tb.hivek_u.execution_stage_u.dout.op1.
+[treeopen] top.hivek_tb.hivek_u.instruction_decode2_stage_u.dout.op1.
+[treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.
+[treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.dout.
+[treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.dout.op0.control.
+[treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.register_bank_u.din.
+[treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.register_bank_u.din.op0.
+[treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.register_bank_u.reg_block_a0.reg_bram0.
+[treeopen] top.hivek_tb.hivek_u.instruction_expansion_stage_u.dout.op1.
+[treeopen] top.hivek_tb.hivek_u.pipeline_u.din.
+[treeopen] top.hivek_tb.hivek_u.pipeline_u.dout.
+[treeopen] top.hivek_tb.hivek_u.pipeline_u.dout.if_i.op0.
+[sst_width] 280
+[signals_width] 312
+[sst_expanded] 1
+[sst_vpaned_height] 314
+@28
+top.hivek_tb.hivek_u.pipeline_u.clock
+top.hivek_tb.hivek_u.pipeline_u.reset
+@200
+-operations
+@22
+#{top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[31:0]} top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[31] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[30] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[29] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[28] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[27] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[26] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[25] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[24] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[23] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[22] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[21] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[20] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[19] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[18] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[17] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[16] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[15] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[14] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[13] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[12] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[11] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[10] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[9] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[8] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[7] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[6] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[5] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[4] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[3] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[2] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[1] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.operation[0]
+#{top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[31:0]} top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[31] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[30] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[29] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[28] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[27] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[26] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[25] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[24] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[23] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[22] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[21] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[20] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[19] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[18] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[17] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[16] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[15] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[14] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[13] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[12] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[11] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[10] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[9] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[8] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[7] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[6] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[5] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[4] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[3] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[2] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[1] top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.operation[0]
+@200
+-controls out from decode
+@28
+top.hivek_tb.hivek_u.instruction_decode_stage_u.dout.op0.control.j_take
+top.hivek_tb.hivek_u.instruction_decode_stage_u.dout.op1.control.j_take
+@200
+-j_take from decode
+@28
+top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op0.j_take
+top.hivek_tb.hivek_u.instruction_decode_stage_u.din.op1.j_take
+top.hivek_tb.hivek_u.instruction_decode_stage_u.dout.op0.j_take
+@29
+top.hivek_tb.hivek_u.instruction_decode_stage_u.dout.op1.j_take
+[pattern_trace] 1
+[pattern_trace] 0
