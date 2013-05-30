@@ -37,11 +37,102 @@ begin
         end if;
     end process;
 
-    mem_addr_0 <= unsigned(din.op0.data_a) + unsigned(din.op0.immd32);
-    mem_addr_1 <= unsigned(din.op1.data_a) + unsigned(din.op1.immd32);
 
     process (din, pb_o, alu_sh_o0, alu_sh_o1, carry_r, mem_addr_0, mem_addr_1)
+        variable mem_addr_0 : unsigned(31 downto 0);
+        variable mem_addr_1 : unsigned(31 downto 0);
+        variable operand_a0 : std_logic_vector(31 downto 0);
+        variable operand_b0 : std_logic_vector(31 downto 0);
+        variable operand_a1 : std_logic_vector(31 downto 0);
+        variable operand_b1 : std_logic_vector(31 downto 0);
     begin
+
+        -- forwarding
+        -- rA0
+        if din.op0.e_e2_wr = '1' and din.op0.e_e2_dst = din.op0.reg_a
+            and din.op0.e_e2_alu_sh_sel = '0' then
+                operand_a0 := din.op0.e_e2_alu_sh_data;
+        elsif din.op1.e_e2_wr = '1' and din.op1.e_e2_dst = din.op0.reg_a
+            and din.op1.e_e2_alu_sh_sel = '0' then
+                operand_a0 := din.op1.e_e2_alu_sh_data;
+
+        elsif din.op0.e2_wb_wr = '1' and din.op0.e2_wb_dst = din.op0.reg_a then
+            operand_a0 := din.op0.e2_wb_alu_sh_mem_data;
+        elsif din.op1.e2_wb_wr = '1' and din.op1.e2_wb_dst = din.op0.reg_a then
+            operand_a0 := din.op1.e2_wb_alu_sh_mem_data;
+
+        elsif din.op0.wb_delay_wr = '1' and din.op0.wb_delay_dst = din.op0.reg_a then
+            operand_a0 := din.op0.wb_delay_data;
+        elsif din.op1.wb_delay_wr = '1' and din.op1.wb_delay_dst = din.op0.reg_a then
+            operand_a0 := din.op1.wb_delay_data;
+        else
+            operand_a0 := din.op0.data_a;
+        end if;
+
+        -- rA1
+        if din.op0.e_e2_wr = '1' and din.op0.e_e2_dst = din.op1.reg_a
+            and din.op0.e_e2_alu_sh_sel = '0' then
+                operand_a1 := din.op0.e_e2_alu_sh_data;
+        elsif din.op1.e_e2_wr = '1' and din.op1.e_e2_dst = din.op1.reg_a
+            and din.op1.e_e2_alu_sh_sel = '0' then
+                operand_a1 := din.op1.e_e2_alu_sh_data;
+
+        elsif din.op0.e2_wb_wr = '1' and din.op0.e2_wb_dst = din.op1.reg_a then
+            operand_a1 := din.op0.e2_wb_alu_sh_mem_data;
+        elsif din.op1.e2_wb_wr = '1' and din.op1.e2_wb_dst = din.op1.reg_a then
+            operand_a1 := din.op1.e2_wb_alu_sh_mem_data;
+
+        elsif din.op0.wb_delay_wr = '1' and din.op0.wb_delay_dst = din.op1.reg_a then
+            operand_a1 := din.op0.wb_delay_data;
+        elsif din.op1.wb_delay_wr = '1' and din.op1.wb_delay_dst = din.op1.reg_a then
+            operand_a1 := din.op1.wb_delay_data;
+        else
+            operand_a1 := din.op1.data_a;
+        end if;
+
+        -- rB0
+        if din.op0.e_e2_wr = '1' and din.op0.e_e2_dst = din.op0.reg_b
+            and din.op0.e_e2_alu_sh_sel = '0' then
+                operand_b0 := din.op0.e_e2_alu_sh_data;
+        elsif din.op1.e_e2_wr = '1' and din.op1.e_e2_dst = din.op0.reg_b
+            and din.op1.e_e2_alu_sh_sel = '0' then
+                operand_b0 := din.op1.e_e2_alu_sh_data;
+
+        elsif din.op0.e2_wb_wr = '1' and din.op0.e2_wb_dst = din.op0.reg_b then
+            operand_b0 := din.op0.e2_wb_alu_sh_mem_data;
+        elsif din.op1.e2_wb_wr = '1' and din.op1.e2_wb_dst = din.op0.reg_b then
+            operand_b0 := din.op1.e2_wb_alu_sh_mem_data;
+
+        elsif din.op0.wb_delay_wr = '1' and din.op0.wb_delay_dst = din.op0.reg_b then
+            operand_b0 := din.op0.wb_delay_data;
+        elsif din.op1.wb_delay_wr = '1' and din.op1.wb_delay_dst = din.op0.reg_b then
+            operand_b0 := din.op1.wb_delay_data;
+        else
+            operand_b0 := din.op0.data_b;
+        end if;
+
+        -- rA1
+        if din.op0.e_e2_wr = '1' and din.op0.e_e2_dst = din.op1.reg_b
+            and din.op0.e_e2_alu_sh_sel = '0' then
+                operand_b1 := din.op0.e_e2_alu_sh_data;
+        elsif din.op1.e_e2_wr = '1' and din.op1.e_e2_dst = din.op1.reg_b
+            and din.op1.e_e2_alu_sh_sel = '0' then
+                operand_b1 := din.op1.e_e2_alu_sh_data;
+
+        elsif din.op0.e2_wb_wr = '1' and din.op0.e2_wb_dst = din.op1.reg_b then
+            operand_b1 := din.op0.e2_wb_alu_sh_mem_data;
+        elsif din.op1.e2_wb_wr = '1' and din.op1.e2_wb_dst = din.op1.reg_b then
+            operand_b1 := din.op1.e2_wb_alu_sh_mem_data;
+
+        elsif din.op0.wb_delay_wr = '1' and din.op0.wb_delay_dst = din.op1.reg_b then
+            operand_b1 := din.op0.wb_delay_data;
+        elsif din.op1.wb_delay_wr = '1' and din.op1.wb_delay_dst = din.op1.reg_b then
+            operand_b1 := din.op1.wb_delay_data;
+        else
+            operand_b1 := din.op1.data_b;
+        end if;
+
+        -- end forwarding
         alu_sh_i0.alu_op <= din.op0.control.alu_op;
         alu_sh_i1.alu_op <= din.op1.control.alu_op;
 
@@ -52,18 +143,18 @@ begin
         if din.op0.control.sh_amt_src_sel = '0' then
             alu_sh_i0.shift_amt <= din.op0.sh_immd;
         else
-            alu_sh_i0.shift_amt <= din.op0.data_b(4 downto 0);
+            alu_sh_i0.shift_amt <= operand_b0(4 downto 0); --din.op0.data_b(4 downto 0);
         end if;
 
         if din.op1.control.sh_amt_src_sel = '0' then
             alu_sh_i1.shift_amt <= din.op1.sh_immd;
         else
-            alu_sh_i1.shift_amt <= din.op1.data_b(4 downto 0);
+            alu_sh_i1.shift_amt <= operand_b1(4 downto 0); --din.op1.data_b(4 downto 0);
         end if;
 
         -- operand a
-        alu_sh_i0.operand_a <= din.op0.data_a;
-        alu_sh_i1.operand_a <= din.op1.data_a;
+        alu_sh_i0.operand_a <= operand_a0; --din.op0.data_a;
+        alu_sh_i1.operand_a <= operand_a1; --din.op1.data_a;
 
         alu_sh_i0.pr_data_a <= pb_o.op0.data_a;
         alu_sh_i0.pr_data_b <= pb_o.op0.data_b;
@@ -76,13 +167,13 @@ begin
 
         -- reg immd select
         if din.op0.control.reg_immd_sel = '0' then
-            alu_sh_i0.operand_b <= din.op0.data_b;
+            alu_sh_i0.operand_b <= operand_b0; --din.op0.data_b;
         else
             alu_sh_i0.operand_b <= din.op0.immd32;
         end if;
 
         if din.op1.control.reg_immd_sel = '0' then
-            alu_sh_i1.operand_b <= din.op1.data_b;
+            alu_sh_i1.operand_b <= operand_b1; --din.op1.data_b;
         else
             alu_sh_i1.operand_b <= din.op1.immd32;
         end if;
@@ -183,10 +274,13 @@ begin
         pb_i.op1.reg_pr <= din.op1.pr_reg;
         pb_i.op1.data   <= alu_sh_o1.cmp_flag;
 
-        dout.op0.mem_data_wr <= din.op0.data_b;
+        mem_addr_0 := unsigned(operand_a0) + unsigned(din.op0.immd32);
+        mem_addr_1 := unsigned(operand_a1) + unsigned(din.op1.immd32);
+
+        dout.op0.mem_data_wr <= operand_b0; --din.op0.data_b;
         dout.op0.mem_addr    <= std_logic_vector(mem_addr_0);
 
-        dout.op1.mem_data_wr <= din.op1.data_b;
+        dout.op1.mem_data_wr <= operand_b1; --din.op1.data_b;
         dout.op1.mem_addr    <= std_logic_vector(mem_addr_1);
 
         dout.op0.mem_data_rd <= din.op0.mem_data;

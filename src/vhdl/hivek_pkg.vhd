@@ -364,6 +364,20 @@ package hivek_pkg is
         restore_sz   : std_logic_vector(1 downto 0);
         j_take       : std_logic;
         control      : id2_control_out_t;
+
+        -- forwarding
+        e_e2_wr          : std_logic;
+        e_e2_alu_sh_data : std_logic_vector(31 downto 0);
+        e_e2_dst         : std_logic_vector(4 downto 0);
+        e_e2_alu_sh_sel  : std_logic;
+
+        e2_wb_wr  : std_logic;
+        e2_wb_dst : std_logic_vector(4 downto 0);
+        e2_wb_alu_sh_mem_data : std_logic_vector(31 downto 0);
+
+        wb_delay_wr   : std_logic;
+        wb_delay_data : std_logic_vector(31 downto 0);
+        wb_delay_dst  : std_logic_vector(4 downto 0);
     end record;
 
     type execution_stage_path_out_t is record
