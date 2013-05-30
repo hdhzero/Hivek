@@ -12,5 +12,29 @@ start:
 ;;
     add $r5, $r2, $r3
 ;;
+    add $r1, $r0, $r0
+    add $r2, $r0, $r0
+;;
+    add $r3, $r0, $r0
+    add $r4, $r0, $r0
+;;
+    add $r5, $r0, $r0
+;;
+    addi $r1, $r0, 1
+;;
+    add $r2, $r1, $r1
+    and $r3, $r1, $r1
+;;
+    or $r4, $r2, $r1
+    and $r5, $r2, $r3
+;;
+    add $r3, $r0, $r3
+    sw $r2, $r0, 0
+;;
+    lw $r4, $r0, 0
+;;
+    add $r0, $r0, $r0
+;;
+    add $r5, $r0, $r4
     addi $r30, $r0, 1
 ;;

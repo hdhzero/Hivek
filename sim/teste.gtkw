@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.40 (w)1999-2012 BSI
-[*] Thu May 30 11:25:25 2013
+[*] Thu May 30 11:33:50 2013
 [*]
 [dumpfile] "/home/hdhzero/projetos/Hivek/sim/hivek_tb.ghw"
-[dumpfile_mtime] "Thu May 30 11:24:24 2013"
-[dumpfile_size] 264947
+[dumpfile_mtime] "Thu May 30 11:31:51 2013"
+[dumpfile_size] 284154
 [savefile] "/home/hdhzero/projetos/Hivek/sim/teste.gtkw"
 [timestart] 0
 [size] 1366 718
 [pos] -1 -1
-*-28.181459 220000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-28.181459 442000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.hivek_tb.
 [treeopen] top.hivek_tb.hivek_u.
@@ -25,8 +25,6 @@
 [treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.register_bank_u.din.
 [treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.register_bank_u.din.op0.
 [treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.register_bank_u.reg_block_a0.
-[treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.register_bank_u.reg_block_a0.reg_bram0.
-[treeopen] top.hivek_tb.hivek_u.instruction_decode_stage_u.register_bank_u.reg_block_a0.reg_bram0.ram.
 [treeopen] top.hivek_tb.hivek_u.instruction_expansion_stage_u.dout.op1.
 [treeopen] top.hivek_tb.hivek_u.instruction_fetch_stage_u.
 [treeopen] top.hivek_tb.hivek_u.instruction_fetch_stage_u.din.
