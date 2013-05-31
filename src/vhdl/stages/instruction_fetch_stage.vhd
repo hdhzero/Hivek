@@ -16,13 +16,12 @@ end instruction_fetch_stage;
 
 architecture behavior of instruction_fetch_stage is
     signal pc     : std_logic_vector(31 downto 0);
-    signal pc_reg : std_logic_vector(31 downto 0);
     signal inst_size_reg : std_logic_vector(1 downto 0);
     signal restore_sz_reg_0 : std_logic_vector(1 downto 0);
     signal restore_sz_reg_1 : std_logic_vector(1 downto 0);
 begin
 
-    process (clock, reset, din, pc, pc_reg, inst_size_reg)
+    process (clock, reset, din, pc, inst_size_reg)
         variable restore        : std_logic;
         variable jr_take        : std_logic;
         variable j_take         : std_logic;
@@ -102,7 +101,6 @@ begin
         elsif clock'event and clock = '1' then
             if din.pc_wren = '1' then
                 pc     <= new_pc;
-                pc_reg <= pc;
                 inst_size_reg <= inst_size;
                 restore_sz_reg_0 <= din.op0.restore_sz;
                 restore_sz_reg_1 <= din.op1.restore_sz;
@@ -112,7 +110,6 @@ begin
         dout.icache_addr <= pc;
         dout.instruction <= din.instruction;
         dout.inst_size   <= inst_size_reg;
-        dout.current_pc  <= pc_reg;
         dout.next_pc     <= pc;
         dout.restore_sz  <= inst_size;
 

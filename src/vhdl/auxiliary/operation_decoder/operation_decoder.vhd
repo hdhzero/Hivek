@@ -50,9 +50,15 @@ begin
 
     process (din, op_type, op)
     begin
-        dout.reg_a <= din.operation(7 downto 3);
-        dout.reg_b <= din.operation(12 downto 8);
-        dout.reg_c <= din.operation(17 downto 13);
+        if op_type = TYPE_IV then
+            dout.reg_a <= "00000";
+            dout.reg_b <= "11111";
+            dout.reg_c <= "00000";
+        else
+            dout.reg_a <= din.operation(7 downto 3);
+            dout.reg_b <= din.operation(12 downto 8);
+            dout.reg_c <= din.operation(17 downto 13);
+        end if;
 
         if op_type = TYPE_IV then
             dout.pr_reg  <= "00";
@@ -74,6 +80,13 @@ begin
         --------------
         -- controls --
         --------------
+
+        -- immd_pc_sel
+        if op_type = TYPE_I and (op = OP_JR or op = OP_JALR) then
+            dout.control.immd_pc_sel <= '1';
+        else
+            dout.control.immd_pc_sel <= '0';
+        end if;
 
         -- reg_wren
         case op_type is
@@ -102,6 +115,10 @@ begin
                     when others =>
                         dout.control.reg_wren <= '1';
                 end case;
+
+            when TYPE_IV =>
+                dout.control.reg_wren <= din.operation(27);
+
             when others =>
                 dout.control.reg_wren <= '0';
         end case;
@@ -139,9 +156,7 @@ begin
         end if;
 
         -- j_take
-        if op_type = TYPE_III and op = OP_JC then
-            dout.control.j_take <= '1';
-        elsif op_type = TYPE_IV and (op = OP_J or op = OP_JAL) then
+        if op_type = TYPE_III or op_type = TYPE_IV then
             dout.control.j_take <= '1';
         else
             dout.control.j_take <= '0';
@@ -175,6 +190,15 @@ begin
         else
             dout.control.reg_immd_sel <= '1';
         end if;
+
+        if op_type = TYPE_I and op = OP_JALR then
+            dout.control.immd_pc_sel <= '1';
+        elsif op_type = TYPE_IV then
+            dout.control.immd_pc_sel <= '1';
+        else
+            dout.control.immd_pc_sel <= '0';
+        end if;
+
 
         if op_type = TYPE_II and (op = OP_LW or op = OP_LB) then
             dout.control.alu_sh_mem_sel <= '1';

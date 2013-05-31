@@ -254,8 +254,8 @@ namespace HivekAssembler {
 
             case TYPE_Ib:
                 rd = 31 << 13;
-                rs = op.destination << 3;
-                rt = 0;
+                rs = 0;
+                rt = op.destination << 8;
                 instruction |= opcode | rd | rt | rs | cond;
                 break;
 

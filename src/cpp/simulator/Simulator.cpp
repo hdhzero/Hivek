@@ -155,7 +155,6 @@ namespace HivekSimulator {
         } else if ((0x30000000 & n) == 0x20000000) { 
             operation = 3000;
             operation += ((n & 0x08000000) ? 1 : 0);
-            std::cout << "jump: " << operation << '\n';
             exec = true;
         }
 
@@ -253,13 +252,13 @@ namespace HivekSimulator {
 
             case JR:
                 new_sz = 3;
-                pc = regs[rs];
+                pc = regs[rt];
                 break;
 
             case JALR:
                 new_sz = 3;
                 regs[31] = pc;
-                pc = regs[rd];
+                pc = regs[rt];
                 break;
 
         /* immediates */

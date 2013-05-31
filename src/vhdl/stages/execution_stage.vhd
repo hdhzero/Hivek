@@ -287,8 +287,8 @@ begin
         dout.op1.mem_data_rd <= din.op1.mem_data;
 
         -- jumps!
-        dout.op0.jr_addr <= din.op0.data_a;
-        dout.op1.jr_addr <= din.op1.data_a;
+        dout.op0.jr_addr <= din.op0.data_b;
+        dout.op1.jr_addr <= din.op1.data_b;
 
         dout.op0.restore_sz <= din.op0.restore_sz;
         dout.op1.restore_sz <= din.op1.restore_sz;

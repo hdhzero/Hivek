@@ -36,6 +36,9 @@ begin
     dout.op0.immd32 <= odecoder_o0.immd32;
     dout.op1.immd32 <= odecoder_o1.immd32;
 
+    -- next pc
+    dout.next_pc <= din.next_pc;
+
     -- sh_immd
     dout.op0.sh_immd <= odecoder_o0.sh_immd;
     dout.op1.sh_immd <= odecoder_o1.sh_immd;

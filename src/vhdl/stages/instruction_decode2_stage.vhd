@@ -50,8 +50,17 @@ begin
         dout.op1.data_b <= din.op1.data_b;
 
         -- immd
-        dout.op0.immd32 <= din.op0.immd32;
-        dout.op1.immd32 <= din.op1.immd32;
+        if din.op0.control.immd_pc_sel = '0' then
+            dout.op0.immd32 <= din.op0.immd32;
+        else
+            dout.op0.immd32 <= din.next_pc;
+        end if;
+
+        if din.op1.control.immd_pc_sel = '0' then
+            dout.op1.immd32 <= din.op1.immd32;
+        else
+            dout.op1.immd32 <= din.next_pc;
+        end if;
 
         -- jump
         dout.op0.restore_addr <= din.op0.restore_addr;

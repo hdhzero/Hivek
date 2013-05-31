@@ -152,7 +152,6 @@ package hivek_pkg is
         instruction : std_logic_vector(63 downto 0);
         inst_size   : std_logic_vector(1 downto 0);
         icache_addr : std_logic_vector(31 downto 0);
-        current_pc  : std_logic_vector(31 downto 0);
         next_pc     : std_logic_vector(31 downto 0);
         restore_sz  : std_logic_vector(1 downto 0);
     end record;
@@ -180,14 +179,14 @@ package hivek_pkg is
     type instruction_expansion_stage_in_t is record
         inst_size   : std_logic_vector(1 downto 0);
         instruction : std_logic_vector(63 downto 0);
-        current_pc  : std_logic_vector(31 downto 0);
         next_pc     : std_logic_vector(31 downto 0);
         restore_sz  : std_logic_vector(1 downto 0);
     end record;
 
     type instruction_expansion_stage_out_t is record
-        op0 : instruction_expansion_stage_path_out_t;
-        op1 : instruction_expansion_stage_path_out_t;
+        op0     : instruction_expansion_stage_path_out_t;
+        op1     : instruction_expansion_stage_path_out_t;
+        next_pc : std_logic_vector(31 downto 0);
     end record;
 
     component instruction_expansion_stage is
@@ -218,6 +217,7 @@ package hivek_pkg is
         reg_immd_sel   : std_logic;
         alu_sh_mem_sel : std_logic;
         sh_amt_src_sel : std_logic;
+        immd_pc_sel    : std_logic;
     end record;
 
     type instruction_decode_path_in_t is record
@@ -247,13 +247,15 @@ package hivek_pkg is
     end record;
 
     type instruction_decode_stage_in_t is record
-        op0 : instruction_decode_path_in_t;
-        op1 : instruction_decode_path_in_t;
+        op0     : instruction_decode_path_in_t;
+        op1     : instruction_decode_path_in_t;
+        next_pc : std_logic_vector(31 downto 0);
     end record;
 
     type instruction_decode_stage_out_t is record
-        op0 : instruction_decode_path_out_t;
-        op1 : instruction_decode_path_out_t;
+        op0     : instruction_decode_path_out_t;
+        op1     : instruction_decode_path_out_t;
+        next_pc : std_logic_vector(31 downto 0);
     end record;
 
     component instruction_decode_stage is
@@ -320,13 +322,14 @@ package hivek_pkg is
     end record;
 
     type instruction_decode2_stage_in_t is record
-        op0 : instruction_decode2_path_in_t;
-        op1 : instruction_decode2_path_in_t;
+        op0     : instruction_decode2_path_in_t;
+        op1     : instruction_decode2_path_in_t;
+        next_pc : std_logic_vector(31 downto 0);
     end record;
 
     type instruction_decode2_stage_out_t is record
-        op0 : instruction_decode2_path_out_t;
-        op1 : instruction_decode2_path_out_t;
+        op0     : instruction_decode2_path_out_t;
+        op1     : instruction_decode2_path_out_t;
     end record;
 
     component instruction_decode2_stage is

@@ -16,7 +16,7 @@ entity pipeline is
 end pipeline;
 
 architecture behavior of pipeline is
-    type pipeline_state_t is (init, init2, running, jump_0, restore_0);
+    type pipeline_state_t is (init, init2, running, jump_0, restore_0, jr_jump_0);
 
     signal current_state : pipeline_state_t;
     signal next_state    : pipeline_state_t;
@@ -96,8 +96,8 @@ begin
                     exec2_wb_wren   := '1';
                     inst_sz_sel     := '1';
                     restore_sz_sel  := '0';
-                    pc_wren         := '0';
-                    next_state      <= running;
+                    pc_wren         := '1';
+                    next_state      <= jr_jump_0;
                 elsif jump = '1' then
                     if_iexp_wren    := '0';
                     iexp_id_wren    := '1';
@@ -143,6 +143,18 @@ begin
                     exec2_wb_wren   := '1';
                     inst_sz_sel     := '0';
                     restore_sz_sel  := '1';
+                    pc_wren         := '1';
+                    next_state      <= running; --jump_1;
+
+            when jr_jump_0 =>
+                    if_iexp_wren    := '0';
+                    iexp_id_wren    := '0';
+                    id_id2_wren     := '0';
+                    id2_exec_wren   := '0';
+                    exec_exec2_wren := '1';
+                    exec2_wb_wren   := '1';
+                    inst_sz_sel     := '1';
+                    restore_sz_sel  := '0';
                     pc_wren         := '1';
                     next_state      <= running; --jump_1;
 
@@ -237,7 +249,6 @@ begin
                 if if_iexp_wren = '1' then
                     dout.iexp_i.instruction <= din.if_o.instruction;
                     dout.iexp_i.inst_size   <= din.if_o.inst_size;
-                    dout.iexp_i.current_pc  <= din.if_o.current_pc;
                     dout.iexp_i.next_pc     <= din.if_o.next_pc;
                     dout.iexp_i.restore_sz  <= din.if_o.restore_sz;
                 else
@@ -264,6 +275,8 @@ begin
                 dout.id_i.op1.j_take       <= din.iexp_o.op1.j_take;
                 dout.id_i.op1.restore_addr <= din.iexp_o.op1.restore_addr;
                 dout.id_i.op1.restore_sz   <= din.iexp_o.op1.restore_sz;
+
+                dout.id_i.next_pc <= din.iexp_o.next_pc;
             else
                 dout.id_i.op0.operation    <= NOP;
                 dout.id_i.op0.j_take       <= '0';
@@ -314,6 +327,8 @@ begin
 
                 dout.id2_i.op0.immd32 <= din.id_o.op0.immd32;
                 dout.id2_i.op1.immd32 <= din.id_o.op1.immd32;
+
+                dout.id2_i.next_pc <= din.id_o.next_pc;
 
                 dout.id2_i.op0.control <= din.id_o.op0.control;
                 dout.id2_i.op1.control <= din.id_o.op1.control;

@@ -21,7 +21,7 @@ architecture behavior of instruction_expansion_stage is
 
 begin
     process (din, iexpr_o0, iexpr_o1)
-        variable current_pc : unsigned(31 downto 0);
+        variable next_pc : unsigned(31 downto 0);
         variable operation0 : std_logic_vector(31 downto 0);
         variable operation1 : std_logic_vector(31 downto 0);
         variable jc_addr_0  : std_logic_vector(21 downto 0);
@@ -52,7 +52,7 @@ begin
                 operation1 := NOP;
         end case;
         
-        current_pc := unsigned(din.next_pc);
+        next_pc := unsigned(din.next_pc);
 
         jc_addr_0 := operation0(24 downto 3);
         jc_addr_1 := operation1(24 downto 3);
@@ -61,16 +61,6 @@ begin
 
         dout.op0.operation <= operation0;
         dout.op1.operation <= operation1;
-
-        assert operation1 /= x"38000004" 
-            report "ish..." & integer'image(to_integer(unsigned(operation1))) &
-                " sz: " & integer'image(to_integer(unsigned(din.inst_size)))
-            severity ERROR;
-
-        assert din.instruction(31 downto 0) /= x"38000004"
-            report "ish2"
-            severity ERROR;
-
 
         -- sign extension
         if operation0(29 downto 28) = "10" then
@@ -110,16 +100,16 @@ begin
             else
                 dout.op0.j_take       <= '0';
                 dout.op0.restore_sz   <= "11";
-                dout.op0.restore_addr <= std_logic_vector(current_pc + addr_0);
+                dout.op0.restore_addr <= std_logic_vector(next_pc + addr_0);
             end if;
         elsif operation0(29 downto 28) = "10" then
             dout.op0.j_take       <= '1';
             dout.op0.restore_sz   <= "11";
-            dout.op0.restore_addr <= std_logic_vector(current_pc + addr_0);
+            dout.op0.restore_addr <= std_logic_vector(next_pc + addr_0);
         else
             dout.op0.j_take       <= '0';
             dout.op0.restore_sz   <= "11";
-            dout.op0.restore_addr <= std_logic_vector(current_pc + addr_0);
+            dout.op0.restore_addr <= std_logic_vector(next_pc + addr_0);
         end if;
 
         if operation1(29 downto 27) = "110" then 
@@ -130,20 +120,21 @@ begin
             else
                 dout.op1.j_take       <= '0';
                 dout.op1.restore_sz   <= "11";
-                dout.op1.restore_addr <= std_logic_vector(current_pc + addr_1);
+                dout.op1.restore_addr <= std_logic_vector(next_pc + addr_1);
             end if;
         elsif operation1(29 downto 28) = "10" then
             dout.op1.j_take       <= '1';
             dout.op1.restore_sz   <= "11";
-            dout.op1.restore_addr <= std_logic_vector(current_pc + addr_1);
+            dout.op1.restore_addr <= std_logic_vector(next_pc + addr_1);
         else
             dout.op1.j_take       <= '0';
             dout.op1.restore_sz   <= "11";
-            dout.op1.restore_addr <= std_logic_vector(current_pc + addr_1);
+            dout.op1.restore_addr <= std_logic_vector(next_pc + addr_1);
         end if;
 
-        dout.op0.j_addr <= std_logic_vector(current_pc + addr_0);
-        dout.op1.j_addr <= std_logic_vector(current_pc + addr_1);
+        dout.op0.j_addr <= std_logic_vector(next_pc + addr_0);
+        dout.op1.j_addr <= std_logic_vector(next_pc + addr_1);
+        dout.next_pc <= din.next_pc;
     end process;
 
     operation_expander_u0 : operation_expander

@@ -438,6 +438,44 @@ begin
             end if;
         end if;
 
+        ---------------------
+        -- forwarding exec --
+        ---------------------
+        dout.exec_i.op0.e_e2_wr          <= din.exec2_o.op0.control.reg_wren;
+        dout.exec_i.op0.e_e2_alu_sh_data <= din.exec2_o.op0.alu_sh_data;
+        dout.exec_i.op0.e_e2_dst         <= din.exec2_o.op0.reg_dst;
+        dout.exec_i.op0.e_e2_alu_sh_sel  <= din.exec_o.op0.control.alu_sh_sel;
+
+        dout.exec_i.op1.e_e2_wr          <= din.exec2_o.op1.control.reg_wren;
+        dout.exec_i.op1.e_e2_alu_sh_data <= din.exec2_o.op1.alu_sh_data;
+        dout.exec_i.op1.e_e2_dst         <= din.exec2_o.op1.reg_dst;
+        dout.exec_i.op1.e_e2_alu_sh_sel  <= din.exec_o.op1.control.alu_sh_sel;
+
+        --
+        dout.exec_i.op0.e2_wb_wr              <= din.wb_o.op0.control.reg_wren;
+        dout.exec_i.op0.e2_wb_dst             <= din.wb_o.op0.reg_dst;
+        dout.exec_i.op0.e2_wb_alu_sh_mem_data <= din.wb_o.op0.data_dst;
+
+        dout.exec_i.op1.e2_wb_wr              <= din.wb_o.op1.control.reg_wren;
+        dout.exec_i.op1.e2_wb_dst             <= din.wb_o.op1.reg_dst;
+        dout.exec_i.op1.e2_wb_alu_sh_mem_data <= din.wb_o.op1.data_dst;
+
+        --
+        if reset = '1' then
+            dout.exec_i.op0.wb_delay_wr <= '0';
+            dout.exec_i.op1.wb_delay_wr <= '0';
+        elsif clock'event and clock = '1' then
+            dout.exec_i.op0.wb_delay_wr   <= din.wb_o.op0.control.reg_wren;
+            dout.exec_i.op0.wb_delay_data <= din.wb_o.op0.data_dst;
+            dout.exec_i.op0.wb_delay_dst  <= din.wb_o.op0.reg_dst;
+
+            dout.exec_i.op1.wb_delay_wr   <= din.wb_o.op1.control.reg_wren;
+            dout.exec_i.op1.wb_delay_data <= din.wb_o.op1.data_dst;
+            dout.exec_i.op1.wb_delay_dst  <= din.wb_o.op1.reg_dst;
+
+        end if;
+        -- end forwarding exec
+
         if reset = '1' then
             dout.exec2_i.op0.control.reg_wren <= '0';
             dout.exec2_i.op1.control.reg_wren <= '0';
