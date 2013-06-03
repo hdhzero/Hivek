@@ -2,7 +2,7 @@ start:
     addi $sp, $zero, 400
     addi $zero, $zero, 0
 ;;
-    addi $a0, $zero, 17
+    addi $a0, $zero, 7
 ;;
     jal fib
 ;;
@@ -10,6 +10,13 @@ start:
     addi $r0, $r0, 0
 ;;
     addi $r0, $r0, 0
+;;
+
+loop_fim:
+    addi $r30, $r0, 1234
+    addi $r0, r0, r0
+;;
+    jc loop_fim
 ;;
 
 fib:

@@ -175,7 +175,7 @@ HIVEK_TOP_FILES = $(SRC_DIR)/vhdl/hivek_pkg.vhd \
 HIVEK_TOP_TB = hivek_tb
 
 hivek_tb: TESTBENCH = $(HIVEK_TOP_TB)
-hivek_tb: RUNTIME = 2000
+hivek_tb: RUNTIME = 20000
 hivek_tb: FILES = $(HIVEK_TOP_FILES)
 hivek_tb:
 	$(MKLIB) $(WORK_DIR)

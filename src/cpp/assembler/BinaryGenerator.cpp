@@ -172,11 +172,12 @@ namespace HivekAssembler {
             case CMPLT:
                 opcode = 0x38000000 | (12 << 18); break;
 
-            case CMPGT:
+            case CMPLTU:
                 opcode = 0x38000000 | (13 << 18); break;
 
-            case CMPLTU:
+            case CMPGT:
                 opcode = 0x38000000 | (14 << 18); break;
+
 
             case CMPGTU:
                 opcode = 0x38000000 | (15 << 18); break;
@@ -208,9 +209,9 @@ namespace HivekAssembler {
                 opcode = 0x08000000; break;
             case CMPLTI:
                 opcode = 0x0A000000; break;
-            case CMPGTI:
-                opcode = 0x0C000000; break;
             case CMPLTUI:
+                opcode = 0x0C000000; break;
+            case CMPGTI:
                 opcode = 0x0E000000; break;
             case CMPGTUI:
                 opcode = 0x10000000; break;

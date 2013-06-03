@@ -35,8 +35,8 @@ namespace HivekSimulator {
         
         CMPEQ = 11,
         CMPLT = 12,
-        CMPGT = 13,
-        CMPLTU = 14,
+        CMPLTU = 13,
+        CMPGT = 14,
         CMPGTU = 15,
 
         ANDP = 16,
@@ -54,8 +54,8 @@ namespace HivekSimulator {
         ORI    = 1003,
         CMPEQI = 1004,
         CMPLTI = 1005,
-        CMPGTI = 1006,
-        CMPLTUI = 1007,
+        CMPLTUI = 1006,
+        CMPGTI = 1007,
         CMPGTUI = 1008,
         LW = 1009,
         LB = 1010,
