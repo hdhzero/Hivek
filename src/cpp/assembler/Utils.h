@@ -18,10 +18,13 @@ namespace HivekAssembler {
         AND, OR, NOR, XOR,
         SLLV, SRLV, SRAV,
         CMPEQ, CMPLT, CMPGT, CMPLTU, CMPGTU,
-        ANDP, ORP, XORP, NORP, SHADD,
+        ANDP, ORP, XORP, NORP,
 
         //TYPE_Ib
         JR, JALR,
+
+        //TYPE_Ic
+        SHADD,
 
         // TYPE_II
         ADDI, ADCI, ADDIS, ADCIS,
@@ -33,13 +36,22 @@ namespace HivekAssembler {
         JC, JCN, JALC, JALCN, 
 
         // TYPE_IV
-        J, JAL
+        J, JAL,
 
+        // Type14
+        ADD14, SUB14, AND14, OR14, ADDHI14, SUBHI14,
+        CMPEQ14, CMPLT14, CMPGT14,
+        ADDI14, MOVI14, LWSP14, SWSP14, LW14, SW14, MOV14,
+        JC14, JCN14
     };
 
     enum OperationType { 
         TYPE_I, TYPE_II, TYPE_III, TYPE_IV, TYPE_V,
-        TYPE_Ib 
+        TYPE_Ib, TYPE_Ic, TYPE14
+    };
+
+    enum ShiftType {
+        SLL = 1, SRL = 2, SRA = 3
     };
 }
 

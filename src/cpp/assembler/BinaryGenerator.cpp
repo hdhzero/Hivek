@@ -86,9 +86,15 @@ namespace HivekAssembler {
         file << byte2str(get_byte(inst, 0)) << std::endl;
     }
 
+    void BinaryGenerator::write16op(uint16_t inst) {
+        file << byte2str(get_byte(inst, 1)) << std::endl;
+        file << byte2str(get_byte(inst, 0)) << std::endl;
+    }
+
     void BinaryGenerator::generate_instructions() {
         int i;
         int sz;
+        int sz14;
         uint32_t instruction1;
         uint32_t instruction2;
         MultiInstruction mop;
@@ -97,11 +103,14 @@ namespace HivekAssembler {
         table->update_multi_instruction_sizes();
 
         for (i = 0; i < table->get_multi_instructions_size(); ++i) {
-            mop = table->get_multi_instruction_at(i);
-            sz  = mop.next_size << 30;
+            mop  = table->get_multi_instruction_at(i);
+            sz   = mop.next_size << 30;
+            sz14 = mop.next_size << 14;
 
             switch (mop.size) {
                 case MULTI_OP1x16:
+                    instruction1 = sz14 | op2bin14(mop.inst1);
+                    write16op(instruction1);
                     break;
 
                 case MULTI_OP1x32: 
@@ -110,6 +119,10 @@ namespace HivekAssembler {
                     break;
 
                 case MULTI_OP2x16:
+                    instruction1 = sz14 | op2bin14(mop.inst1);
+                    instruction2 = op2bin14(mop.inst2);
+                    write16op(instruction1);
+                    write16op(instruction2);
                     break;
 
                 case MULTI_OP2x32: 
@@ -122,6 +135,120 @@ namespace HivekAssembler {
                 default:
                     break;
             }
+        }
+    }
+
+    uint16_t BinaryGenerator::op2bin14(Instruction& op) {
+        uint16_t instruction = 0;
+
+        switch (op.operation) {
+            case ADD14:
+                instruction |= 0 << 9;
+                instruction |= (op.destination & 7) << 6;
+                instruction |= (op.operand2 & 7) << 3;
+                instruction |= (op.operand1 & 7);
+                break;
+
+            case SUB14:
+                instruction |= 1 << 9;
+                instruction |= (op.destination & 7) << 6;
+                instruction |= (op.operand2 & 7) << 3;
+                instruction |= (op.operand1 & 7);
+                break;
+
+            case AND14:
+                instruction |= 2 << 9;
+                instruction |= (op.destination & 7) << 6;
+                instruction |= (op.operand2 & 7) << 3;
+                instruction |= (op.operand1 & 7);
+                break;
+
+            case OR14:
+                instruction |= 3 << 9;
+                instruction |= (op.destination & 7) << 6;
+                instruction |= (op.operand2 & 7) << 3;
+                instruction |= (op.operand1 & 7);
+                break;
+
+            case CMPEQ14:
+                instruction |= 4 << 9;
+                instruction |= (op.destination & 7) << 6;
+                instruction |= (op.operand2 & 7) << 3;
+                instruction |= (op.operand1 & 7);
+                break;
+
+            case CMPLT14:
+                instruction |= 5 << 9;
+                instruction |= (op.destination & 7) << 6;
+                instruction |= (op.operand2 & 7) << 3;
+                instruction |= (op.operand1 & 7);
+                break;
+
+            case CMPGT14:
+                instruction |= 6 << 9;
+                instruction |= (op.destination & 7) << 6;
+                instruction |= (op.operand2 & 7) << 3;
+                instruction |= (op.operand1 & 7);
+                break;
+
+            case ADDHI14:
+                instruction |= 7 << 9;
+                instruction |= (op.destination & 7) << 6;
+                instruction |= (op.operand2 & 7) << 3;
+                instruction |= (op.operand1 & 7);
+                break;
+
+            case SUBHI14:
+                instruction |= 8 << 9;
+                instruction |= (op.destination & 7) << 6;
+                instruction |= (op.operand2 & 7) << 3;
+                instruction |= (op.operand1 & 7);
+                break;
+
+            case ADDI14:
+                instruction |= 9 << 9;
+                instruction |= op.operand2 & 31;
+                instruction |= (op.destination & 15) << 5;
+                break;
+
+            case MOVI14:
+                instruction |= 10 << 9;
+                instruction |= op.operand2 & 31;
+                instruction |= (op.destination & 15) << 5;
+                break;
+              
+            case LWSP14:
+                std::cout << op.operand2 << ' ' 
+                    << op.destination << '\n';
+                instruction |= 11 << 9;
+                instruction |= op.operand2 & 31;
+                instruction |= (op.destination & 15) << 5;
+                break;
+
+            case SWSP14:
+                instruction |= 12 << 9;
+                instruction |= op.operand2 & 31;
+                instruction |= (op.destination & 15) << 5;
+                break;
+
+            case LW14:
+                instruction |= 13 << 9;
+                instruction |= op.destination << 4;
+                instruction |= op.operand1 & 15;
+                break;
+
+            case SW14:
+                instruction |= 14 << 9;
+                instruction |= op.destination << 4;
+                instruction |= op.operand1 & 15;
+                break;
+
+            case MOV14:
+                instruction |= 15 << 9;
+                instruction |= op.destination << 4;
+                instruction |= op.operand1 & 15;
+                break;
+
         }
     }
 
@@ -146,9 +273,10 @@ namespace HivekAssembler {
                 opcode = 0x38000000 | (2 << 18); break;
             case SBC:
                 opcode = 0x38000000 | (3 << 18); break;
-            case SHADD:
-                // op.shift_type
-                opcode = 0x38000000 | (3 << 18); break;
+            case SHADD: std::cout << "shadd " << op.shift_type << ' ' << op.shamt << '\n';
+                opcode = 0x38000000;
+                opcode |= op.shift_type << 23;
+                opcode |= op.shamt << 18; break;
 
             case AND:
                 opcode = 0x38000000 | (4 << 18); break;

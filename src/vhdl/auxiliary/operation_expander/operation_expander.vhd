@@ -33,6 +33,8 @@ begin
         variable reg_a3c : std_logic_vector(4 downto 0);
         variable reg_b3c : std_logic_vector(4 downto 0);
 
+        variable reg_b3i : std_logic_vector(4 downto 0);
+
         variable immd12  : std_logic_vector(11 downto 0);
         variable immd22  : std_logic_vector(21 downto 0);
 
@@ -50,9 +52,11 @@ begin
         reg_b3 := "00" & din.operation(5 downto 3);
         reg_c3 := "00" & din.operation(8 downto 6);
 
-        reg_a3b := '0' & din.operation(2 downto 0) & '0';
-        reg_b3b := '0' & din.operation(5 downto 3) & '0';
-        reg_c3b := '0' & din.operation(8 downto 6) & '0';
+        reg_a3b := std_logic_vector(unsigned("00" & din.operation(2 downto 0)) + "01000");
+        reg_b3b := std_logic_vector(unsigned("00" & din.operation(5 downto 3)) + "01000");
+        reg_c3b := std_logic_vector(unsigned("00" & din.operation(8 downto 6)) + "01000");
+
+        reg_b3i := '0' & din.operation(8 downto 5);
 
         reg_a3c := '0' & din.operation(3 downto 0);
         reg_b3c := din.operation(8 downto 4);
@@ -88,21 +92,22 @@ begin
                     op := "1110000" & OP_CMPLT & reg_c3 & reg_b3 & reg_a3;
                 when OP_CMPGT_16 =>
                     op := "1110000" & OP_CMPGT & reg_c3 & reg_b3 & reg_a3;
+
                 when OP_ADDHI_16 =>
                     op := "1110000" & OP_ADD & reg_c3b & reg_b3b & reg_a3b;
                 when OP_SUBHI_16 =>
                     op := "1110000" & OP_ADD & reg_c3b & reg_b3b & reg_a3b;
 
                 when OP_ADDI_16 =>
-                    op := OP_ADDI & immd12 & reg_b3 & reg_a3;
+                    op := OP_ADDI & immd12 & reg_b3i & reg_b3i;
 
                 when OP_MOVI =>
-                    op := OP_ADDI & immd12 & reg_b3 & "00000";
+                    op := OP_ADDI & immd12 & reg_b3i & "00000";
 
                 when OP_LW_SP_16 =>
-                    op := OP_LW & immd12 & reg_b3 & "11101";
+                    op := OP_LW & immd12 & reg_b3i & "11101";
                 when OP_SW_SP_16 =>
-                    op := OP_SW & immd12 & reg_b3 & "11101";
+                    op := OP_SW & immd12 & reg_b3i & "11101";
 
                 when OP_LW_16 =>
                     op := OP_LW & x"000" & reg_b3c & reg_a3c;

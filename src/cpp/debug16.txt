@@ -1,0 +1,19 @@
+start:
+    add $r0, $r0, $r0
+    add $r0, $r0, $r0
+;;
+    add14 $r1, $r2, $r3
+    sub14 $r1, $r2, $r3
+;;
+    and14 $r1, $r2, $r3
+;;
+    or14 $r1, $r2, $r3
+    cmpeq14 $p1, $r2, $r3
+;;
+    cmplt14 $p2, $r2, $r3
+;;
+    cmpgt14 $p0, $r1, $r7
+;;
+    lwsp14 $r1, $sp, 0
+    swsp14 $r1, $sp, 4
+;;

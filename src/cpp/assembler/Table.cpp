@@ -52,6 +52,8 @@ namespace HivekAssembler {
         get_destination(destination, op);
         get_operand1(operand1, op);
         get_operand2(operand2, op);
+        get_shift_type(shift_type, op);
+        get_shamt(shamt, op);
 
         op.stop_bit = false;
         op.size     = instruction_size[op.type];
@@ -121,7 +123,7 @@ namespace HivekAssembler {
 
         if (str2register.count(str) > 0) {
             op.operand2 = str2register[str];
-        } else {
+        } else { 
             op.label = str;
         }
     }
@@ -212,6 +214,7 @@ namespace HivekAssembler {
                 break;
 
             case TYPE_II:
+            case TYPE14:
                 convert_label_data(op);
                 break;
 
@@ -269,9 +272,9 @@ namespace HivekAssembler {
         str2data_type["ascii"] = DATA_ASCII;
         str2data_type["dw"]    = DATA_INT32;
 
-        str2shift_type["SLLV"]  = SLLV;
-        str2shift_type["SRLV"]  = SRLV;
-        str2shift_type["SRAV"]  = SRAV;
+        str2shift_type["SLL"]  = SLL;
+        str2shift_type["SRL"]  = SRL;
+        str2shift_type["SRA"]  = SRA;
 
         str2predicate["p0"] = 0;
         str2predicate["p1"] = 1;
@@ -333,16 +336,13 @@ namespace HivekAssembler {
         instruction_size[TYPE_III] = 4;
         instruction_size[TYPE_IV]  = 4;
         instruction_size[TYPE_V]   = 4;
+        instruction_size[TYPE14]   = 2;
 
         #define assoc(a, b, c) { str2operation[a] = b; str2type[a] = c; }
         assoc("add", ADD, TYPE_I);
         assoc("sub", SUB, TYPE_I);
         assoc("adc", ADC, TYPE_I);
         assoc("sbc", SBC, TYPE_I);
-        assoc("adds", ADDS, TYPE_I);
-        assoc("adcs", ADCS, TYPE_I);
-        assoc("subs", SUBS, TYPE_I);
-        assoc("sbcs", SBCS, TYPE_I);
 
         assoc("and", AND, TYPE_I);
         assoc("or", OR, TYPE_I);
@@ -369,12 +369,11 @@ namespace HivekAssembler {
         assoc("jalr", JALR, TYPE_Ib);
 
         //type Ic
+        assoc("shadd", SHADD, TYPE_I);
 
         // type ii
         assoc("addi", ADDI, TYPE_II);
         assoc("adci", ADCI, TYPE_II);
-        assoc("addis", ADDIS, TYPE_II);
-        assoc("adcis", ADCIS, TYPE_II);
 
         assoc("andi", ANDI, TYPE_II);
         assoc("ori", ORI, TYPE_II);
@@ -399,5 +398,30 @@ namespace HivekAssembler {
         // type iv
         assoc("j", J, TYPE_IV);
         assoc("jal", JAL, TYPE_IV);
+
+        // type 16
+        assoc("add14", ADD14, TYPE14);
+        assoc("sub14", SUB14, TYPE14);
+        assoc("and14", AND14, TYPE14);
+        assoc("or14" , OR14 , TYPE14);
+
+        assoc("addhi14" , ADDHI14 , TYPE14);
+        assoc("subhi14" , SUBHI14 , TYPE14);
+
+        assoc("cmpeq14" , CMPEQ14 , TYPE14);
+        assoc("cmplt14" , CMPLT14 , TYPE14);
+        assoc("cmpgt14" , CMPGT14 , TYPE14);
+
+        assoc("addi14" , ADDI14 , TYPE14);
+        assoc("movi14" , MOVI14 , TYPE14);
+        assoc("lwsp14" , LWSP14 , TYPE14);
+        assoc("swsp14" , SWSP14 , TYPE14);
+        assoc("lw14" , LW14 , TYPE14);
+        assoc("sw14" , SW14 , TYPE14);
+
+        assoc("mov14" , MOV14 , TYPE14);
+        assoc("jc14" , JC14 , TYPE14);
+        assoc("jcn14" , JCN14 , TYPE14);
+
     }
 }

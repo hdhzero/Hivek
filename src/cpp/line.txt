@@ -1,0 +1,84 @@
+start:
+    addi $r1, $r0, 0
+    addi $r2, $r0, 0
+;;
+    addi $r3, $r0, 50
+    addi $r4, $r0, 50
+;;
+
+# x0 = r1, y0 = r2, x1 = r3, y1 = r4
+# dx = r5, dy = r6, sx = r7, sy = r8
+# err = r9, e2 = r10
+line:
+    sub $r5, $r3, $r1
+    sub $r6, $r4, $r2
+;;
+    cmplt $p1, $r5, $r0
+    cmplt $p2, $r6, $r0
+;;
+    (p1) sub $r5, $r0, $r5
+    (p2) sub $r6, $r0, $r6
+;;
+    cmplt $p1, $r1, $r3
+    cmplt $p2, $r2, $r4
+;;
+    (p1) addi $r7, $r0, 1
+    (!p1) addi $r7, $r0, -1
+;;
+    (p2) addi $r8, $r0, 1
+    (!p2) addi $r8, $r0, -1
+;;
+    cmpgt $p1, $r5, $r6
+    sub $r19, $r0, $r6
+;;
+    (p1) add $r9, $r0, $r5
+    (!p1) add $r9, $r0, $19
+;;
+    shadd $r9, $r9, $r0 SRA 1
+;;
+
+L0:
+    jal plot
+    add $r0, $r0, $r0
+;;
+    cmpeq $p1, $r1, $r3
+    cmpeq $p2, $r2, $r4
+;;
+    andp $p1, $p1, $p2
+    sub $r19, $r0, $r5
+;;
+    (p1) jc L1
+    (!p1) $r10, $r0, $r9
+;;
+    cmpgt $p1, $r10, $r19
+    cmplt $p2, $r10, $r6
+;;
+    (p1) sub $r9, $r9, $r6
+    (p1) add $r1, $r1, $r7
+;;
+    (p2) add $r9, $r9, $r5
+    (p2) add $r2, $r2, $r8
+;;
+    jc L0
+;;
+
+L1:
+    addi $r30, $r0, 1
+    add $r0, $r0, $r0
+;;
+    jc L1
+;;
+
+
+plot:
+    shadd $r20, $r1, $r0 SLL 2
+    shadd $r21, $r1, $r0 SLL 5
+;;
+    shadd $r20, $r1, $r2 SLL 6
+    addi $r21, $r0, 1
+;;
+    sw $r21, $r20, 0
+    jr $r31
+;;
+
+    

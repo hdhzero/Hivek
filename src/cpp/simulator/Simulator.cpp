@@ -39,7 +39,7 @@ namespace HivekSimulator {
             data_memory.push_back(v);
         }
 
-        data_memory.resize(4096);
+        data_memory.resize(200 * 200);
         file.close();
     }
 
@@ -323,8 +323,6 @@ namespace HivekSimulator {
             case JC:
             case JCN:
                 new_sz = 3;
-                std::cout << "pc: " << pc << ", immd" << sign_ext(immd22 << 1, 22)
-                    << ", +: " << pc + sign_ext(immd22 << 1, 22) << std::endl;
                 pc += sign_ext(immd22 << 1, 22);
                 break;
 
@@ -340,7 +338,7 @@ namespace HivekSimulator {
                 pc += sign_ext(immd27 << 1, 27);
                 break;
 
-            case JAL: std::cout << "jal\n";
+            case JAL: 
                 new_sz = 3;
                 regs[31] = pc;
                 pc += sign_ext(immd27 << 1, 27);
@@ -406,11 +404,14 @@ namespace HivekSimulator {
     }
 
     void Simulator::run() {
+//        int a;
         while (regs[30] == 0) {
             fetch_instructions(); 
             decode_instructions();
             execute_instructions();
             update_status();
+            //print_registers();
+  //          std::cin >> a;
         }
     }
 
