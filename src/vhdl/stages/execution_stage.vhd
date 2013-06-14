@@ -26,8 +26,8 @@ architecture behavior of execution_stage is
     signal pb_i : predicate_bank_in_t;
     signal pb_o : predicate_bank_out_t;
 
-    signal mem_addr_0 : unsigned(31 downto 0);
-    signal mem_addr_1 : unsigned(31 downto 0);
+--    signal mem_addr_0 : unsigned(31 downto 0);
+--    signal mem_addr_1 : unsigned(31 downto 0);
 begin
     process (clock)
     begin
@@ -38,7 +38,7 @@ begin
     end process;
 
 
-    process (din, pb_o, alu_sh_o0, alu_sh_o1, carry_r, mem_addr_0, mem_addr_1)
+    process (din, pb_o, alu_sh_o0, alu_sh_o1, carry_r)--, mem_addr_0, mem_addr_1)
         variable mem_addr_0 : unsigned(31 downto 0);
         variable mem_addr_1 : unsigned(31 downto 0);
         variable operand_a0 : std_logic_vector(31 downto 0);
@@ -49,6 +49,9 @@ begin
 
         -- forwarding
         -- rA0
+        -- CAUTION: e_e2_alu_sh_sel is wrong, the right is e_e2_alu_sh_mem_sel
+        -- need to be fixed later!
+
         if din.op0.e_e2_wr = '1' and din.op0.e_e2_dst = din.op0.reg_a
             and din.op0.e_e2_alu_sh_sel = '0' then
                 operand_a0 := din.op0.e_e2_alu_sh_data;
@@ -139,14 +142,17 @@ begin
         alu_sh_i0.sh_type <= din.op0.control.sh_type;
         alu_sh_i1.sh_type <= din.op1.control.sh_type;
 
+        alu_sh_i0.bshift_sel <= din.op0.control.bshift_sel;
+        alu_sh_i1.bshift_sel <= din.op1.control.bshift_sel;
+
         -- shift ammount select
-        if din.op0.control.sh_amt_src_sel = '0' then
+        if din.op0.control.sh_amt_src_sel = '1' then
             alu_sh_i0.shift_amt <= din.op0.sh_immd;
         else
             alu_sh_i0.shift_amt <= operand_b0(4 downto 0); --din.op0.data_b(4 downto 0);
         end if;
 
-        if din.op1.control.sh_amt_src_sel = '0' then
+        if din.op1.control.sh_amt_src_sel = '1' then
             alu_sh_i1.shift_amt <= din.op1.sh_immd;
         else
             alu_sh_i1.shift_amt <= operand_b1(4 downto 0); --din.op1.data_b(4 downto 0);

@@ -179,8 +179,13 @@ begin
             dout.control.reg_dst_sel <= '1';
         end if;
 
-        if op_type = TYPE_I and op = OP_SHADD then
-            dout.control.alu_sh_sel <= '1';
+        if op_type = TYPE_I then 
+            case op is
+                when OP_SHADD | OP_SLLV | OP_SRAV | OP_SLRV =>
+                    dout.control.alu_sh_sel <= '1';
+                when others =>
+                    dout.control.alu_sh_sel <= '0';
+            end case;
         else
             dout.control.alu_sh_sel <= '0';
         end if;
@@ -212,22 +217,28 @@ begin
             dout.control.sh_amt_src_sel <= '0';
         end if;
 
-        -- sh_type
+        -- sh_type and bshift_sel
         if op_type = TYPE_I then
             case op is
                 when OP_SHADD =>
                     dout.control.sh_type <= din.operation(24 downto 23);
+                    dout.control.bshift_sel <= '1';
                 when OP_SLLV =>
                     dout.control.sh_type <= SH_SLL;
+                    dout.control.bshift_sel <= '0';
                 when OP_SLRV =>
                     dout.control.sh_type <= SH_SRL;
+                    dout.control.bshift_sel <= '0';
                 when OP_SRAV =>
                     dout.control.sh_type <= SH_SRA;
+                    dout.control.bshift_sel <= '0';
                 when others =>
                     dout.control.sh_type <= SH_SLL;
+                    dout.control.bshift_sel <= '0';
             end case;
         else
             dout.control.sh_type <= SH_SLL;
+            dout.control.bshift_sel <= '0';
         end if;
 
         -- alu_op

@@ -328,6 +328,9 @@ begin
                 dout.id2_i.op0.immd32 <= din.id_o.op0.immd32;
                 dout.id2_i.op1.immd32 <= din.id_o.op1.immd32;
 
+                dout.id2_i.op0.sh_immd <= din.id_o.op0.sh_immd;
+                dout.id2_i.op1.sh_immd <= din.id_o.op1.sh_immd;
+
                 dout.id2_i.next_pc <= din.id_o.next_pc;
 
                 dout.id2_i.op0.control <= din.id_o.op0.control;
@@ -456,15 +459,20 @@ begin
         ---------------------
         -- forwarding exec --
         ---------------------
+        -- CAUTION: e_e2_alu_sh_sel is wrong, the right is e_e2_alu_sh_mem_sel
+        -- need to be fixed later!
+
         dout.exec_i.op0.e_e2_wr          <= din.exec2_o.op0.control.reg_wren;
         dout.exec_i.op0.e_e2_alu_sh_data <= din.exec2_o.op0.alu_sh_data;
         dout.exec_i.op0.e_e2_dst         <= din.exec2_o.op0.reg_dst;
-        dout.exec_i.op0.e_e2_alu_sh_sel  <= din.exec_o.op0.control.alu_sh_sel;
+--        dout.exec_i.op0.e_e2_alu_sh_sel  <= din.exec_o.op0.control.alu_sh_sel;
+        dout.exec_i.op0.e_e2_alu_sh_sel  <= din.exec2_o.op0.control.alu_sh_mem_sel;
 
         dout.exec_i.op1.e_e2_wr          <= din.exec2_o.op1.control.reg_wren;
         dout.exec_i.op1.e_e2_alu_sh_data <= din.exec2_o.op1.alu_sh_data;
         dout.exec_i.op1.e_e2_dst         <= din.exec2_o.op1.reg_dst;
-        dout.exec_i.op1.e_e2_alu_sh_sel  <= din.exec_o.op1.control.alu_sh_sel;
+--        dout.exec_i.op1.e_e2_alu_sh_sel  <= din.exec_o.op1.control.alu_sh_sel;
+        dout.exec_i.op1.e_e2_alu_sh_sel  <= din.exec2_o.op1.control.alu_sh_mem_sel;
 
         --
         dout.exec_i.op0.e2_wb_wr              <= din.wb_o.op0.control.reg_wren;

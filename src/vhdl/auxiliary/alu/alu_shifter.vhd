@@ -39,7 +39,8 @@ begin
         dout => alu_o
     );
 
-    tmp <= unsigned(bsh_o.output) + unsigned(din.operand_a);
+    tmp <= unsigned(bsh_o.output) when din.bshift_sel = '0' else 
+           unsigned(bsh_o.output) + unsigned(din.operand_b);
 
     bsh_i.left    <= '1' when din.sh_type = SH_SLL else '0';
     bsh_i.logical <= '1' when din.sh_type /= SH_SRA else '0';

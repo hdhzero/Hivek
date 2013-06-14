@@ -62,6 +62,11 @@ begin
             dout.op1.immd32 <= din.next_pc;
         end if;
 
+        -- sh_immd
+        dout.op0.sh_immd <= din.op0.sh_immd;
+        dout.op1.sh_immd <= din.op1.sh_immd;
+
+
         -- jump
         dout.op0.restore_addr <= din.op0.restore_addr;
         dout.op0.restore_sz   <= din.op0.restore_sz;
@@ -82,6 +87,10 @@ begin
         -- shift_type
         dout.op0.control.sh_type <= din.op0.control.sh_type;
         dout.op1.control.sh_type <= din.op1.control.sh_type;
+
+        -- bshift_sel
+        dout.op0.control.bshift_sel <= din.op0.control.bshift_sel;
+        dout.op1.control.bshift_sel <= din.op1.control.bshift_sel;
 
         -- wrens
         dout.op0.control.reg_wren <= din.op0.control.reg_wren;

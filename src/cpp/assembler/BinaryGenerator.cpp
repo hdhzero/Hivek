@@ -273,7 +273,9 @@ namespace HivekAssembler {
                 opcode = 0x38000000 | (2 << 18); break;
             case SBC:
                 opcode = 0x38000000 | (3 << 18); break;
-            case SHADD: std::cout << "shadd " << op.shift_type << ' ' << op.shamt << '\n';
+            case SHADD: 
+                std::cout << "shadd " << op.shift_type << ' ' 
+                    << op.shamt << '\n';
                 opcode = 0x38000000;
                 opcode |= op.shift_type << 23;
                 opcode |= op.shamt << 18; break;

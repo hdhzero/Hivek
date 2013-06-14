@@ -138,10 +138,19 @@ namespace HivekSimulator {
         int immd22 = (n & 0x01FFFFF8) >> 3;
         int immd27 = n & 0x07FFFFFF;
         bool exec = pr_regs[p_reg] == p_value;
+        bool shadd_flag = false;
+        int sh_amt;
+        int sh_t;
 
         // type I
         if ((0x3E000000 & n) == 0x38000000) {
             operation = (n & 0x01FC0000) >> 18;
+
+            if (operation & 0x060 != 0) {
+                sh_amt = operation & 31;
+                sh_t = (operation & 0x060) >> 5;
+                shadd_flag = true;
+            }
         }
         // immediates - type II
         else if ((0x20000000 & n) == 0) { 
@@ -159,6 +168,18 @@ namespace HivekSimulator {
         }
 
         if (!exec) {
+            return;
+        }
+
+        if (shadd_flag) {
+            if (sh_t == 1) {
+                regs[rd] = (regs[rs] << sh_amt) + regs[rt];
+            } else if (sh_t == 2) {
+                regs[rd] = ((unsigned) regs[rs] >> sh_amt) + regs[rt];
+            } else {
+                regs[rd] = (((signed) regs[rs]) >> sh_amt) + regs[rt];
+            }
+
             return;
         }
 
@@ -196,17 +217,19 @@ namespace HivekSimulator {
                 regs[rd] = regs[rs] << (regs[rt] & 0x01F);
                 break;
 
-            case SRLV:
-                regs[rd] = regs[rs] >> (regs[rt] & 0x01F);
+            case SRLV: 
+                regs[rd] = ((unsigned) regs[rs]) >> (regs[rt] & 0x01F);
                 break;
 
             case SRAV:
+                regs[rd] = ((signed) regs[rs]) >> (regs[rt] & 0x01F);
+                /*
                 if (regs[rs] & 0x80000000) {
                     regs[rd] = regs[rs] >> (regs[rt] & 0x01F);
                     regs[rd] |= ~0 << 32 - (regs[rt] & 0x01F);
                 } else {
                     regs[rd] = regs[rs] >> (regs[rt] & 0x01F);
-                }
+                }*/
                 break;
 
             case CMPEQ:

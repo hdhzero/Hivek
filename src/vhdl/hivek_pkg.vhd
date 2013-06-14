@@ -218,6 +218,7 @@ package hivek_pkg is
         alu_sh_mem_sel : std_logic;
         sh_amt_src_sel : std_logic;
         immd_pc_sel    : std_logic;
+        bshift_sel     : std_logic;
     end record;
 
     type instruction_decode_path_in_t is record
@@ -287,6 +288,7 @@ package hivek_pkg is
         reg_immd_sel   : std_logic;
         alu_sh_mem_sel : std_logic;
         sh_amt_src_sel : std_logic;
+        bshift_sel     : std_logic;
     end record;
 
     type instruction_decode2_path_in_t is record
@@ -602,11 +604,12 @@ package hivek_pkg is
     type alu_shifter_in_t is record
         alu_op       : alu_op_t;
         sh_type      : shift_type_t;
+        bshift_sel   : std_logic;
         carry_in     : std_logic;
         operand_a    : std_logic_vector(31 downto 0);
         operand_b    : std_logic_vector(31 downto 0);
-        pr_data_a : std_logic;
-        pr_data_b : std_logic;
+        pr_data_a    : std_logic;
+        pr_data_b    : std_logic;
         shift_amt    : std_logic_vector(4 downto 0);
     end record;
 
