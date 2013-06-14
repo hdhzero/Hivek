@@ -33,8 +33,8 @@ namespace HivekSimulator {
             bool cmpgtu(uint32_t a, uint32_t b);
 
 
-    void write_dmem(uint32_t v, uint32_t address, int bits);
-    uint32_t read_dmem(uint32_t address, int bits);
+            void write_dmem(uint32_t v, uint32_t address, int bits);
+            uint32_t read_dmem(uint32_t address, int bits);
 
             void fetch_instructions();
             void decode_instructions();
@@ -49,6 +49,7 @@ namespace HivekSimulator {
             void print_registers();
             void run();
             void reset();
+            void dump_memory();
     };
 }
 

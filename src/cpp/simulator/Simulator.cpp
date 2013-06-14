@@ -1,6 +1,7 @@
 #include "HivekSimulator.h"
 
 namespace HivekSimulator {
+
     uint8_t Simulator::str2byte(std::string& str) {
         uint8_t v = 0;
 
@@ -146,7 +147,7 @@ namespace HivekSimulator {
         if ((0x3E000000 & n) == 0x38000000) {
             operation = (n & 0x01FC0000) >> 18;
 
-            if (operation & 0x060 != 0) {
+            if ((operation & 0x060) != 0) {
                 sh_amt = operation & 31;
                 sh_t = (operation & 0x060) >> 5;
                 shadd_flag = true;
@@ -166,6 +167,7 @@ namespace HivekSimulator {
             operation += ((n & 0x08000000) ? 1 : 0);
             exec = true;
         }
+
 
         if (!exec) {
             return;
@@ -217,19 +219,12 @@ namespace HivekSimulator {
                 regs[rd] = regs[rs] << (regs[rt] & 0x01F);
                 break;
 
-            case SRLV: 
+            case SRLV:  
                 regs[rd] = ((unsigned) regs[rs]) >> (regs[rt] & 0x01F);
                 break;
 
             case SRAV:
                 regs[rd] = ((signed) regs[rs]) >> (regs[rt] & 0x01F);
-                /*
-                if (regs[rs] & 0x80000000) {
-                    regs[rd] = regs[rs] >> (regs[rt] & 0x01F);
-                    regs[rd] |= ~0 << 32 - (regs[rt] & 0x01F);
-                } else {
-                    regs[rd] = regs[rs] >> (regs[rt] & 0x01F);
-                }*/
                 break;
 
             case CMPEQ:
@@ -436,6 +431,8 @@ namespace HivekSimulator {
             //print_registers();
   //          std::cin >> a;
         }
+
+        dump_memory();
     }
 
     void Simulator::reset() {
@@ -459,5 +456,22 @@ namespace HivekSimulator {
     Simulator::Simulator() {
         reset();
     }
+
+    void Simulator::dump_memory() {
+        int t;
+        std::cout << "P3\n128 128\n255\n";
+        for (int i = 0; i < 128; ++i) {
+            for (int j = 0; j < 128; ++j) {
+                t = read_dmem(i * 128 + j, 32);
+
+                if (t == 0) {
+                    std::cout << "255 255 255\n";
+                } else {
+                    std::cout << "0 0 0\n";
+                }
+            }
+        }
+    }
+
 }
 

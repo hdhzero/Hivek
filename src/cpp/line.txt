@@ -20,5 +20,7 @@ line:
 ;;
     srlv $r4, $r2, $r1
 ;;
+    srav $r5, $r2, $r1
+;;
     addi $r30, $r0, 1
 ;;

@@ -1,0 +1,9 @@
+start:
+    addi $r1, $r0, 4
+    addi $r2, $r0, 1
+;;
+    srlv $r2, $r1, $r2
+;;
+    addi $r30, $r0, 1
+;;
+    
