@@ -1,5 +1,5 @@
 start:
-    addi $r1, $r0, 30
+    add $r1, $r0, $r0
     add $r2, $r0, $r0
 ;;
     addi $r3, $r0, 70
@@ -58,10 +58,6 @@ L0:
     (p2) add $r9, $r9, $r5
     (p2) add $r2, $r2, $r8
 ;;
-###
-#    addi $r30, $r0, 1
-#;;
-###
     jc L0
 ;;
 
@@ -71,14 +67,64 @@ L1:
 ;;
 
 
-
+# a = 20, b = 21, d = 22. c = 23, x = 1, y = 2
 plot:
-    # a[x][y] = x * 128 + y
-    shadd $r20, $r1, $r2 SLL 7
-    addi $r21, $r0, 1
+    shadd $r20, $r1, $r0 SRL 5
+    shadd $r21, $r2, $r0 SLL 3
 ;;
-    sw $r21, $r20, 0
+    shadd $r21, $r2, $r21 SLL 1
+    shadd $r22, $r20, $r0 SLL 5
+;;
+    sub $r22, $r1, $r22
+    add $r23, $r21, $r20
+;;
+# WARNING!! VHDL uses 4 byte aligned, remove this shadd
+# when running on FPGA
+    shadd $r23, $r23, $r0 SLL 2
+;;
+    addi $r24, $r0, 31
+    addi $r25, $r0, 1
+;;
+    sub $r22, $r24, $r22
+    lw $r24, $r23, 0
+;;
+    sllv $r25, $r25, $r22
+;;
+    or $r24, $r25, $r24
+;;
+    sw $r24, $r23, 0
     jr $r31
 ;;
+
+# 1 = x0, 2 = y0, 3 = x1, 4 = y1, 5 = x2, 6 = y2
+# 7 = t, 8 = x, 9 = y, 10 = xo, 11 = y0, 12 = acc
+# 13 = k
+# 20 = tmp
+bresenham:
+    shadd xo, x0, $r0 SLL 7
+    shadd yo, y0, $r0 SLL 7
+;;
+    shadd x0, x0, $r0 SLL 7
+    shadd y0, y0, $r0 SLL 7
+;;
+    shadd x1, x1, $r0 SLL 7
+    shadd y1, y1, $r0 SLL 7
+;;
+    shadd x2, x2, $r0 SLL 7
+    shadd y2, y2, $r0 SLL 7
+;;
+    add t, $r0, $r0
+    addi tmp, $r0, 128
+;;
+    shadd tmp1, $r0, 
+
+L77:
+    cmplti $p1, t, 128
+    sub k, tmp, t
+;;
+    (!p1) jcn L88
+
+L88:
+    # retornar!
 
 

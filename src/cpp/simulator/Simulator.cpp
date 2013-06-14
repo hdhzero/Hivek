@@ -459,15 +459,16 @@ namespace HivekSimulator {
 
     void Simulator::dump_memory() {
         int t;
-        std::cout << "P3\n128 128\n255\n";
-        for (int i = 0; i < 128; ++i) {
-            for (int j = 0; j < 128; ++j) {
-                t = read_dmem(i * 128 + j, 32);
+        std::cout << "P3\n320 240\n255\n";
 
-                if (t == 0) {
-                    std::cout << "255 255 255\n";
-                } else {
+        for (int i = 0; i < 2400 * 4; i += 4) {
+            t = read_dmem(i, 32);
+
+            for (int j = 31; j >= 0; --j) {
+                if (t & (1 << j)) {
                     std::cout << "0 0 0\n";
+                } else {
+                    std::cout << "255 255 255\n";
                 }
             }
         }
