@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
 entity icache_memory is
     generic (
         VENDOR     : string := "GENERIC";
@@ -14,6 +15,7 @@ entity icache_memory is
         data_o  : out std_logic_vector(63 downto 0)
     );
 end icache_memory;
+
 architecture icache_memory_arch of icache_memory is
     signal addr0 : std_logic_vector(31 downto 0);
     signal addr1 : std_logic_vector(31 downto 0);
@@ -33,59 +35,26 @@ architecture icache_memory_arch of icache_memory is
     signal address_plus_one : std_logic_vector(31 downto 0);
     signal addr_sel         : std_logic_vector(1 downto 0);
     signal addr_sel_reg     : std_logic_vector(1 downto 0);
-    type mem_bram is array (2 ** ADDR_WIDTH - 1 downto 0) of std_logic_vector(15 downto 0);
 
-signal mem0_ram : mem_bram := (
-    0 => "0111100000000000",
-    1 => "0100000000001001",
-    2 => "0111100000000000",
-    3 => "0111100000000000",
-    4 => "0111100000000000",
-    5 => "0111100000000000",
-    6 => "0111100000000000",
-    7 => "0111100000000000",
-    8 => "0100000000000000",
-    others => "0000000000000000");
-
-signal mem1_ram : mem_bram := (
-    0 => "0000000000000100",
-    1 => "0000000100000100",
-    2 => "0000000000000100",
-    3 => "0000000000000100",
-    4 => "0000000000000100",
-    5 => "0000000000000100",
-    6 => "0000000000000100",
-    7 => "0000000000000100",
-    8 => "0011111000000100",
-    others => "0000000000000000");
-
-signal mem2_ram : mem_bram := (
-    0 => "0011100000000000",
-    1 => "0111100000000000",
-    2 => "0111100000000000",
-    3 => "0111100000000000",
-    4 => "0101011000000000",
-    5 => "0111100000000000",
-    6 => "0101001000000000",
-    7 => "0111100000000000",
-    8 => "0011001111111111",
-    others => "0000000000000000");
-
-signal mem3_ram : mem_bram := (
-    0 => "0000000000000100",
-    1 => "0000000000000100",
-    2 => "0000000000000100",
-    3 => "0000000000000100",
-    4 => "0000000100000100",
-    5 => "0000000000000100",
-    6 => "0000001000000100",
-    7 => "0000000000000100",
-    8 => "1111111111000100",
-    others => "0000000000000000");
+    component memory_bram is
+    generic (
+        VENDOR     : string  := "GENERIC";
+        DATA_WIDTH : integer := 16;
+        ADDR_WIDTH : integer := 8 -- 2 ^ ADDR_WIDTH addresses
+    );
+    port (
+        clock  : in std_logic;
+        wren   : in std_logic;
+        addr   : in std_logic_vector(ADDR_WIDTH - 1 downto 0);
+        data_i : in std_logic_vector(DATA_WIDTH - 1 downto 0);
+        data_o : out std_logic_vector(DATA_WIDTH - 1 downto 0)
+    );
+    end component;
 
 begin
     address_plus_one <= std_logic_vector(unsigned(address) + x"00000008");
     addr_sel <= address(2 downto 1);
+
     wren0 <= wren;
     wren1 <= wren;
     wren2 <= wren;
@@ -122,6 +91,7 @@ begin
 
         end case;
     end process;
+
     process (clock)
     begin
         if clock'event and clock = '1' then
@@ -145,32 +115,61 @@ begin
 
         end case;
     end process;
-    process (clock)
-    begin
-        if clock'event and clock = '1' then
-            out0 <= mem0_ram(to_integer(unsigned(addr0(ADDR_WIDTH - 1 downto 0))));
-        end if;
-    end process;
 
-    process (clock)
-    begin
-        if clock'event and clock = '1' then
-            out1 <= mem1_ram(to_integer(unsigned(addr1(ADDR_WIDTH - 1 downto 0))));
-        end if;
-    end process;
+    mem0 : memory_bram
+    generic map (
+        VENDOR => VENDOR,
+        DATA_WIDTH => 16,
+        ADDR_WIDTH => ADDR_WIDTH
+    )
+    port map (
+        clock  => clock,
+        wren   => wren0,
+        addr   => addr0(ADDR_WIDTH - 1 downto 0),
+        data_i => data_i(63 downto 48),
+        data_o => out0
+    );
 
-    process (clock)
-    begin
-        if clock'event and clock = '1' then
-            out2 <= mem2_ram(to_integer(unsigned(addr2(ADDR_WIDTH - 1 downto 0))));
-        end if;
-    end process;
+    mem1 : memory_bram
+    generic map (
+        VENDOR => VENDOR,
+        DATA_WIDTH => 16,
+        ADDR_WIDTH => ADDR_WIDTH
+    )
+    port map (
+        clock  => clock,
+        wren   => wren1,
+        addr   => addr1(ADDR_WIDTH - 1 downto 0),
+        data_i => data_i(47 downto 32),
+        data_o => out1
+    );
 
-    process (clock)
-    begin
-        if clock'event and clock = '1' then
-            out3 <= mem3_ram(to_integer(unsigned(addr3(ADDR_WIDTH - 1 downto 0))));
-        end if;
-    end process;
+    mem2 : memory_bram
+    generic map (
+        VENDOR => VENDOR,
+        DATA_WIDTH => 16,
+        ADDR_WIDTH => ADDR_WIDTH
+    )
+    port map (
+        clock  => clock,
+        wren   => wren2,
+        addr   => addr2(ADDR_WIDTH - 1 downto 0),
+        data_i => data_i(31 downto 16),
+        data_o => out2
+    );
+
+    mem3 : memory_bram
+    generic map (
+        VENDOR => VENDOR,
+        DATA_WIDTH => 16,
+        ADDR_WIDTH => ADDR_WIDTH
+    )
+    port map (
+        clock  => clock,
+        wren   => wren3,
+        addr   => addr3(ADDR_WIDTH - 1 downto 0),
+        data_i => data_i(15 downto 0),
+        data_o => out3
+    );
 
 end icache_memory_arch;

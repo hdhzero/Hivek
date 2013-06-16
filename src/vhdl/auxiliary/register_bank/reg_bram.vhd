@@ -34,17 +34,17 @@ architecture behavior of reg_bram is
     -- if you need to use a vendor bram because you want to or
     -- because the synthesis tool isnt inferring the bram from the
     -- generic code, instantiate the vendor component here
-    component reg_bram_altera IS
-	PORT
-	(
-		clock		: IN STD_LOGIC  := '1';
-		data		: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
-		rdaddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
-		wraddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
-		wren		: IN STD_LOGIC  := '0';
-		q		: OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
-	);
-    end component;
+    --component reg_bram_altera IS
+	--PORT
+	--(
+		--clock		: IN STD_LOGIC  := '1';
+		--data		: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		--rdaddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+		--wraddress		: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+		--wren		: IN STD_LOGIC  := '0';
+		--q		: OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
+	--);
+    --end component;
 
 begin
     process (wraddr_r, rdaddr_r, dout_v1, dout_v0, wren_r)
@@ -71,17 +71,17 @@ begin
         end if;
     end process;
 
-    altera_bram : if vendor = "ALTERA" generate
-        reg_bram_u : reg_bram_altera
-        port map (
-            clock     => clock,
-            data      => din,
-            rdaddress => rdaddr,
-            wraddress => wraddr,
-            wren      => wren,
-            q         => dout_v0
-        );
-    end generate;
+    --altera_bram : if vendor = "ALTERA" generate
+        --reg_bram_u : reg_bram_altera
+        --port map (
+            --clock     => clock,
+            --data      => din,
+            --rdaddress => rdaddr,
+            --wraddress => wraddr,
+            --wren      => wren,
+            --q         => dout_v0
+        --);
+    --end generate;
 
     generic_bram : if vendor = "GENERIC" generate
         process (clock)

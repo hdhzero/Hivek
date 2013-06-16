@@ -44,3 +44,5 @@ transcript
 # folders
 sim/modelsim/work/
 sim/work/
+syn/incremental_db/
+syn/db/

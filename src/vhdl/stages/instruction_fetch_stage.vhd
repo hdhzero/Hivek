@@ -21,7 +21,7 @@ architecture behavior of instruction_fetch_stage is
     signal restore_sz_reg_1 : std_logic_vector(1 downto 0);
 begin
 
-    process (clock, reset, din, pc, inst_size_reg)
+    process (clock, reset, din, pc, inst_size_reg, restore_sz_reg_0, restore_sz_reg_1)
         variable restore        : std_logic;
         variable jr_take        : std_logic;
         variable j_take         : std_logic;
