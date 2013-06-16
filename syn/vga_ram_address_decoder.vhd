@@ -81,6 +81,12 @@ begin
         z  := 31 - (k - as);
 
         address <= std_logic_vector(to_unsigned((b + a), 32));
-        bit_pos <= rom(z);
+
+        if unsigned(x) < 320 and unsigned(y) < 240 then
+            bit_pos <= rom(z);
+        else
+            bit_pos <= (others => '0');
+        end if;
+
     end process;
 end behavior;

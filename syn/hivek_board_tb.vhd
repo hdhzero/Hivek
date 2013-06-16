@@ -44,11 +44,80 @@ begin
 
     process
     begin
-        key <= "111";
+        key <= "000";
         sw  <= "0000000000";
         wait until clock_50'event and clock_50 = '1';
         wait until clock_50'event and clock_50 = '1';
-        key <= "110";
+
+        key <= "001";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "011";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "101";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "001";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "011";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "101";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "001";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "011";
+        sw  <= "0000000111";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "101";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "001";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "011";
+        sw  <= "0000000111";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "101";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "001";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
+
+        key <= "001";
+        sw  <= "0000000000";
+        wait until clock_50'event and clock_50 = '1';
+        wait until clock_50'event and clock_50 = '1';
 
         wait;
     end process;

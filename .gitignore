@@ -23,6 +23,7 @@ icache_memory_tb
 *.vcd
 
 # modelsim and quartus
+*.cdf
 *.lst
 *.wlf
 *.sof

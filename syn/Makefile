@@ -33,7 +33,7 @@ sim:
 	ghdl -m hivek_board_tb
 
 bench:
-	ghdl -r hivek_board_tb --stop-time=1000ns --wave=hivek_board_tb.ghw
+	ghdl -r hivek_board_tb --stop-time=7000ns --wave=hivek_board_tb.ghw
 
 
 clean:

@@ -192,11 +192,9 @@ architecture behavior of hivek_board is
     end component;
 
 begin
-    ledg  <= data_dram_led(9 downto 0);
-
     buttons(0) <= not key(0);
-    press1     <= not key(1);
-    press2     <= not key(2);
+    press1     <= sw(9); --not key(1);
+    press2     <= sw(8); --not key(2);
 
     reset <= buttons(0);
 
@@ -257,14 +255,16 @@ begin
             input_addr  <= (others => '0');
             dcache_sel  <= "01";
             hivek_reset <= '1';
+            ledg <= "0000000000";
         elsif clock'event and clock = '1' then
             case state is
                 when set_x0 =>
+                    ledg <= "0000000001";
                     dcache_sel  <= "01";
                     hivek_reset <= '1';
 
-                    input_data <= "0000000000000000000000" & sw;
-                    input_addr <= x"00000000";
+                    input_data <= "000000000000000000000000" & sw(7 downto 0);
+                    input_addr <= x"000007D0";
 
                     if buttons(1) = '1' then
                         input_wren <= '1';
@@ -274,14 +274,17 @@ begin
                    
                     if buttons(2) = '1' then
                         state <= set_y0;
+                    else
+                        state <= set_x0;
                     end if;
 
                 when set_y0 =>
+                    ledg <= "0000000010";
                     dcache_sel  <= "01";
                     hivek_reset <= '1';
 
-                    input_data <= "0000000000000000000000" & sw;
-                    input_addr <= x"00000001";
+                    input_data <= "000000000000000000000000" & sw(7 downto 0);
+                    input_addr <= x"000007D1";
 
                     if buttons(1) = '1' then
                         input_wren <= '1';
@@ -291,14 +294,17 @@ begin
                    
                     if buttons(2) = '1' then
                         state <= set_x1;
+                    else
+                        state <= set_y0;
                     end if;
 
                 when set_x1 =>
+                    ledg <= "0000000100";
                     dcache_sel  <= "01";
                     hivek_reset <= '1';
 
-                    input_data <= "0000000000000000000000" & sw;
-                    input_addr <= x"00000002";
+                    input_data <= "000000000000000000000000" & sw(7 downto 0);
+                    input_addr <= x"000007D2";
 
                     if buttons(1) = '1' then
                         input_wren <= '1';
@@ -308,14 +314,17 @@ begin
                    
                     if buttons(2) = '1' then
                         state <= set_y1;
+                    else
+                        state <= set_x1;
                     end if;
 
                 when set_y1 =>
+                    ledg <= "0000001000";
                     dcache_sel  <= "01";
                     hivek_reset <= '1';
 
-                    input_data <= "0000000000000000000000" & sw;
-                    input_addr <= x"00000003";
+                    input_data <= "000000000000000000000000" & sw(7 downto 0);
+                    input_addr <= x"000007D3";
 
                     if buttons(1) = '1' then
                         input_wren <= '1';
@@ -325,14 +334,19 @@ begin
                    
                     if buttons(2) = '1' then
                         state <= draw;
+                    else
+                        state <= set_y1;
                     end if;
 
                 when draw =>
+                    ledg <= "0000001111";
                     dcache_sel  <= "00";
                     hivek_reset <= '0';
 
                     if buttons(2) = '1' then
                         state <= set_x0;
+                    else
+                        state <= draw;
                     end if;
 
             end case;
@@ -385,7 +399,6 @@ begin
         dout  => hivek_o
     );
 
-
     icache_selector_u : icache_selector
     generic map (
         VENDOR => VENDOR, 
@@ -416,7 +429,6 @@ begin
         dout_3  => open
     );
 
-
     dcache_selector_u : dcache_selector
     generic map (
         VENDOR => VENDOR,
@@ -431,10 +443,15 @@ begin
         a_data_i_0 => hivek_o.op0.dcache_data,
         a_data_o_0 => hivek_i.op0.dcache_data,
 
-        b_wren_0   => '0',             --hivek_o.op1.dcache_wren,
-        b_addr_0   => vgamem_addr,     --hivek_o.op1.dcache_addr,
-        b_data_i_0 => (others => '0'), --hivek_o.op1.dcache_data,
-        b_data_o_0 => vgamem_data0,     --hivek_i.op1.dcache_data,
+        b_wren_0   => hivek_o.op1.dcache_wren,
+        b_addr_0   => hivek_o.op1.dcache_addr,
+        b_data_i_0 => hivek_o.op1.dcache_data,
+        b_data_o_0 => hivek_i.op1.dcache_data,
+
+        --b_wren_0   => '0',             --hivek_o.op1.dcache_wren,
+        --b_addr_0   => vgamem_addr,     --hivek_o.op1.dcache_addr,
+        --b_data_i_0 => (others => '0'), --hivek_o.op1.dcache_data,
+        --b_data_o_0 => vgamem_data0,     --hivek_i.op1.dcache_data,
 
         a_wren_1   => input_wren,
         a_addr_1   => input_addr,
@@ -446,10 +463,15 @@ begin
         b_data_i_1 => (others => '0'),
         b_data_o_1 => vgamem_data1,
 
-        a_wren_2   => hivek_o.op1.dcache_wren,--'0',
-        a_addr_2   => hivek_o.op1.dcache_addr,--(others => '0'),
-        a_data_i_2 => hivek_o.op1.dcache_data,--(others => '0'),
-        a_data_o_2 => hivek_i.op1.dcache_data, --open,
+        a_wren_2   => '0',
+        a_addr_2   => (others => '0'),
+        a_data_i_2 => (others => '0'),
+        a_data_o_2 => open,
+
+        --a_wren_2   => hivek_o.op1.dcache_wren,--'0',
+        --a_addr_2   => hivek_o.op1.dcache_addr,--(others => '0'),
+        --a_data_i_2 => hivek_o.op1.dcache_data,--(others => '0'),
+        --a_data_o_2 => hivek_i.op1.dcache_data, --open,
 
         b_wren_2   => '0',
         b_addr_2   => (others => '0'),
