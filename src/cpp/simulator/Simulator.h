@@ -24,6 +24,7 @@ namespace HivekSimulator {
             uint8_t str2byte(std::string& str);
             uint32_t expand(uint32_t n);
             uint32_t sign_ext(uint32_t v, int pos);
+            uint32_t get_part(uint32_t operation, int end, int begin);
             void execute(uint32_t n, int u);
 
             bool cmpeq(uint32_t a, uint32_t b);

@@ -140,6 +140,9 @@ namespace HivekAssembler {
 
     uint16_t BinaryGenerator::op2bin14(Instruction& op) {
         uint16_t instruction = 0;
+        uint16_t cond;
+
+        cond = (op.predicate_value << 2) | op.predicate_register;
 
         switch (op.operation) {
             case ADD14:
@@ -247,6 +250,18 @@ namespace HivekAssembler {
                 instruction |= 15 << 9;
                 instruction |= op.destination << 4;
                 instruction |= op.operand1 & 15;
+                break;
+
+            case JC14:
+                instruction |= 3 << 12;
+                instruction |= cond << 9;
+                instruction |= (op.destination & 511);
+                break;
+
+            case JCN14:
+                instruction |= 2 << 12;
+                instruction |= cond << 9;
+                instruction |= (op.destination & 511);
                 break;
 
         }

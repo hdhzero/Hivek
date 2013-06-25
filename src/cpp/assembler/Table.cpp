@@ -214,8 +214,16 @@ namespace HivekAssembler {
                 break;
 
             case TYPE_II:
-            case TYPE14:
                 convert_label_data(op);
+                break;
+
+            case TYPE14:
+                if (op.operation == JC14 || op.operation == JCN14) {
+                    convert_label_branch(op, i);
+                } else {
+                    convert_label_data(op);
+                }
+
                 break;
 
             default:

@@ -89,38 +89,175 @@ namespace HivekSimulator {
 
     void Simulator::decode_instructions() {
         if (sz == 0) {
-            instruction1 = expand(instruction1);
+            instruction1 = expand(instruction1 >> 16);
             instruction2 = NOP;
         } else if (sz == 2) {
+            instruction2 = expand(instruction1 & 0x0FFFF);
             instruction1 = expand(instruction1 >> 16);
-            instruction2 = expand(instruction1 & 0xFFFF);
         } else if (sz == 1) {
             instruction2 = NOP;
         }
     }
 
-    uint32_t Simulator::expand(uint32_t n) {
-        uint32_t immd22;
-        uint32_t immd12;
-/*        // if jump
-        // 00 1pccc 000 000 000
-        // 00 001 l p iiiii ccc
-        if (n & 0x2000) {
-            if (n & 0x100) {
-                immd22 = 0x3FFE00 | (n & 0x1FF);
-            } else {
-                immd22 = n & 0x1FF;
-            }
+    uint32_t Simulator::get_part(uint32_t operation, int end, int begin) {
+        uint32_t mask = 0;
 
-            n = 0x0FC00000 | immd22 | cond;
+        for (int i = begin; i <= end; ++i) {
+            mask |= (1 << i);
+        }
+
+        return (operation & mask) >> begin;
+    }
+
+    uint32_t Simulator::expand(uint32_t operation) {
+        uint32_t predict;
+        uint32_t itype  ;
+        uint32_t opcode ;
+        uint32_t immd9  ;
+        uint32_t immd5  ;
+        uint32_t cond   ;
+
+        uint32_t reg_a3 ;
+        uint32_t reg_b3 ;
+        uint32_t reg_c3 ;
+
+        uint32_t reg_a3b;
+        uint32_t reg_b3b;
+        uint32_t reg_c3b;
+
+        uint32_t reg_a3c;
+        uint32_t reg_b3c;
+
+        uint32_t reg_b3i;
+
+        uint32_t immd12 ;
+        uint32_t immd22 ;
+
+        uint32_t op;
+        uint32_t dout;
+
+        itype   = get_part(operation, 13, 13); 
+        predict = get_part(operation, 12, 12); 
+        opcode  = get_part(operation, 12, 9);
+        immd9   = get_part(operation, 8, 0);
+        immd5   = get_part(operation, 4, 0);
+        cond    = get_part(operation, 11, 9);
+
+        reg_a3 = get_part(operation, 2, 0); 
+        reg_b3 = get_part(operation, 5, 3); 
+        reg_c3 = get_part(operation, 8, 6); 
+
+        reg_a3b = get_part(operation, 2, 0) + 8; 
+        reg_b3b = get_part(operation, 5, 3) + 8; 
+        reg_c3b = get_part(operation, 8, 6) + 8; 
+
+        reg_b3i = get_part(operation, 8, 5);
+        reg_a3c = get_part(operation, 3, 0); 
+        reg_b3c = get_part(operation, 8, 4);
+
+        if (immd5 & (1 << 4)) {
+            immd12 = (get_part(~0, 11, 5) << 5) | immd5;
         } else {
-            switch (n & 0xff >> 0) {
-                case ADD:
-                    n = 0x0F123123 | rd | rs | rt | 0x04; break;
-            }
-        }*/
+            immd12 = immd5;
+        }
 
-        return n;
+        if (immd9 & (1 << 8)) {
+            immd22 = (get_part(~0, 21, 9) << 9) | immd9;
+        } else {
+            immd22 = immd9;
+        }
+
+        if (itype == 1) {
+            dout = (12 << 26) | (predict << 25) | (immd22 << 3) | cond;
+            return dout;
+        } else {
+            op = 4;
+
+            switch (opcode) {
+                case 0: //OP_ADD_16
+                    op |= (reg_c3 << 13) | (reg_b3 << 8) | (reg_a3 << 3);
+                    op |=  (112 << 23) | (0 << 18); //OP_ADD
+                    break;
+
+                case 1: //OP_SUB_16
+                    op |= (reg_c3 << 13) | (reg_b3 << 8) | (reg_a3 << 3);
+                    op |=  (112 << 23) | (1 << 18); //OP_ADD
+                    break;
+
+                case 2: //and
+                    op |= (reg_c3 << 13) | (reg_b3 << 8) | (reg_a3 << 3);
+                    op |=  (112 << 23) | (4 << 18); //OP_ADD
+                    break;
+
+                case 3: //or
+                    op |= (reg_c3 << 13) | (reg_b3 << 8) | (reg_a3 << 3);
+                    op |=  (112 << 23) | (5 << 18); //OP_ADD
+                    break;
+
+                case 4: //cmpeq
+                    op |= (reg_c3 << 13) | (reg_b3 << 8) | (reg_a3 << 3);
+                    op |=  (112 << 23) | (11 << 18); //OP_ADD
+                    break;
+
+                case 5: //cmplt
+                    op |= (reg_c3 << 13) | (reg_b3 << 8) | (reg_a3 << 3);
+                    op |=  (112 << 23) | (12 << 18); //OP_ADD
+                    break;
+
+                case 6: //cmpgt
+                    op |= (reg_c3 << 13) | (reg_b3 << 8) | (reg_a3 << 3);
+                    op |=  (112 << 23) | (14 << 18); //OP_ADD
+                    break;
+
+                case 7: //addhi
+                    op |= (reg_c3b << 13) | (reg_b3b << 8) | (reg_a3b << 3);
+                    op |=  (112 << 23) | (0 << 18); //OP_ADD
+                    break;
+
+                case 8: //subhi
+                    op |= (reg_c3b << 13) | (reg_b3b << 8) | (reg_a3b << 3);
+                    op |=  (112 << 23) | (1 << 18); //OP_ADD
+                    break;
+
+                case 9://addi
+                    op |= (immd12 << 13) | (reg_b3i << 8) | (reg_b3i << 3);
+                    op |= (0 << 25);
+                    break;
+
+                case 10://movi
+                    op |= (immd12 << 13) | (reg_b3i << 8) | (0 << 3);
+                    op |= (0 << 25);
+                    break;
+
+                case 11: //lw_sp
+                    op |= (immd12 << 13) | (reg_b3i << 8) | (29 << 3);
+                    op |= (9 << 25);
+                    break;
+
+                case 12: //sw_sp
+                    op |= (immd12 << 13) | (reg_b3i << 8) | (29 << 3);
+                    op |= (11 << 25);
+                    break;
+
+                case 13: //lw
+                    op |= (0 << 13) | (reg_b3c << 8) | (reg_a3c << 3);
+                    op |= (9 << 25);
+                    break;
+
+                case 14: //sw
+                    op |= (0 << 13) | (reg_b3i << 8) | (reg_a3c << 3);
+                    op |= (11 << 25);
+                    break;
+
+                case 15:
+                    op |= (reg_b3c << 13) | (0 << 8) | (reg_a3c << 3);
+                    op |=  (112 << 23) | (0 << 18); //OP_ADD
+                    break;
+
+            }
+
+            return op;
+        }
     }
 
     void Simulator::execute_instructions() {
@@ -397,6 +534,7 @@ namespace HivekSimulator {
 
     void Simulator::write_dmem(uint32_t v, uint32_t address, int bits) {
         if (bits == 32) {
+            address *= 4;
             data_memory[address]     = (v & 0xFF000000) >> 24;
             data_memory[address + 1] = (v & 0x00FF0000) >> 16;
             data_memory[address + 2] = (v & 0x0000FF00) >> 8;
@@ -410,6 +548,7 @@ namespace HivekSimulator {
         uint32_t v = 0;
 
         if (bits == 32) {
+            address *= 4;
             v |= data_memory[address] << 24;
             v |= data_memory[address + 1] << 16;
             v |= data_memory[address + 2] << 8;
@@ -432,7 +571,7 @@ namespace HivekSimulator {
   //          std::cin >> a;
         }
 
-        dump_memory();
+        //dump_memory();
     }
 
     void Simulator::reset() {

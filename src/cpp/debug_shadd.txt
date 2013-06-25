@@ -1,7 +1,0 @@
-start:
-    shadd $r7, $r0, $r1 SLL 7
-;;
-    shadd $r7, $r0, $r1 SRL 31
-;;
-    shadd $r7, $r0, $r1 SRA 3
-;;

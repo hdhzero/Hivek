@@ -1,0 +1,232 @@
+start:
+    add $r0, $r0, $r0
+    add $r0, $r0, $r0
+;;
+    addi $r11, $r0, 1200
+    addi $r12, $r0, 442
+;;
+    jal mult
+;;
+
+loopend:
+    addi $r30, $r0, 1
+    addi $r0, $r0, $r0
+;;
+    jc loopend
+;;
+
+# r1 = vetor a
+# r2 = vetor b
+# r3 = vetor c
+# r4 = i, r5 = j, r6 = k, r7 = tmp, r8 = tmp2
+matrix:
+    add $r4, $r0, $r0
+    add $r7, $r0, $r0
+;;
+    
+whileL0:
+    cmplti $p1, $r4, 8
+    add $r0, $r0, $r0
+;;
+    (!p1) jcn fimwhileL0
+    (p1) add $r5, $r0, $r0
+
+whileL1:
+    cmplti $p1, $r5, 8
+    add $r0, $r0, $r0
+;;
+    (!p1) jcn fimwhileL1
+    (p1) add $r6, $r0, $r0
+;;
+    add $r7, $r0, $r0
+;;
+
+whileL3:
+    cmplti $p1, $r6, 8
+    add $r0, $r0, $r0
+;;
+    (!p1) jcn fimwhileL3
+    addi $r11, $r0, 7
+;;
+    jal mult
+;;
+    addi $r6, $r6, 1
+    j whileL3
+;;
+
+fimwhileL3:
+    addi $r5, $r5, 1
+    j whileL1
+;;    
+
+fimwhileL1:
+    addi $r4, $r4, 1
+    j whileL0
+;;
+
+fimwhileL0:
+    jr $r31
+    add $r0, $r0, $r0
+;;
+# end of matrix multiplication
+    
+            c[i][j] += a[i][k] * b[k][j];
+
+
+# r1 = a
+# r2 = b
+mult:
+    add $r13, $r0, $r0
+    add $r14, $r0, $r0
+;;
+
+L0:
+    cmpeqi $p1, $r13, 32
+    andi $r15, $r12, 1
+;;
+    (p1) jcn L1
+    (!p1) cmpeq $p2, $r15, $r0
+;;
+    (!p2) add $r14, $r14, $r11
+    shadd $r11, $r11, $r0 SLL 1
+;;
+    shadd $r12, $r12, $r0 SRL 1
+    addi $r13, $r13, 1
+;;
+    jc L0
+;;
+
+L1:
+    jr $r31
+    add $r0, $r0, $r0
+;;
+
+.a00 dw 1
+.a01 dw 1
+.a02 dw 1
+.a03 dw 1
+.a04 dw 1
+.a05 dw 1
+.a06 dw 1
+.a07 dw 1
+.a10 dw 1
+.a11 dw 1
+.a12 dw 1
+.a13 dw 1
+.a14 dw 1
+.a15 dw 1
+.a16 dw 1
+.a17 dw 1
+.a20 dw 1
+.a21 dw 1
+.a22 dw 1
+.a23 dw 1
+.a24 dw 1
+.a25 dw 1
+.a26 dw 1
+.a27 dw 1
+.a30 dw 1
+.a31 dw 1
+.a32 dw 1
+.a33 dw 1
+.a34 dw 1
+.a35 dw 1
+.a36 dw 1
+.a37 dw 1
+.a40 dw 1
+.a41 dw 1
+.a42 dw 1
+.a43 dw 1
+.a44 dw 1
+.a45 dw 1
+.a46 dw 1
+.a47 dw 1
+.a50 dw 1
+.a51 dw 1
+.a52 dw 1
+.a53 dw 1
+.a54 dw 1
+.a55 dw 1
+.a56 dw 1
+.a57 dw 1
+.a60 dw 1
+.a61 dw 1
+.a62 dw 1
+.a63 dw 1
+.a64 dw 1
+.a65 dw 1
+.a66 dw 1
+.a67 dw 1
+.a70 dw 1
+.a71 dw 1
+.a72 dw 1
+.a73 dw 1
+.a74 dw 1
+.a75 dw 1
+.a76 dw 1
+.a77 dw 1
+.c00 dw 1
+.c01 dw 1
+.c02 dw 1
+.c03 dw 1
+.c04 dw 1
+.c05 dw 1
+.c06 dw 1
+.c07 dw 1
+.c10 dw 1
+.c11 dw 1
+.c12 dw 1
+.c13 dw 1
+.c14 dw 1
+.c15 dw 1
+.c16 dw 1
+.c17 dw 1
+.c20 dw 1
+.c21 dw 1
+.c22 dw 1
+.c23 dw 1
+.c24 dw 1
+.c25 dw 1
+.c26 dw 1
+.c27 dw 1
+.c30 dw 1
+.c31 dw 1
+.c32 dw 1
+.c33 dw 1
+.c34 dw 1
+.c35 dw 1
+.c36 dw 1
+.c37 dw 1
+.c40 dw 1
+.c41 dw 1
+.c42 dw 1
+.c43 dw 1
+.c44 dw 1
+.c45 dw 1
+.c46 dw 1
+.c47 dw 1
+.c50 dw 1
+.c51 dw 1
+.c52 dw 1
+.c53 dw 1
+.c54 dw 1
+.c55 dw 1
+.c56 dw 1
+.c57 dw 1
+.c60 dw 1
+.c61 dw 1
+.c62 dw 1
+.c63 dw 1
+.c64 dw 1
+.c65 dw 1
+.c66 dw 1
+.c67 dw 1
+.c70 dw 1
+.c71 dw 1
+.c72 dw 1
+.c73 dw 1
+.c74 dw 1
+.c75 dw 1
+.c76 dw 1
+.c77 dw 1
+

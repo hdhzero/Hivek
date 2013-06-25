@@ -96,7 +96,7 @@ begin
                 when OP_ADDHI_16 =>
                     op := "1110000" & OP_ADD & reg_c3b & reg_b3b & reg_a3b;
                 when OP_SUBHI_16 =>
-                    op := "1110000" & OP_ADD & reg_c3b & reg_b3b & reg_a3b;
+                    op := "1110000" & OP_SUB & reg_c3b & reg_b3b & reg_a3b;
 
                 when OP_ADDI_16 =>
                     op := OP_ADDI & immd12 & reg_b3i & reg_b3i;
@@ -112,7 +112,7 @@ begin
                 when OP_LW_16 =>
                     op := OP_LW & x"000" & reg_b3c & reg_a3c;
                 when OP_SW_16 =>
-                    op := OP_LW & x"000" & reg_b3c & reg_a3c;
+                    op := OP_SW & x"000" & reg_b3c & reg_a3c;
                 when OP_MOV_16 =>
                     op := "1110000" & OP_ADD & reg_b3c & "00000" & reg_a3c;
                 when others =>

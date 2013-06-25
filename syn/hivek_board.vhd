@@ -25,7 +25,7 @@ architecture behavior of hivek_board is
      
     -- constants
     constant ADDR_WIDTH : integer := 8;
-    constant DUAL_ADDR_WIDTH : integer := 8;
+    constant DUAL_ADDR_WIDTH : integer := 12;
     constant DUAL_DATA_WIDTH : integer := 32;
     constant VENDOR : string := "GENERIC";
 
