@@ -79,10 +79,6 @@ plot:
     sub $r22, $r1, $r22
     add $r23, $r21, $r20
 ;;
-# WARNING!! VHDL uses 4 byte aligned, remove this shadd
-# when running on FPGA
-#    shadd $r23, $r23, $r0 SLL 2
-#;;
     addi $r24, $r0, 31
     addi $r25, $r0, 1
 ;;
@@ -96,7 +92,5 @@ plot:
     sw $r24, $r23, 0
     jr $r31
 ;;
-
-
 
 

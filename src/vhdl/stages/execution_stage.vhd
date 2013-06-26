@@ -114,7 +114,7 @@ begin
             operand_b0 := din.op0.data_b;
         end if;
 
-        -- rA1
+        -- rB1
         if din.op0.e_e2_wr = '1' and din.op0.e_e2_dst = din.op1.reg_b
             and din.op0.e_e2_alu_sh_sel = '0' then
                 operand_b1 := din.op0.e_e2_alu_sh_data;
@@ -293,8 +293,8 @@ begin
         dout.op1.mem_data_rd <= din.op1.mem_data;
 
         -- jumps!
-        dout.op0.jr_addr <= din.op0.data_b;
-        dout.op1.jr_addr <= din.op1.data_b;
+        dout.op0.jr_addr <= operand_b0;--din.op0.data_b;
+        dout.op1.jr_addr <= operand_b1;--din.op1.data_b;
 
         dout.op0.restore_sz <= din.op0.restore_sz;
         dout.op1.restore_sz <= din.op1.restore_sz;

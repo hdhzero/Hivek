@@ -1,0 +1,68 @@
+start:
+    addi $sp, $r0, 400
+    addi $r1, $r0, 5
+;;
+    addi $r2, $r0, 7
+    jal fact
+;;
+
+loop:
+    addi $r30, $r0, 1
+    add $r0, $r0, $r0
+;;
+    j loop
+;;
+
+fact:
+    addi $sp, $sp, -2
+    cmplti $p1, $r1, 1
+;;
+    sw $ra, $sp, 1
+    sw $r1, $sp, 0
+;;
+    (p1) addi $r2, $zero, 1
+    (p1) addi $sp, $sp, 2
+;;
+    (p1) jr $ra
+    (!p1) addi $r1, $r1, -1
+;;
+    jal fact
+;;
+    lw $r1, $sp, 0
+    jal mult
+;;
+    lw $ra, $sp, 1
+;;
+    addi $sp, $sp, 2
+;;
+    add14 $r0, $r0, $r0
+;;
+    jr $ra
+;;
+
+mult:
+    add $r3, $r0, $r0
+    add $r4, $r0, $r0
+;;
+
+L100:
+    cmpeqi $p1, $r3, 32
+    andi $r5, $r2, 1
+;;
+    (p1) jcn L101
+    (!p1) cmpeq $p2, $r5, $r0
+;;
+    (!p2) add $r4, $r4, $r1
+    shadd $r1, $r1, $r0 SLL 1
+;;
+    shadd $r2, $r2, $r0 SRL 1
+;;
+    addi14 $r3, $r3, 1
+;;
+    jc14 L100
+;;
+
+L101:
+    jr $ra
+    add $r2, $r4, $r0
+;;
